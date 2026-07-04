@@ -35,7 +35,7 @@ class TipoCliente(models.Model):
 class ListaPrecios(models.Model):
     nombre = models.CharField(max_length=50)
     tipo_cliente = models.ForeignKey(TipoCliente, on_delete=models.PROTECT)
-    fecha = models.DateTimeField(auto_now_add=True)
+    fecha = models.DateField()
     activo = models.BooleanField(default=True)
 
 class Precio(models.Model):
