@@ -5,7 +5,7 @@ from . import models
 
 @admin.register(models.Producto)
 class AdminProducto(admin.ModelAdmin):
-    fields = ['nombre', 'variedad', 'tamaño', 'tipo_medida', 'medida_1', 'medida_2', 'medida_3', 'familia', 'unidades_paquete']
+    fields = ['nombre', 'variedad', 'tamaño', 'tipo_medida', 'medida_1', 'medida_2', 'medida_3', 'familia', 'unidades_paquete', 'activo']
     search_fields = ['variedad', 'familia']
 
 @admin.register(models.Precio)
