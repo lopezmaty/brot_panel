@@ -5,11 +5,20 @@ from django.db import models
 class Variedad(models.Model):
     nombre = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.nombre
+
 class Tamaño(models.Model):
     nombre = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.nombre
+
 class Familia(models.Model):
     nombre = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.nombre
 
 class Producto(models.Model):
 
@@ -29,8 +38,14 @@ class Producto(models.Model):
     unidades_paquete = models.IntegerField()
     activo = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.nombre
+
 class TipoCliente(models.Model):
     nombre = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.nombre
 
 class ListaPrecios(models.Model):
     nombre = models.CharField(max_length=50)
@@ -38,10 +53,16 @@ class ListaPrecios(models.Model):
     fecha = models.DateField()
     activo = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.nombre
+
 class Precio(models.Model):
     lista_precio = models.ForeignKey(ListaPrecios, on_delete=models.PROTECT)
     producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
     precio = models.DecimalField(max_digits=6, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.producto} - {str(self.precio)}"
 
 
 
