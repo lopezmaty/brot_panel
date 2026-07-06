@@ -12,3 +12,6 @@ class Perfil(models.Model):
 
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)
     rol = models.CharField(max_length=50, choices=ROLES)
+
+    def __str__(self):
+        return self.usuario.username
