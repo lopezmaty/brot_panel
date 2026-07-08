@@ -23,8 +23,8 @@ class Cliente(models.Model):
     condicion_iva = models.CharField(max_length=50, choices=COND_IVA)
     tipo_cliente = models.ForeignKey(TipoCliente, on_delete=models.PROTECT)
     activo = models.BooleanField(default=True)
-    token = models.CharField(max_length=100)
-    token_expiracion = models.DateTimeField()
+    token = models.CharField(max_length=100, null=True, blank=True)
+    token_expiracion = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.nombre
