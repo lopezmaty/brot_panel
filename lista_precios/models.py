@@ -39,7 +39,7 @@ class Producto(models.Model):
     activo = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.nombre
+        return f'{self.nombre} {self.variedad} {self.tamaño}'
 
 class TipoCliente(models.Model):
     nombre = models.CharField(max_length=50)
