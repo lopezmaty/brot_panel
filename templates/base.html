@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Brot Panel{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <nav class="topnav">
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Colapsar menú">
+      <i class="ti ti-menu-2"></i>
+    </button>
+    <div class="logo">
+      <img src="{% static 'img/logo.png' %}" alt="Brot Panes" class="logo-img">
+      <span>Panel</span>
+    </div>
+  </nav>
+
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <nav class="sidebar-nav">
+        <a href="{% url 'dashboard' %}" class="sidebar-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+          <span class="sidebar-dot"><i class="ti ti-layout-dashboard"></i></span>
+          <span class="sidebar-label">Dashboard</span>
+        </a>
+
+        <p class="sidebar-category-title">Administración</p>
+        <a href="{% url 'lista_precios' %}" class="sidebar-item {% if request.resolver_match.url_name == 'lista_precios' %}active{% endif %}">
+          <span class="sidebar-dot"><i class="ti ti-tag"></i></span>
+          <span class="sidebar-label">Lista de precios</span>
+        </a>
+        <a href="{% url 'clientes' %}" class="sidebar-item {% if request.resolver_match.url_name == 'clientes' %}active{% endif %}">
+          <span class="sidebar-dot"><i class="ti ti-users"></i></span>
+          <span class="sidebar-label">Clientes</span>
+        </a>
+        <span class="sidebar-item-disabled">
+          <span class="sidebar-dot"><i class="ti ti-box"></i></span>
+          <span class="sidebar-label">Productos</span>
+        </span>
+        <span class="sidebar-item-disabled">
+          <span class="sidebar-dot"><i class="ti ti-cash"></i></span>
+          <span class="sidebar-label">Control de caja</span>
+        </span>
+
+        <p class="sidebar-category-title">Producción</p>
+        <a href="{% url 'centro_pedidos' %}" class="sidebar-item {% if request.resolver_match.url_name == 'centro_pedidos' %}active{% endif %}">
+          <span class="sidebar-dot"><i class="ti ti-clipboard-list"></i></span>
+          <span class="sidebar-label">Pedidos</span>
+        </a>
+        <span class="sidebar-item-disabled">
+          <span class="sidebar-dot"><i class="ti ti-calculator"></i></span>
+          <span class="sidebar-label">Calculador de producción</span>
+        </span>
+        <span class="sidebar-item-disabled">
+          <span class="sidebar-dot"><i class="ti ti-scale"></i></span>
+          <span class="sidebar-label">Calculadora de insumos</span>
+        </span>
+
+        <p class="sidebar-category-title">Gestión gerencial</p>
+        <span class="sidebar-item-disabled">
+          <span class="sidebar-dot"><i class="ti ti-report-money"></i></span>
+          <span class="sidebar-label">Costos</span>
+        </span>
+        <span class="sidebar-item-disabled">
+          <span class="sidebar-dot"><i class="ti ti-chart-line"></i></span>
+          <span class="sidebar-label">Cashflow</span>
+        </span>
+      </nav>
+
+      <div class="sidebar-user">
+        <div class="sidebar-user-info">
+          <span class="sidebar-dot"><i class="ti ti-user-circle"></i></span>
+          <span class="sidebar-label">{{ request.user.username }}</span>
+        </div>
+        <a href="{% url 'logout' %}" class="sidebar-item sidebar-logout">
+          <span class="sidebar-dot"><i class="ti ti-logout"></i></span>
+          <span class="sidebar-label">Cerrar sesión</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="content">
+      {% block content %}
+      {% endblock %}
+    </main>
+  </div>
+
+  <script>
+    document.getElementById('sidebarToggle').addEventListener('click', function () {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    });
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
