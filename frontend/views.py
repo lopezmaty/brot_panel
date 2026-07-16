@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+import requests
 
 @login_required(login_url='login')
 def dashboard_view(request):
@@ -25,7 +26,15 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('dashboard')
+            respuesta = requests.post('http://localhost:8000/api/token/', data={
+                'username': username,
+                'password': password
+            })
+            datos = respuesta.json()
+            access_token = datos['access']
+            response = redirect('dashboard')
+            response.set_cookie('access_token', access_token, httponly=True)
+            return response
         else:
             return render(request, 'login.html', {'error': True})
     else:

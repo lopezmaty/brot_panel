@@ -14,7 +14,7 @@ class ClienteViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [IsAuthenticated()]
-        return [EsAdmin(), EsColab()]
+        return [(EsAdmin | EsColab)()]
 
 class PedidoViewset(viewsets.ModelViewSet):
     queryset = models.Pedido.objects.all()
@@ -23,7 +23,7 @@ class PedidoViewset(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [IsAuthenticated()]
-        return [EsAdmin(), EsColab()]
+        return [(EsAdmin | EsColab)()]
 
 class ItemPedidoViewset(viewsets.ModelViewSet):
     queryset = models.ItemPedido.objects.all()
@@ -32,4 +32,4 @@ class ItemPedidoViewset(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [IsAuthenticated()]
-        return [EsAdmin(), EsColab()]
+        return [(EsAdmin | EsColab)()]
