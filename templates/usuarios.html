@@ -1,6 +1,52 @@
 {% extends 'base.html' %}
 
+{% block body_class %}no-sidebar{% endblock %}
+
 {% block content %}
+
 <h1 class="page-title">Gestión de usuarios</h1>
-<p>Esta pantalla está en construcción.</p>
+
+<div class="card">
+  <div class="usuarios-toolbar">
+    <button class="btn-primary" id="btnCrearUsuario">
+      <i class="ti ti-plus"></i> Crear usuario
+    </button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Usuario</th>
+        <th>Mail</th>
+        <th>Rol</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+<tr>
+  <td>{{ u.username }}</td>
+  <td>{{ u.email }}</td>
+  <td>
+    {% if u.perfil.rol == 'admin' %}
+      Administrador
+    {% elif u.perfil.rol == 'colab' %}
+      Colaborador
+    {% elif u.perfil.rol == 'read-only' %}
+      Lector
+    {% else %}
+      Sin rol
+    {% endif %}
+  </td>
+  <td>
+    <button class="btn-delete" data-user-id="{{ u.id }}">
+      <i class="ti ti-trash"></i>
+    </button>
+  </td>
+</tr>
+{% endfor %}
+    </tbody>
+  </table>
+</div>
+
 {% endblock %}
