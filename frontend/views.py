@@ -64,9 +64,14 @@ def establecer_password_view(request, uid, token):
     token_generator = PasswordResetTokenGenerator()
     if token_generator.check_token(user, token):
         if request.method == 'POST':
-            user.set_password(request.POST.get('password'))
-            user.save()
-            return redirect('login')
+            password = request.POST.get('password')
+            password2= request.POST.get('password2')
+            if password == password2:
+                user.set_password(password)
+                user.save()
+                return redirect('login')
+            else:
+                return render(request, 'establecer_password.html', {'error': 'Las contraselas no coinciden'})
         else:
             return render(request, 'establecer_password.html')
     else:

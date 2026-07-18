@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link inválido — Brot Panel</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body class="login-body">
+
+  <div class="login-card">
+    <img src="{% static 'img/logo.png' %}" alt="Brot Panes" class="login-logo">
+    <p style="color: #fff; margin-top: 16px;">Este link ya no es válido. Pedile a un administrador que te reenvíe la invitación.</p>
+  </div>
+
+</body>
+</html>
