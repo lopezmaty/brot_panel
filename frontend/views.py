@@ -3,6 +3,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 import requests
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
 
 @login_required(login_url='login')
 def dashboard_view(request):
@@ -54,3 +57,17 @@ def usuarios_view(request):
     else:
         response = redirect('dashboard')
         return response
+    
+def establecer_password_view(request, uid, token):
+    uid_decodificado = force_str(urlsafe_base64_decode(uid))
+    user = User.objects.get(pk=uid_decodificado)
+    token_generator = PasswordResetTokenGenerator()
+    if token_generator.check_token(user, token):
+        if request.method == 'POST':
+            user.set_password(request.POST.get('password'))
+            user.save()
+            return redirect('login')
+        else:
+            return render(request, 'establecer_password.html')
+    else:
+        return render(request, 'token_invalido.html')
