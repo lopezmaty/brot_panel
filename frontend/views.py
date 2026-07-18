@@ -71,7 +71,7 @@ def establecer_password_view(request, uid, token):
                 user.save()
                 return redirect('login')
             else:
-                return render(request, 'establecer_password.html', {'error': 'Las contraselas no coinciden'})
+                return render(request, 'establecer_password.html', {'error': 'Las contraseñas no coinciden'})
         else:
             return render(request, 'establecer_password.html')
     else:

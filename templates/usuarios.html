@@ -27,33 +27,59 @@
     </thead>
     <tbody>
       {% for u in users %}
-<tr>
-  <td>{{ u.username }}</td>
-  <td>{{ u.email }}</td>
-  <td>
-    {% if u.perfil.rol == 'admin' %}
-      Administrador
-    {% elif u.perfil.rol == 'colab' %}
-      Colaborador
-    {% elif u.perfil.rol == 'read-only' %}
-      Lector
-    {% else %}
-      Sin rol
-    {% endif %}
-  </td>
-  <td>
-    <button class="btn-delete" data-user-id="{{ u.id }}">
-      <i class="ti ti-trash"></i>
-    </button>
-  </td>
-</tr>
-{% endfor %}
+      <tr>
+        <td>{{ u.username }}</td>
+        <td>{{ u.email }}</td>
+        <td>
+          {% if u.perfil.rol == 'admin' %}
+            Administrador
+          {% elif u.perfil.rol == 'colab' %}
+            Colaborador
+          {% elif u.perfil.rol == 'read-only' %}
+            Lector
+          {% else %}
+            Sin rol
+          {% endif %}
+        </td>
+        <td>
+          <button class="btn-delete" data-user-id="{{ u.id }}">
+            <i class="ti ti-trash"></i>
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
     </tbody>
   </table>
 </div>
 
-{% block extra_js %}
-<script src="{% static 'js/usuarios.js' %}"></script>
+<div class="modal-overlay" id="modalCrear">
+  <div class="modal-box">
+    <h2 class="modal-title">Crear usuario</h2>
+
+    <form id="formCrearUsuario">
+      <label>Usuario</label>
+      <input type="text" id="inputUsername" required>
+
+      <label>Mail</label>
+      <input type="email" id="inputEmail" required>
+
+      <label>Rol</label>
+      <select id="inputRol" required>
+        <option value="admin">Administrador</option>
+        <option value="colab">Colaborador</option>
+        <option value="read-only">Lector</option>
+      </select>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="btnCancelarCrear">Cancelar</button>
+        <button type="submit" class="btn-primary">Crear</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 {% endblock %}
 
+{% block extra_js %}
+<script src="{% static 'js/usuarios.js' %}"></script>
 {% endblock %}

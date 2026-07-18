@@ -323,6 +323,11 @@ body.no-sidebar .sidebar {
   flex-shrink: 0;
 }
 
+.content > .modal-overlay {
+  max-width: none;
+  width: auto;
+}
+
 /* Page title */
 .page-title {
   font-family: 'DM Serif Display', serif;
@@ -571,4 +576,61 @@ tbody td {
 .btn-delete:hover {
   color: #DC2626;
   background: #FDEDED;
+}
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(19, 38, 68, 0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-box {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 380px;
+}
+
+.modal-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  color: var(--navy);
+  margin: 0 0 20px;
+}
+
+#formCrearUsuario label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray600);
+  margin: 12px 0 6px;
+}
+
+#formCrearUsuario input,
+#formCrearUsuario select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-actions button {
+  flex: 1;
 }

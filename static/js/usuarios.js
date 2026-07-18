@@ -26,3 +26,43 @@ document.querySelectorAll('.btn-delete').forEach(function (boton) {
     borrarUsuario(userId)
   });
 });
+
+document.getElementById('btnCrearUsuario').addEventListener('click', function () {
+  document.getElementById('modalCrear').classList.add('open');
+});
+
+document.getElementById('btnCancelarCrear').addEventListener('click', function () {
+  document.getElementById('modalCrear').classList.remove('open');
+});
+
+async function crearUsuario() {
+    const username = document.getElementById('inputUsername').value;
+    const email = document.getElementById('inputEmail').value;
+    const rol = document.getElementById('inputRol').value;
+
+    const url = '/api/users/usuarios/';
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            username: username,
+            email: email,
+            rol: rol
+        })
+    });
+
+    if (response.ok) {
+        location.reload();
+    } else {
+        alert('No se pudo crear el usuario');
+    }
+}
+
+document.getElementById('formCrearUsuario').addEventListener('submit', function (evento) {
+    evento.preventDefault();
+    crearUsuario();
+});
