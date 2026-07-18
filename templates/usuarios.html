@@ -4,6 +4,8 @@
 
 {% block content %}
 
+{% csrf_token %}
+
 <h1 class="page-title">Gestión de usuarios</h1>
 
 <div class="card">
@@ -48,5 +50,9 @@
     </tbody>
   </table>
 </div>
+
+{% block extra_js %}
+<script src="{% static 'js/usuarios.js' %}"></script>
+{% endblock %}
 
 {% endblock %}
