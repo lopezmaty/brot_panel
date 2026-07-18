@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from . import models
 from django.contrib.auth.models import User
+from . import utils
 
 class UserSerializer(serializers.ModelSerializer):
     rol = serializers.CharField(write_only=True)
@@ -16,6 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_unusable_password()
         user.save()
         models.Perfil.objects.create(usuario=user, rol= rol)
+        utils.enviar_invitacion(user)
 
         return user
         
