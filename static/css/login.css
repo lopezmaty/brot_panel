@@ -9,9 +9,9 @@
 }
 
 .login-card {
-  background: var(--white);
+  background: var(--navy);
   border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(19, 38, 68, 0.1);
+  box-shadow: 0 4px 20px rgba(19, 38, 68, 0.15);
   padding: 40px 36px;
   width: 100%;
   max-width: 360px;
@@ -42,16 +42,18 @@
 .login-form label {
   font-size: 13px;
   font-weight: 600;
-  color: var(--gray600);
+  color: rgba(255, 255, 255, 0.7);
   margin-top: 12px;
 }
 
 .login-form input {
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
   padding: 10px 12px;
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
 }
 
 .login-form input:focus {

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 import requests
 
 @login_required(login_url='login')
@@ -43,3 +44,13 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+@login_required(login_url='login')
+def usuarios_view(request):
+    if request.user.perfil.rol  == 'admin':
+        users = User.objects.all()
+        response = render(request, 'usuarios.html', {'users': users})
+        return response
+    else:
+        response = redirect('dashboard')
+        return response

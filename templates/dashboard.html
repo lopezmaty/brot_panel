@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block body_class %}no-sidebar{% endblock %}
+
 {% block content %}
 
 <h1 class="page-title">Acceso rápido</h1>
@@ -8,39 +10,31 @@
   <h2 class="qc-category-title">Administración</h2>
   <div class="quick-access-grid">
     <a href="{% url 'lista_precios' %}" class="quick-card">
-      <i class="ti ti-tag qc-icon-bg"></i>
-      <div class="qc-text">
-        <h3 class="qc-title">Lista de precios</h3>
-        <p class="qc-desc">Mantené tus precios actualizados y competitivos.</p>
-        <span class="qc-btn">Ir a la lista <i class="ti ti-arrow-right"></i></span>
-      </div>
+      <div class="qc-badge"><i class="ti ti-tag"></i></div>
+      <h3 class="qc-title">Lista de precios</h3>
+      <p class="qc-desc">Mantené tus precios actualizados y competitivos.</p>
+      <span class="qc-btn">Ir a la lista <i class="ti ti-arrow-right"></i></span>
     </a>
 
     <a href="{% url 'clientes' %}" class="quick-card">
-      <i class="ti ti-users qc-icon-bg"></i>
-      <div class="qc-text">
-        <h3 class="qc-title">Clientes</h3>
-        <p class="qc-desc">Gestioná tu cartera de clientes y sus datos.</p>
-        <span class="qc-btn">Ver clientes <i class="ti ti-arrow-right"></i></span>
-      </div>
+      <div class="qc-badge"><i class="ti ti-users"></i></div>
+      <h3 class="qc-title">Clientes</h3>
+      <p class="qc-desc">Gestioná tu cartera de clientes y sus datos.</p>
+      <span class="qc-btn">Ver clientes <i class="ti ti-arrow-right"></i></span>
     </a>
 
     <div class="quick-card qc-disabled">
-      <i class="ti ti-box qc-icon-bg"></i>
-      <div class="qc-text">
-        <h3 class="qc-title">Productos</h3>
-        <p class="qc-desc">Gestioná el catálogo de productos.</p>
-        <span class="qc-btn qc-btn-disabled">Próximamente</span>
-      </div>
+      <div class="qc-badge"><i class="ti ti-box"></i></div>
+      <h3 class="qc-title">Productos</h3>
+      <p class="qc-desc">Gestioná el catálogo de productos.</p>
+      <span class="qc-btn-disabled">Próximamente</span>
     </div>
 
     <div class="quick-card qc-disabled">
-      <i class="ti ti-cash qc-icon-bg"></i>
-      <div class="qc-text">
-        <h3 class="qc-title">Control de caja</h3>
-        <p class="qc-desc">Registrá ingresos y egresos diarios.</p>
-        <span class="qc-btn qc-btn-disabled">Próximamente</span>
-      </div>
+      <div class="qc-badge"><i class="ti ti-cash"></i></div>
+      <h3 class="qc-title">Control de caja</h3>
+      <p class="qc-desc">Registrá ingresos y egresos diarios.</p>
+      <span class="qc-btn-disabled">Próximamente</span>
     </div>
   </div>
 </section>
@@ -49,30 +43,24 @@
   <h2 class="qc-category-title">Producción</h2>
   <div class="quick-access-grid">
     <a href="{% url 'centro_pedidos' %}" class="quick-card">
-      <i class="ti ti-clipboard-list qc-icon-bg"></i>
-      <div class="qc-text">
-        <h3 class="qc-title">Pedidos</h3>
-        <p class="qc-desc">Controlá el estado y la producción de pedidos.</p>
-        <span class="qc-btn">Ver pedidos <i class="ti ti-arrow-right"></i></span>
-      </div>
+      <div class="qc-badge"><i class="ti ti-clipboard-list"></i></div>
+      <h3 class="qc-title">Pedidos</h3>
+      <p class="qc-desc">Controlá el estado y la producción de pedidos.</p>
+      <span class="qc-btn">Ver pedidos <i class="ti ti-arrow-right"></i></span>
     </a>
 
     <div class="quick-card qc-disabled">
-      <i class="ti ti-calculator qc-icon-bg"></i>
-      <div class="qc-text">
-        <h3 class="qc-title">Calculador de producción</h3>
-        <p class="qc-desc">Estimá cantidades a producir según pedidos.</p>
-        <span class="qc-btn qc-btn-disabled">Próximamente</span>
-      </div>
+      <div class="qc-badge"><i class="ti ti-calculator"></i></div>
+      <h3 class="qc-title">Calculador de producción</h3>
+      <p class="qc-desc">Estimá cantidades a producir según pedidos.</p>
+      <span class="qc-btn-disabled">Próximamente</span>
     </div>
 
     <div class="quick-card qc-disabled">
-      <i class="ti ti-scale qc-icon-bg"></i>
-      <div class="qc-text">
-        <h3 class="qc-title">Calculadora de insumos</h3>
-        <p class="qc-desc">Calculá insumos necesarios por receta.</p>
-        <span class="qc-btn qc-btn-disabled">Próximamente</span>
-      </div>
+      <div class="qc-badge"><i class="ti ti-scale"></i></div>
+      <h3 class="qc-title">Calculadora de insumos</h3>
+      <p class="qc-desc">Calculá insumos necesarios por receta.</p>
+      <span class="qc-btn-disabled">Próximamente</span>
     </div>
   </div>
 </section>
@@ -81,21 +69,17 @@
   <h2 class="qc-category-title">Gestión gerencial</h2>
   <div class="quick-access-grid">
     <div class="quick-card qc-disabled">
-      <i class="ti ti-report-money qc-icon-bg"></i>
-      <div class="qc-text">
-        <h3 class="qc-title">Costos</h3>
-        <p class="qc-desc">Analizá costos de producción y márgenes.</p>
-        <span class="qc-btn qc-btn-disabled">Próximamente</span>
-      </div>
+      <div class="qc-badge"><i class="ti ti-report-money"></i></div>
+      <h3 class="qc-title">Costos</h3>
+      <p class="qc-desc">Analizá costos de producción y márgenes.</p>
+      <span class="qc-btn-disabled">Próximamente</span>
     </div>
 
     <div class="quick-card qc-disabled">
-      <i class="ti ti-chart-line qc-icon-bg"></i>
-      <div class="qc-text">
-        <h3 class="qc-title">Cashflow</h3>
-        <p class="qc-desc">Seguimiento del flujo de caja del negocio.</p>
-        <span class="qc-btn qc-btn-disabled">Próximamente</span>
-      </div>
+      <div class="qc-badge"><i class="ti ti-chart-line"></i></div>
+      <h3 class="qc-title">Cashflow</h3>
+      <p class="qc-desc">Seguimiento del flujo de caja del negocio.</p>
+      <span class="qc-btn-disabled">Próximamente</span>
     </div>
   </div>
 </section>

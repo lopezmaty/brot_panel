@@ -15,79 +15,69 @@
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
   {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
 
   <nav class="topnav">
     <button class="sidebar-toggle" id="sidebarToggle" aria-label="Colapsar menú">
       <i class="ti ti-menu-2"></i>
     </button>
-    <div class="logo">
+
+    <a href="{% url 'dashboard' %}" class="logo">
       <img src="{% static 'img/logo.png' %}" alt="Brot Panes" class="logo-img">
       <span>Panel</span>
+    </a>
+
+    <div class="topnav-categories">
+      <div class="topnav-dropdown">
+        <span class="topnav-cat-label">Administración <i class="ti ti-chevron-down"></i></span>
+        <div class="topnav-dropdown-menu">
+          <a href="{% url 'lista_precios' %}">Lista de precios</a>
+          <a href="{% url 'clientes' %}">Clientes</a>
+          <span class="topnav-dropdown-disabled">Productos</span>
+          <span class="topnav-dropdown-disabled">Control de caja</span>
+        </div>
+      </div>
+
+      <div class="topnav-dropdown">
+        <span class="topnav-cat-label">Producción <i class="ti ti-chevron-down"></i></span>
+        <div class="topnav-dropdown-menu">
+          <a href="{% url 'centro_pedidos' %}">Pedidos</a>
+          <span class="topnav-dropdown-disabled">Calculador de producción</span>
+          <span class="topnav-dropdown-disabled">Calculadora de insumos</span>
+        </div>
+      </div>
+
+      <div class="topnav-dropdown">
+        <span class="topnav-cat-label">Gestión gerencial <i class="ti ti-chevron-down"></i></span>
+        <div class="topnav-dropdown-menu">
+          <span class="topnav-dropdown-disabled">Costos</span>
+          <span class="topnav-dropdown-disabled">Cashflow</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="topnav-user">
+      <button class="topnav-user-info" id="userMenuToggle">
+        <span class="sidebar-dot"><i class="ti ti-user-circle"></i></span>
+        <span>{{ request.user.username }}</span>
+        <i class="ti ti-chevron-down"></i>
+      </button>
+      <div class="user-dropdown" id="userDropdown">
+        {% if request.user.perfil.rol == 'admin' %}
+        <a href="{% url 'usuarios' %}" class="user-dropdown-item">
+          <i class="ti ti-users-group"></i> Gestión de usuarios
+        </a>
+        {% endif %}
+        <a href="{% url 'logout' %}" class="user-dropdown-item">
+          <i class="ti ti-logout"></i> Cerrar sesión
+        </a>
+      </div>
     </div>
   </nav>
 
   <div class="app-layout">
     <aside class="sidebar" id="sidebar">
-      <nav class="sidebar-nav">
-        <a href="{% url 'dashboard' %}" class="sidebar-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-          <span class="sidebar-dot"><i class="ti ti-layout-dashboard"></i></span>
-          <span class="sidebar-label">Dashboard</span>
-        </a>
-
-        <p class="sidebar-category-title">Administración</p>
-        <a href="{% url 'lista_precios' %}" class="sidebar-item {% if request.resolver_match.url_name == 'lista_precios' %}active{% endif %}">
-          <span class="sidebar-dot"><i class="ti ti-tag"></i></span>
-          <span class="sidebar-label">Lista de precios</span>
-        </a>
-        <a href="{% url 'clientes' %}" class="sidebar-item {% if request.resolver_match.url_name == 'clientes' %}active{% endif %}">
-          <span class="sidebar-dot"><i class="ti ti-users"></i></span>
-          <span class="sidebar-label">Clientes</span>
-        </a>
-        <span class="sidebar-item-disabled">
-          <span class="sidebar-dot"><i class="ti ti-box"></i></span>
-          <span class="sidebar-label">Productos</span>
-        </span>
-        <span class="sidebar-item-disabled">
-          <span class="sidebar-dot"><i class="ti ti-cash"></i></span>
-          <span class="sidebar-label">Control de caja</span>
-        </span>
-
-        <p class="sidebar-category-title">Producción</p>
-        <a href="{% url 'centro_pedidos' %}" class="sidebar-item {% if request.resolver_match.url_name == 'centro_pedidos' %}active{% endif %}">
-          <span class="sidebar-dot"><i class="ti ti-clipboard-list"></i></span>
-          <span class="sidebar-label">Pedidos</span>
-        </a>
-        <span class="sidebar-item-disabled">
-          <span class="sidebar-dot"><i class="ti ti-calculator"></i></span>
-          <span class="sidebar-label">Calculador de producción</span>
-        </span>
-        <span class="sidebar-item-disabled">
-          <span class="sidebar-dot"><i class="ti ti-scale"></i></span>
-          <span class="sidebar-label">Calculadora de insumos</span>
-        </span>
-
-        <p class="sidebar-category-title">Gestión gerencial</p>
-        <span class="sidebar-item-disabled">
-          <span class="sidebar-dot"><i class="ti ti-report-money"></i></span>
-          <span class="sidebar-label">Costos</span>
-        </span>
-        <span class="sidebar-item-disabled">
-          <span class="sidebar-dot"><i class="ti ti-chart-line"></i></span>
-          <span class="sidebar-label">Cashflow</span>
-        </span>
-      </nav>
-
-      <div class="sidebar-user">
-        <div class="sidebar-user-info">
-          <span class="sidebar-dot"><i class="ti ti-user-circle"></i></span>
-          <span class="sidebar-label">{{ request.user.username }}</span>
-        </div>
-        <a href="{% url 'logout' %}" class="sidebar-item sidebar-logout">
-          <span class="sidebar-dot"><i class="ti ti-logout"></i></span>
-          <span class="sidebar-label">Cerrar sesión</span>
-        </a>
-      </div>
+      {% block sidebar %}{% endblock %}
     </aside>
 
     <main class="content">
@@ -99,6 +89,10 @@
   <script>
     document.getElementById('sidebarToggle').addEventListener('click', function () {
       document.getElementById('sidebar').classList.toggle('collapsed');
+    });
+
+    document.getElementById('userMenuToggle').addEventListener('click', function () {
+      document.getElementById('userDropdown').classList.toggle('open');
     });
   </script>
 
