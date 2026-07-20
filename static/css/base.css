@@ -582,6 +582,8 @@ tbody td {
 .usuarios-toolbar {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 16px;
 }
 
@@ -655,4 +657,16 @@ tbody td {
 
 .modal-actions button {
   flex: 1;
+}
+
+.filtro-select {
+  padding: 10px 32px 10px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--gray100);
+  color: var(--gray800);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
 }

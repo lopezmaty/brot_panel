@@ -12,6 +12,12 @@
 
 <div class="card">
   <div class="usuarios-toolbar">
+    <select id="filtroTipoCliente" class="filtro-select">
+      <option value="todos">Todos los tipos</option>
+      {% for tipo in tipos_cliente %}
+        <option value="{{ tipo.nombre }}">{{ tipo.nombre }}</option>
+      {% endfor %}
+    </select>
     <button class="btn-primary" id="btnCrearCliente">
       <i class="ti ti-plus"></i> Crear cliente
     </button>
@@ -21,14 +27,14 @@
     <thead>
       <tr>
         <th>Razón social</th>
-        <th>Nombre del Comercio</th>
+        <th>Nombre comercial</th>
         <th>Tipo de cliente</th>
         <th></th>
       </tr>
     </thead>
     <tbody>
       {% for c in clientes %}
-      <tr>
+      <tr data-tipo-cliente="{{ c.tipo_cliente.nombre }}">
         <td>{{ c.razon_social }}</td>
         <td>{{ c.nombre_comercio }}</td>
         <td>{{ c.tipo_cliente.nombre }}</td>

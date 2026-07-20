@@ -32,3 +32,17 @@ document.querySelectorAll('.btn-delete').forEach(function (boton) {
     borrarCliente(clienteId);
   });
 });
+
+document.getElementById('filtroTipoCliente').addEventListener('change', function () {
+  const tipoElegido = this.value;
+  const filas = document.querySelectorAll('tbody tr');
+
+  filas.forEach(function (fila) {
+    const tipoDeLaFila = fila.dataset.tipoCliente;
+    if (tipoElegido === 'todos' || tipoDeLaFila === tipoElegido) {
+      fila.style.display = '';
+    } else {
+      fila.style.display = 'none';
+    }
+  });
+});

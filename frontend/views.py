@@ -6,7 +6,7 @@ import requests
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
-from sistema_pedidos.models import Cliente
+from sistema_pedidos.models import Cliente, TipoCliente
 
 @login_required(login_url='login')
 def dashboard_view(request):
@@ -78,7 +78,8 @@ def establecer_password_view(request, uid, token):
 def clientes_view(request):
     if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
         clientes = Cliente.objects.all().order_by('razon_social')
-        response = render(request, 'clientes.html', {'clientes': clientes})
+        tipos_cliente = TipoCliente.objects.all()
+        response = render(request, 'clientes.html', {'clientes': clientes, 'tipos_cliente': tipos_cliente})
         return response
     else:
         response = redirect('dashboard')
