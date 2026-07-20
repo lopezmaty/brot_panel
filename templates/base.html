@@ -86,6 +86,17 @@
     </main>
   </div>
 
+<div class="modal-overlay" id="modalConfirm">
+    <div class="modal-box">
+      <h2 class="modal-title">Confirmar acción</h2>
+      <p id="confirmMessage" style="color: var(--gray600); margin: 0 0 20px;">¿Estás seguro?</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="btnConfirmCancel">Cancelar</button>
+        <button type="button" class="btn-primary" id="btnConfirmAccept">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.getElementById('sidebarToggle').addEventListener('click', function () {
       document.getElementById('sidebar').classList.toggle('collapsed');
@@ -96,6 +107,9 @@
     });
   </script>
 
+  <script src="{% static 'js/base.js' %}"></script>
+
   {% block extra_js %}{% endblock %}
+
 </body>
 </html>

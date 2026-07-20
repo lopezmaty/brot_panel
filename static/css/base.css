@@ -12,6 +12,7 @@
   --gray600: #4A5D7A;
   --gray800: #1E2D45;
   --border: #CBD8EE;
+  --dropdown-bg: #2E333D;
 
   --topnav-bg: #12141A;
   --sidebar-bg: #0D1825;
@@ -110,15 +111,16 @@ body {
 .topnav-dropdown-menu {
   position: absolute;
   top: 100%;
-  left: 0;
-  min-width: 200px;
-  background: var(--navy);
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  min-width: 220px;
+  background: var(--white);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(19, 38, 68, 0.3);
+  box-shadow: 0 12px 28px rgba(15, 35, 64, 0.14);
   padding: 8px;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-6px);
   transition: opacity 0.15s ease, transform 0.15s ease;
   z-index: 200;
 }
@@ -126,25 +128,31 @@ body {
 .topnav-dropdown:hover .topnav-dropdown-menu {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: translateX(-50%) translateY(0);
 }
 
 .topnav-dropdown-menu a,
 .topnav-dropdown-disabled {
-  display: block;
-  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--navy);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .topnav-dropdown-menu a:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--gray100);
 }
 
 .topnav-dropdown-disabled {
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--gray400);
+  opacity: 0.7;
   cursor: default;
 }
 
@@ -177,9 +185,10 @@ body {
   top: 100%;
   right: 0;
   min-width: 200px;
-  background: var(--navy);
+  background: var(--white);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(19, 38, 68, 0.3);
+  box-shadow: 0 12px 28px rgba(15, 35, 64, 0.14);
   padding: 8px;
   max-height: 0;
   overflow: hidden;
@@ -199,14 +208,16 @@ body {
   gap: 10px;
   padding: 10px 12px;
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--navy);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .user-dropdown-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--white);
+  background: var(--gray100);
 }
 
 /* Layout */
@@ -329,17 +340,28 @@ body.no-sidebar .sidebar {
 }
 
 /* Page title */
+.page-eyebrow {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gray400);
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+
 .page-title {
   font-family: 'DM Serif Display', serif;
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 400;
   color: var(--navy);
-  margin: 0 0 20px;
-  padding: 16px 20px;
-  background: var(--white);
-  border-radius: 16px;
-  border-left: 4px solid var(--orange);
-  box-shadow: 0 4px 24px rgba(15, 35, 64, 0.08), 0 1px 4px rgba(15, 35, 64, 0.05);
+  margin: 0 0 24px;
+  padding: 0 0 14px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  box-shadow: none;
+  border-radius: 0;
 }
 
 /* Cards genéricas */
@@ -548,8 +570,8 @@ tbody td {
   }
 
   .page-title {
-    font-size: 18px;
-    padding: 12px 16px;
+    font-size: 20px;
+    padding-bottom: 10px;
   }
 
   .content {

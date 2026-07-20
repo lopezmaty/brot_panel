@@ -5,6 +5,12 @@ function getCookie(name) {
 }
 
 async function borrarUsuario(userId) {
+
+    const confirmado = await confirmarAccion('¿Estás seguro que querés borrar este usuario?');
+    if (confirmado !== true) {
+        return;
+    }
+
     const url = `/api/users/usuarios/${userId}/`;
 
     const response = await fetch(url, {
