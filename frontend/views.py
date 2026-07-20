@@ -6,6 +6,7 @@ import requests
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
+from sistema_pedidos.models import Cliente
 
 @login_required(login_url='login')
 def dashboard_view(request):
@@ -14,10 +15,6 @@ def dashboard_view(request):
 @login_required(login_url='login')
 def lista_precios_view(request):
     return render(request, 'lista_precios.html')
-
-@login_required(login_url='login')
-def clientes_view(request):
-    return render(request, 'clientes.html')
 
 @login_required(login_url='login')
 def centro_pedidos_view(request):
@@ -76,3 +73,13 @@ def establecer_password_view(request, uid, token):
             return render(request, 'establecer_password.html')
     else:
         return render(request, 'token_invalido.html')
+    
+@login_required(login_url='login')
+def clientes_view(request):
+    if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
+        clientes = Cliente.objects.all().order_by('razon_social')
+        response = render(request, 'clientes.html', {'clientes': clientes})
+        return response
+    else:
+        response = redirect('dashboard')
+        return response

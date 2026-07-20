@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
 class ClienteViewSet(viewsets.ModelViewSet):
-    queryset = models.Cliente.objects.all()
+    queryset = models.Cliente.objects.all().order_by("razon_social")
     serializer_class = serializers.ClienteSerializer
 
     def get_permissions(self):

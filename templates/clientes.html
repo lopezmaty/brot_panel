@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_class %}no-sidebar{% endblock %}
+
+{% block content %}
+
+{% csrf_token %}
+
+<span class="page-eyebrow">Administración</span>
+<h1 class="page-title">Clientes</h1>
+
+<div class="card">
+  <div class="usuarios-toolbar">
+    <button class="btn-primary" id="btnCrearCliente">
+      <i class="ti ti-plus"></i> Crear cliente
+    </button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Razón social</th>
+        <th>Nombre del Comercio</th>
+        <th>Tipo de cliente</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in clientes %}
+      <tr>
+        <td>{{ c.razon_social }}</td>
+        <td>{{ c.nombre_comercio }}</td>
+        <td>{{ c.tipo_cliente.nombre }}</td>
+        <td>
+          <button class="btn-delete" data-cliente-id="{{ c.id }}">
+            <i class="ti ti-trash"></i>
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/clientes.js' %}"></script>
+{% endblock %}
