@@ -6,7 +6,7 @@ from lista_precios.models import TipoCliente, Producto
 class Cliente(models.Model):
 
     COND_IVA = [
-        ('responsable_incripto', 'Responsable Inscripto'),
+        ('responsable_inscripto', 'Responsable Inscripto'),
         ('monotributista', 'Monotributista'),
         ('consumidor_final', 'Consumidor Final')
     ]

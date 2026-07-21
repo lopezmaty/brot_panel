@@ -67,3 +67,15 @@ document.getElementById('formCliente').addEventListener('submit', function (even
     evento.preventDefault();
     crearOEditarCliente();
 });
+
+const btnCopiar = document.getElementById('btnCopiarLink');
+if (btnCopiar) {
+  btnCopiar.addEventListener('click', function () {
+    const link = document.getElementById('magicLinkInput').value;
+    navigator.clipboard.writeText(link);
+    btnCopiar.textContent = '¡Copiado!';
+    setTimeout(function () {
+      btnCopiar.textContent = 'Copiar';
+    }, 2000);
+  });
+}
