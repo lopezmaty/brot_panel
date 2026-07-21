@@ -84,3 +84,18 @@ def clientes_view(request):
     else:
         response = redirect('dashboard')
         return response
+    
+@login_required(login_url='login')
+def cliente_detalle_view(request, cliente_id=None):
+    if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
+        if cliente_id is None:
+            tipos_cliente = TipoCliente.objects.all()
+            return render(request, 'cliente_detalle.html', {'cliente': None, 'tipos_cliente': tipos_cliente})
+
+        else:
+            cliente = Cliente.objects.get(pk=cliente_id)
+            tipos_cliente = TipoCliente.objects.all()
+            return render(request, 'cliente_detalle.html', {'cliente': cliente, 'tipos_cliente': tipos_cliente})
+    else:
+        response = redirect('dashboard')
+        return response

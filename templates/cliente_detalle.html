@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_class %}no-sidebar{% endblock %}
+
+{% block content %}
+
+{% csrf_token %}
+
+<span class="page-eyebrow">Administración</span>
+<h1 class="page-title">
+  {% if cliente %}Editar cliente{% else %}Nuevo cliente{% endif %}
+</h1>
+
+<div class="card">
+  {% if cliente %}
+  <div class="magic-link-box">
+    <label>Magic link del cliente</label>
+    <div class="magic-link-row">
+      <input type="text" id="magicLinkInput" value="http://127.0.0.1:8000/catalogo/{{ cliente.token }}/" readonly>
+      <button type="button" class="btn-secondary" id="btnCopiarLink">Copiar</button>
+    </div>
+  </div>
+  {% endif %}
+
+  <form id="formCliente">
+    <div class="form-grid">
+      <div>
+        <label>Nombre de contacto</label>
+        <input type="text" id="inputNombre" value="{% if cliente %}{{ cliente.nombre }}{% endif %}" required>
+      </div>
+      <div>
+        <label>Razón social</label>
+        <input type="text" id="inputRazonSocial" value="{% if cliente %}{{ cliente.razon_social }}{% endif %}" required>
+      </div>
+      <div>
+        <label>CUIT</label>
+        <input type="text" id="inputCuit" value="{% if cliente %}{{ cliente.cuit }}{% endif %}" required>
+      </div>
+      <div>
+        <label>Nombre comercial</label>
+        <input type="text" id="inputNombreComercio" value="{% if cliente %}{{ cliente.nombre_comercio }}{% endif %}" required>
+      </div>
+      <div>
+        <label>Dirección</label>
+        <input type="text" id="inputDireccion" value="{% if cliente %}{{ cliente.direccion }}{% endif %}" required>
+      </div>
+      <div>
+        <label>Ciudad</label>
+        <input type="text" id="inputCiudad" value="{% if cliente %}{{ cliente.ciudad }}{% endif %}" required>
+      </div>
+      <div>
+        <label>Provincia</label>
+        <input type="text" id="inputProvincia" value="{% if cliente %}{{ cliente.provincia }}{% endif %}" required>
+      </div>
+      <div>
+        <label>Teléfono</label>
+        <input type="text" id="inputTelefono" value="{% if cliente %}{{ cliente.telefono }}{% endif %}" required>
+      </div>
+      <div>
+        <label>Mail</label>
+        <input type="email" id="inputMail" value="{% if cliente %}{{ cliente.mail }}{% endif %}" required>
+      </div>
+      <div>
+        <label>Condición frente al IVA</label>
+        <select id="inputCondicionIva" required>
+          <option value="responsable_inscripto" {% if cliente.condicion_iva == 'responsable_inscripto' %}selected{% endif %}>Responsable Inscripto</option>
+          <option value="monotributista" {% if cliente.condicion_iva == 'monotributista' %}selected{% endif %}>Monotributista</option>
+          <option value="consumidor_final" {% if cliente.condicion_iva == 'consumidor_final' %}selected{% endif %}>Consumidor Final</option>
+        </select>
+      </div>
+      <div>
+        <label>Tipo de cliente</label>
+        <select id="inputTipoCliente" required>
+          {% for tipo in tipos_cliente %}
+          <option value="{{ tipo.id }}" {% if cliente.tipo_cliente.id == tipo.id %}selected{% endif %}>{{ tipo.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-checkboxes">
+      <label class="checkbox-label">
+        <input type="checkbox" id="inputActivo" {% if cliente.activo|default:True %}checked{% endif %}>
+        Cliente activo
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="inputPoseeDeuda" {% if cliente.posee_deuda %}checked{% endif %}>
+        Posee deuda
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <a href="{% url 'clientes' %}" class="btn-secondary">Cancelar</a>
+      <button type="submit" class="btn-primary">
+        {% if cliente %}Guardar cambios{% else %}Crear cliente{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/cliente_detalle.js' %}"></script>
+{% endblock %}

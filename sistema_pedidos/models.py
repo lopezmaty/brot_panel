@@ -25,6 +25,7 @@ class Cliente(models.Model):
     activo = models.BooleanField(default=True)
     token = models.CharField(max_length=100, null=True, blank=True)
     token_expiracion = models.DateTimeField(null=True, blank=True)
+    posee_deuda = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nombre

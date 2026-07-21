@@ -7,7 +7,7 @@ class ClienteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Cliente
-        fields = ['id', 'nombre', 'razon_social','cuit', 'nombre_comercio', 'direccion', 'ciudad', 'provincia', 'telefono', 'mail', 'condicion_iva', 'tipo_cliente', 'activo']
+        fields = ['id', 'nombre', 'razon_social','cuit', 'nombre_comercio', 'direccion', 'ciudad', 'provincia', 'telefono', 'mail', 'condicion_iva', 'tipo_cliente', 'activo', 'posee_deuda']
 
 class PedidoSerializer(serializers.ModelSerializer):
     cliente = ClienteSerializer(read_only=True)

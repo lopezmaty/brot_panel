@@ -18,9 +18,9 @@
         <option value="{{ tipo.nombre }}">{{ tipo.nombre }}</option>
       {% endfor %}
     </select>
-    <button class="btn-primary" id="btnCrearCliente">
-      <i class="ti ti-plus"></i> Crear cliente
-    </button>
+    <a href="{% url 'cliente_nuevo' %}" class="btn-primary">
+  <i class="ti ti-plus"></i> Crear cliente
+</a>
   </div>
 
   <table>
@@ -33,18 +33,18 @@
       </tr>
     </thead>
     <tbody>
-      {% for c in clientes %}
-      <tr data-tipo-cliente="{{ c.tipo_cliente.nombre }}">
-        <td>{{ c.razon_social }}</td>
+            {% for c in clientes %}
+        <tr data-tipo-cliente="{{ c.tipo_cliente.nombre }}">
+        <td><a href="{% url 'cliente_editar' c.id %}" style="color: var(--navy); font-weight: 600; text-decoration: none;">{{ c.razon_social }}</a></td>
         <td>{{ c.nombre_comercio }}</td>
         <td>{{ c.tipo_cliente.nombre }}</td>
         <td>
-          <button class="btn-delete" data-cliente-id="{{ c.id }}">
+            <button class="btn-delete" data-cliente-id="{{ c.id }}">
             <i class="ti ti-trash"></i>
-          </button>
+            </button>
         </td>
-      </tr>
-      {% endfor %}
+        </tr>
+        {% endfor %}
     </tbody>
   </table>
 </div>
