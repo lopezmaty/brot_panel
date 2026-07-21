@@ -403,6 +403,10 @@ body.no-sidebar .sidebar {
   font-family: 'DM Sans', sans-serif;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* Tablas */

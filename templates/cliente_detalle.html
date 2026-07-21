@@ -23,7 +23,7 @@
   </div>
   {% endif %}
 
-  <form id="formCliente">
+  <form id="formCliente" data-cliente-id="{% if cliente %}{{ cliente.id }}{% endif %}">
     <div class="form-grid">
       <div>
         <label>Nombre de contacto</label>
