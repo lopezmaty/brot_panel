@@ -12,5 +12,9 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('usuarios/', views.usuarios_view, name='usuarios'),
     path('establecer-password/<uid>/<token>/', views.establecer_password_view, name='establecer_password'),
+    path('producto/', views.producto_view, name='producto'),
+    path('producto/nuevo/', views.producto_detalle_view, name='producto_nuevo'),
+    path('producto/<producto_id>/', views.producto_detalle_view, name='producto_editar'),
+    
 
 ]
