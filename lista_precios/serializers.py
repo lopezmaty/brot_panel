@@ -22,13 +22,16 @@ class FamiliaSerializer(serializers.ModelSerializer):
         fields = ['id', 'nombre']
 
 class ProductoSerializer(serializers.ModelSerializer):
-        variedad = VariedadSerializer(read_only=True)
-        tamaño = TamañoSerializer(read_only=True)
-        familia = FamiliaSerializer(read_only=True)
+        variedad_detalle = VariedadSerializer(source='variedad', read_only=True)
+        variedad = serializers.PrimaryKeyRelatedField(queryset=models.Variedad.objects.all())
+        tamaño_detalle = TamañoSerializer(source='tamaño', read_only=True)
+        tamaño = serializers.PrimaryKeyRelatedField(queryset=models.Tamaño.objects.all())
+        familia_detalle = FamiliaSerializer(source='familia', read_only=True)
+        familia = serializers.PrimaryKeyRelatedField(queryset=models.Familia.objects.all())
         
         class Meta:
             model = models.Producto
-            fields = ['id', 'nombre', 'variedad', 'tamaño', 'tipo_medida', 'medida_1', 'medida_2', 'medida_3', 'familia', 'unidades_paquete', 'activo']
+            fields = ['id', 'nombre', 'variedad', 'variedad_detalle', 'tamaño', 'tamaño_detalle', 'tipo_medida', 'medida_1', 'medida_2', 'medida_3', 'familia', 'familia_detalle', 'unidades_paquete', 'activo']
 
 class ListaPrecioSerializer(serializers.ModelSerializer):
     tipo_cliente = TipoClienteSerializer(read_only=True)

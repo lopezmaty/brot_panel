@@ -6,7 +6,8 @@ import requests
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
-from sistema_pedidos.models import Cliente, TipoCliente
+from sistema_pedidos.models import Cliente, TipoCliente, Producto
+from lista_precios.models import Variedad, Tamaño, Familia
 
 @login_required(login_url='login')
 def dashboard_view(request):
@@ -96,6 +97,38 @@ def cliente_detalle_view(request, cliente_id=None):
             cliente = Cliente.objects.get(pk=cliente_id)
             tipos_cliente = TipoCliente.objects.all()
             return render(request, 'cliente_detalle.html', {'cliente': cliente, 'tipos_cliente': tipos_cliente})
+    else:
+        response = redirect('dashboard')
+        return response
+
+@login_required(login_url='login')
+def producto_view(request):
+    if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
+        productos = Producto.objects.all().order_by('nombre')
+        variedad = Variedad.objects.all()
+        tamaño = Tamaño.objects.all()
+        familia = Familia.objects.all()
+        response = render(request, 'productos.html', {'productos': productos, 'variedad': variedad, 'tamaño': tamaño, 'familia': familia})
+        return response
+    else:
+        response = redirect('dashboard')
+        return response
+
+@login_required(login_url='login')
+def producto_detalle_view(request, producto_id=None):
+    if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
+        if producto_id is None:
+            variedad = Variedad.objects.all()
+            tamaño = Tamaño.objects.all()
+            familia = Familia.objects.all()
+            return render(request, 'producto_detalle.html', {'producto': None, 'variedad': variedad, 'tamaño': tamaño, 'familia': familia})
+
+        else:
+            producto = Producto.objects.get(pk=producto_id)
+            variedad = Variedad.objects.all()
+            tamaño = Tamaño.objects.all()
+            familia = Familia.objects.all()
+            return render(request, 'producto_detalle.html', {'producto': producto, 'variedad': variedad, 'tamaño': tamaño, 'familia': familia})
     else:
         response = redirect('dashboard')
         return response

@@ -47,10 +47,10 @@ class ProductoViewset(viewsets.ModelViewSet):
     serializer_class = serializers.ProductoSerializer
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
-            return [IsAuthenticated()]
-        return [EsAdmin()]
-
+            if self.action in ['list', 'retrieve']:
+                return [IsAuthenticated()]
+            return [(EsAdmin | EsColab)()]
+    
 class ListaPreciosViewset(viewsets.ModelViewSet):
     queryset = models.ListaPrecios.objects.all()
     serializer_class = serializers.ListaPrecioSerializer
