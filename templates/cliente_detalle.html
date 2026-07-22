@@ -17,7 +17,7 @@
   <div class="magic-link-box">
     <label>Magic link del cliente</label>
     <div class="magic-link-row">
-      <input type="text" id="magicLinkInput" value="http://127.0.0.1:8000/catalogo/{{ cliente.token }}/" readonly>
+      <input type="text" id="magicLinkInput" value="{{ magic_link }}" readonly>
       <button type="button" class="btn-secondary" id="btnCopiarLink">Copiar</button>
     </div>
   </div>

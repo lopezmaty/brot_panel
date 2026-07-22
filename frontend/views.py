@@ -28,7 +28,8 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            respuesta = requests.post('http://localhost:8000/api/token/', data={
+            url_token = request.build_absolute_uri('/api/token/')
+            respuesta = requests.post(url_token, data={
                 'username': username,
                 'password': password
             })
@@ -96,7 +97,9 @@ def cliente_detalle_view(request, cliente_id=None):
         else:
             cliente = Cliente.objects.get(pk=cliente_id)
             tipos_cliente = TipoCliente.objects.all()
-            return render(request, 'cliente_detalle.html', {'cliente': cliente, 'tipos_cliente': tipos_cliente})
+            ruta = f'/catalogo/{cliente.token}/'
+            magic_link = request.build_absolute_uri(ruta)
+            return render(request, 'cliente_detalle.html', {'cliente': cliente, 'tipos_cliente': tipos_cliente, 'magic_link': magic_link})
     else:
         response = redirect('dashboard')
         return response
@@ -132,3 +135,8 @@ def producto_detalle_view(request, producto_id=None):
     else:
         response = redirect('dashboard')
         return response
+
+
+
+
+    

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_class %}no-sidebar{% endblock %}
+
+{% block content %}
+
+{% csrf_token %}
+
+<span class="page-eyebrow">Administración</span>
+<h1 class="page-title">Productos</h1>
+
+<div class="card">
+  <div class="usuarios-toolbar">
+    <select id="filtroFamilia" class="filtro-select">
+      <option value="todos">Todas las familias</option>
+      {% for f in familia %}
+        <option value="{{ f.nombre }}">{{ f.nombre }}</option>
+      {% endfor %}
+    </select>
+    <a href="{% url 'producto_nuevo' %}" class="btn-primary">
+      <i class="ti ti-plus"></i> Crear producto
+    </a>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Variedad</th>
+        <th>Tamaño</th>
+        <th>Familia</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in productos %}
+      <tr data-familia="{{ p.familia.nombre }}">
+        <td><a href="{% url 'producto_editar' p.id %}" style="color: var(--navy); font-weight: 600; text-decoration: none;">{{ p.nombre }}</a></td>
+        <td>{{ p.variedad.nombre }}</td>
+        <td>{{ p.tamaño.nombre }}</td>
+        <td>{{ p.familia.nombre }}</td>
+        <td>
+          <button class="btn-delete" data-producto-id="{{ p.id }}">
+            <i class="ti ti-trash"></i>
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/productos.js' %}"></script>
+{% endblock %}
