@@ -7,15 +7,11 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from sistema_pedidos.models import Cliente, TipoCliente, Producto
-from lista_precios.models import Variedad, Tamaño, Familia
+from lista_precios.models import Variedad, Tamaño, Familia, ListaPrecios
 
 @login_required(login_url='login')
 def dashboard_view(request):
     return render(request, 'dashboard.html')
-
-@login_required(login_url='login')
-def lista_precios_view(request):
-    return render(request, 'lista_precios.html')
 
 @login_required(login_url='login')
 def centro_pedidos_view(request):
@@ -137,6 +133,31 @@ def producto_detalle_view(request, producto_id=None):
         return response
 
 
+@login_required(login_url='login')
+def lista_precios_view(request):
+    if request.user.perfil.rol == 'admin':
+        lista_precios = ListaPrecios.objects.all().order_by('-fecha').first()
+        response = render(request, 'lista_precios.html', {'lista_precios': lista_precios})
+        return response
+    else:
+        response = redirect('dashboard')
+        return response
 
+@login_required(login_url='login')
+def lista_precios_detalle_view(request, lista_precios_id=None):
+    if request.user.perfil.rol == 'admin':
+        if lista_precios_id is None:
+            producto = Producto.objects.all()
+            response = render(request, 'lista_precios_detalle.html', {'lista_precios': None, 'producto': producto})
+            return response
+
+        else:
+            producto = Producto.objects.all()
+            lista_precios = ListaPrecios.objects.get(pk=lista_precios_id)
+            response = render(request, 'lista_precios_detalle.html', {'lista_precios': lista_precios, 'producto': producto})
+            return response
+    else:
+        response = redirect('dashboard')
+        return response
 
     
