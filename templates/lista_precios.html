@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_class %}no-sidebar{% endblock %}
+
+{% block content %}
+
+<span class="page-eyebrow">Administración</span>
+<h1 class="page-title">Lista de precios</h1>
+
+<div class="card">
+  {% if lista_precios %}
+    <div class="lista-actual-box">
+      <div>
+        <label>Lista vigente</label>
+        <p class="lista-actual-nombre">{{ lista_precios.nombre }}</p>
+        <p class="lista-actual-fecha">{{ lista_precios.fecha|date:"F Y" }}</p>
+      </div>
+      <a href="{% url 'lista_precios_editar' lista_precios.id %}" class="btn-secondary">Editar precios</a>
+    </div>
+  {% else %}
+    <p style="color: var(--text-secondary);">Todavía no creaste ninguna lista de precios.</p>
+  {% endif %}
+
+  <div class="usuarios-toolbar">
+    <a href="{% url 'lista_precios_nuevo' %}" class="btn-primary">
+      <i class="ti ti-plus"></i> Crear nueva lista
+    </a>
+  </div>
+</div>
+
+{% endblock %}

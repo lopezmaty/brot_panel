@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_class %}no-sidebar{% endblock %}
+
+{% block content %}
+
+{% csrf_token %}
+
+<span class="page-eyebrow">Administración</span>
+<h1 class="page-title">
+  {% if lista_precios %}Editar lista de precios{% else %}Nueva lista de precios{% endif %}
+</h1>
+
+<div class="card">
+  <form id="formListaPrecios" data-lista-id="{% if lista_precios %}{{ lista_precios.id }}{% endif %}">
+    <div class="form-grid">
+      <div>
+        <label>Nombre de la lista</label>
+        <input type="text" id="inputNombre" value="{% if lista_precios %}{{ lista_precios.nombre }}{% endif %}" required>
+      </div>
+      <div>
+        <label>Mes de la lista</label>
+        <input type="month" id="inputFecha" value="{% if lista_precios %}{{ lista_precios.fecha|date:'Y-m' }}{% endif %}" required>
+      </div>
+    </div>
+
+    <table style="margin-top: 24px;">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Precio</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in producto %}
+        <tr>
+          <td>{{ p.nombre }}</td>
+          <td>
+            <input type="number" step="0.01" class="input-precio-producto" data-producto-id="{{ p.id }}" placeholder="0.00">
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="form-actions">
+      <a href="{% url 'lista_precios' %}" class="btn-secondary">Cancelar</a>
+      <button type="submit" class="btn-primary">
+        {% if lista_precios %}Guardar cambios{% else %}Crear lista{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/lista_precios_detalle.js' %}"></script>
+{% endblock %}

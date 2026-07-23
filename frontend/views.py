@@ -7,7 +7,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from sistema_pedidos.models import Cliente, TipoCliente, Producto
-from lista_precios.models import Variedad, Tamaño, Familia, ListaPrecios
+from lista_precios.models import Variedad, Tamaño, Familia, ListaPrecios, Precio
 
 @login_required(login_url='login')
 def dashboard_view(request):
@@ -154,7 +154,8 @@ def lista_precios_detalle_view(request, lista_precios_id=None):
         else:
             producto = Producto.objects.all()
             lista_precios = ListaPrecios.objects.get(pk=lista_precios_id)
-            response = render(request, 'lista_precios_detalle.html', {'lista_precios': lista_precios, 'producto': producto})
+            precios = Precio.objects.filter(lista_precio=lista_precios)
+            response = render(request, 'lista_precios_detalle.html', {'lista_precios': lista_precios, 'producto': producto, 'precios': precios})
             return response
     else:
         response = redirect('dashboard')
