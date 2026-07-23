@@ -35,7 +35,7 @@
     <tbody>
             {% for c in clientes %}
         <tr data-tipo-cliente="{{ c.tipo_cliente.nombre }}">
-        <td><a href="{% url 'cliente_editar' c.id %}" style="color: var(--navy); font-weight: 600; text-decoration: none;">{{ c.razon_social }}</a></td>
+        <td><a href="{% url 'cliente_editar' c.id %}" style="color: var(--text-heading); font-weight: 600; text-decoration: none;">{{ c.razon_social }}</a></td>
         <td>{{ c.nombre_comercio }}</td>
         <td>{{ c.tipo_cliente.nombre }}</td>
         <td>

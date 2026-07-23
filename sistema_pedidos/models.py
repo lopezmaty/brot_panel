@@ -1,5 +1,5 @@
 from django.db import models
-from lista_precios.models import TipoCliente, Producto
+from lista_precios.models import TipoCliente, Producto, ListaPrecios
 
 # Create your models here.
 
@@ -26,6 +26,7 @@ class Cliente(models.Model):
     token = models.CharField(max_length=100, null=True, blank=True)
     token_expiracion = models.DateTimeField(null=True, blank=True)
     posee_deuda = models.BooleanField(default=False)
+    lista_precios = models.ForeignKey(ListaPrecios, on_delete=models.PROTECT, null=True, blank=True)
 
     def __str__(self):
         return self.nombre

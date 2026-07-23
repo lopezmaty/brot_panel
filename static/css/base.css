@@ -19,6 +19,30 @@
   --sidebar-width: 250px;
   --sidebar-width-collapsed: 64px;
   --topnav-height: 52px;
+
+  /* Tokens semánticos (permiten el modo oscuro sin tocar el resto del CSS) */
+  --bg-page: var(--gray50);
+  --bg-surface: var(--white);
+  --bg-surface-2: var(--gray100);
+  --text-primary: var(--gray800);
+  --text-secondary: var(--gray600);
+  --text-muted: var(--gray400);
+  --text-heading: var(--navy);
+  --badge-bg: #FBE6D3;
+  --badge-bg-disabled: #EAE6DC;
+}
+
+body.dark-mode {
+  --bg-page: #10141C;
+  --bg-surface: #1A2030;
+  --bg-surface-2: #232A3D;
+  --text-primary: #E4E8F1;
+  --text-secondary: #A9B4CC;
+  --text-muted: #6E7A94;
+  --text-heading: #F4F6FB;
+  --border: #2E374C;
+  --badge-bg: rgba(240, 112, 48, 0.18);
+  --badge-bg-disabled: rgba(255, 255, 255, 0.06);
 }
 
 * {
@@ -28,8 +52,9 @@
 body {
   margin: 0;
   font-family: 'DM Sans', sans-serif;
-  background: var(--gray50);
-  color: var(--gray800);
+  background: var(--bg-page);
+  color: var(--text-primary);
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 /* Topnav */
@@ -45,7 +70,8 @@ body {
   z-index: 100;
 }
 
-.sidebar-toggle {
+.sidebar-toggle,
+.theme-toggle {
   background: none;
   border: none;
   color: var(--white);
@@ -53,6 +79,15 @@ body {
   cursor: pointer;
   display: flex;
   align-items: center;
+}
+
+.theme-toggle {
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .logo {
@@ -114,7 +149,7 @@ body {
   left: 50%;
   transform: translateX(-50%) translateY(-6px);
   min-width: 220px;
-  background: var(--white);
+  background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow: 0 12px 28px rgba(15, 35, 64, 0.14);
@@ -138,7 +173,7 @@ body {
   gap: 10px;
   padding: 9px 12px;
   border-radius: 8px;
-  color: var(--navy);
+  color: var(--text-heading);
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
@@ -147,11 +182,11 @@ body {
 }
 
 .topnav-dropdown-menu a:hover {
-  background: var(--gray100);
+  background: var(--bg-surface-2);
 }
 
 .topnav-dropdown-disabled {
-  color: var(--gray400);
+  color: var(--text-muted);
   opacity: 0.7;
   cursor: default;
 }
@@ -185,7 +220,7 @@ body {
   top: 100%;
   right: 0;
   min-width: 200px;
-  background: var(--white);
+  background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow: 0 12px 28px rgba(15, 35, 64, 0.14);
@@ -208,7 +243,7 @@ body {
   gap: 10px;
   padding: 10px 12px;
   border-radius: 8px;
-  color: var(--navy);
+  color: var(--text-heading);
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
@@ -217,7 +252,7 @@ body {
 }
 
 .user-dropdown-item:hover {
-  background: var(--gray100);
+  background: var(--bg-surface-2);
 }
 
 /* Layout */
@@ -322,7 +357,7 @@ body.no-sidebar .sidebar {
   flex: 1;
   padding: 24px 48px;
   min-width: 0;
-  background-color: var(--gray50);
+  background-color: var(--bg-page);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -345,7 +380,7 @@ body.no-sidebar .sidebar {
   font-size: 12px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--gray400);
+  color: var(--text-muted);
   margin: 0 0 4px;
   font-weight: 600;
 }
@@ -354,7 +389,7 @@ body.no-sidebar .sidebar {
   font-family: 'DM Serif Display', serif;
   font-size: 26px;
   font-weight: 400;
-  color: var(--navy);
+  color: var(--text-heading);
   margin: 0 0 24px;
   padding: 0 0 14px;
   background: none;
@@ -366,7 +401,7 @@ body.no-sidebar .sidebar {
 
 /* Cards genéricas */
 .card {
-  background: var(--white);
+  background: var(--bg-surface);
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(15, 35, 64, 0.08), 0 1px 4px rgba(15, 35, 64, 0.05);
   padding: 20px;
@@ -395,8 +430,8 @@ body.no-sidebar .sidebar {
 }
 
 .btn-secondary {
-  background: var(--gray100);
-  color: var(--gray800);
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
   border: 1.5px solid var(--border);
   border-radius: 12px;
   padding: 10px 18px;
@@ -429,8 +464,9 @@ thead th {
 
 tbody td {
   padding: 12px 16px;
-  border-bottom: 1px solid var(--gray100);
+  border-bottom: 1px solid var(--border);
   font-size: 14px;
+  color: var(--text-primary);
 }
 
 /* Quick access cards - estilo elevado suave */
@@ -460,7 +496,7 @@ tbody td {
 }
 
 .quick-card {
-  background: var(--white);
+  background: var(--bg-surface);
   border-radius: 16px;
   padding: 24px;
   text-decoration: none;
@@ -479,7 +515,7 @@ tbody td {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: #FBE6D3;
+  background: var(--badge-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -493,20 +529,20 @@ tbody td {
   font-size: 18px;
   font-weight: 400;
   margin: 0 0 6px;
-  color: var(--navy) !important;
+  color: var(--text-heading) !important;
 }
 
 .qc-desc {
   font-size: 13px;
   line-height: 1.5;
-  color: #847D6A !important;
+  color: var(--text-secondary) !important;
   margin: 0 0 18px;
 }
 
 .qc-btn {
   font-size: 13px;
   font-weight: 600;
-  color: var(--navy) !important;
+  color: var(--text-heading) !important;
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -528,18 +564,18 @@ tbody td {
 }
 
 .qc-disabled .qc-badge {
-  background: #EAE6DC;
-  color: #A39D8E;
+  background: var(--badge-bg-disabled);
+  color: var(--text-muted);
 }
 
 .qc-disabled .qc-title {
-  color: #A39D8E !important;
+  color: var(--text-muted) !important;
 }
 
 .qc-btn-disabled {
   font-size: 13px;
   font-weight: 600;
-  color: #C2BCAC !important;
+  color: var(--text-muted) !important;
 }
 
 /* Login */
@@ -549,7 +585,7 @@ tbody td {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--gray50);
+  background: var(--bg-page);
   font-family: 'DM Sans', sans-serif;
 }
 
@@ -595,10 +631,22 @@ tbody td {
   margin-bottom: 16px;
 }
 
+.filtro-select {
+  padding: 10px 32px 10px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 .btn-delete {
   background: none;
   border: none;
-  color: var(--gray400);
+  color: var(--text-muted);
   cursor: pointer;
   font-size: 16px;
   padding: 6px;
@@ -614,7 +662,7 @@ tbody td {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(19, 38, 68, 0.5);
+  background: rgba(15, 20, 28, 0.6);
   align-items: center;
   justify-content: center;
   z-index: 300;
@@ -625,7 +673,7 @@ tbody td {
 }
 
 .modal-box {
-  background: var(--white);
+  background: var(--bg-surface);
   border-radius: 16px;
   padding: 28px;
   width: 100%;
@@ -635,7 +683,7 @@ tbody td {
 .modal-title {
   font-family: 'DM Serif Display', serif;
   font-size: 20px;
-  color: var(--navy);
+  color: var(--text-heading);
   margin: 0 0 20px;
 }
 
@@ -643,7 +691,7 @@ tbody td {
   display: block;
   font-size: 13px;
   font-weight: 600;
-  color: var(--gray600);
+  color: var(--text-secondary);
   margin: 12px 0 6px;
 }
 
@@ -655,6 +703,8 @@ tbody td {
   padding: 9px 12px;
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .modal-actions {
@@ -667,20 +717,8 @@ tbody td {
   flex: 1;
 }
 
-.filtro-select {
-  padding: 10px 32px 10px 16px;
-  border-radius: 12px;
-  border: 1.5px solid var(--border);
-  background: var(--gray100);
-  color: var(--gray800);
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-}
-
 .magic-link-box {
-  background: var(--gray100);
+  background: var(--bg-surface-2);
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 24px;
@@ -690,7 +728,7 @@ tbody td {
   display: block;
   font-size: 13px;
   font-weight: 600;
-  color: var(--gray600);
+  color: var(--text-secondary);
   margin-bottom: 8px;
 }
 
@@ -706,8 +744,8 @@ tbody td {
   padding: 9px 12px;
   font-family: 'DM Sans', sans-serif;
   font-size: 13px;
-  background: var(--white);
-  color: var(--gray600);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
 }
 
 .form-grid {
@@ -720,7 +758,7 @@ tbody td {
   display: block;
   font-size: 13px;
   font-weight: 600;
-  color: var(--gray600);
+  color: var(--text-secondary);
   margin-bottom: 6px;
 }
 
@@ -732,6 +770,8 @@ tbody td {
   padding: 9px 12px;
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .form-checkboxes {
@@ -745,7 +785,7 @@ tbody td {
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: var(--gray800);
+  color: var(--text-primary);
   cursor: pointer;
 }
 

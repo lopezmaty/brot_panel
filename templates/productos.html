@@ -36,7 +36,7 @@
     <tbody>
       {% for p in productos %}
       <tr data-familia="{{ p.familia.nombre }}">
-        <td><a href="{% url 'producto_editar' p.id %}" style="color: var(--navy); font-weight: 600; text-decoration: none;">{{ p.nombre }}</a></td>
+        <td><a href="{% url 'producto_editar' p.id %}" style="color: var(--text-heading); font-weight: 600; text-decoration: none;">{{ p.nombre }}</a></td>
         <td>{{ p.variedad.nombre }}</td>
         <td>{{ p.tamaño.nombre }}</td>
         <td>{{ p.familia.nombre }}</td>

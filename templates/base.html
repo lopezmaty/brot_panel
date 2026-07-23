@@ -33,7 +33,7 @@
         <div class="topnav-dropdown-menu">
           <a href="{% url 'lista_precios' %}">Lista de precios</a>
           <a href="{% url 'clientes' %}">Clientes</a>
-          <span class="topnav-dropdown-disabled">Productos</span>
+          <a href="{% url 'producto' %}">Productos</a>
           <span class="topnav-dropdown-disabled">Control de caja</span>
         </div>
       </div>
@@ -55,6 +55,10 @@
         </div>
       </div>
     </div>
+
+    <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+      <i class="ti ti-moon" id="themeIcon"></i>
+    </button>
 
     <div class="topnav-user">
       <button class="topnav-user-info" id="userMenuToggle">
@@ -86,10 +90,10 @@
     </main>
   </div>
 
-<div class="modal-overlay" id="modalConfirm">
+  <div class="modal-overlay" id="modalConfirm">
     <div class="modal-box">
       <h2 class="modal-title">Confirmar acción</h2>
-      <p id="confirmMessage" style="color: var(--gray600); margin: 0 0 20px;">¿Estás seguro?</p>
+      <p id="confirmMessage" style="color: var(--text-secondary); margin: 0 0 20px;">¿Estás seguro?</p>
       <div class="modal-actions">
         <button type="button" class="btn-secondary" id="btnConfirmCancel">Cancelar</button>
         <button type="button" class="btn-primary" id="btnConfirmAccept">Confirmar</button>
