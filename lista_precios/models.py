@@ -49,6 +49,7 @@ class TipoCliente(models.Model):
 
 class ListaPrecios(models.Model):
     nombre = models.CharField(max_length=50)
+    tipo_cliente = models.ForeignKey(TipoCliente, on_delete=models.PROTECT)
     fecha = models.DateField()
 
     def __str__(self):

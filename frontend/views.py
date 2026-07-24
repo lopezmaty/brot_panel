@@ -136,8 +136,13 @@ def producto_detalle_view(request, producto_id=None):
 @login_required(login_url='login')
 def lista_precios_view(request):
     if request.user.perfil.rol == 'admin':
-        lista_precios = ListaPrecios.objects.all().order_by('-fecha').first()
-        response = render(request, 'lista_precios.html', {'lista_precios': lista_precios})
+        listas_vigentes = []
+        categorias = TipoCliente.objects.all()
+        for categoria in categorias:
+            lista = ListaPrecios.objects.filter(tipo_cliente=categoria).order_by('-fecha').first()
+            if lista is not None:
+                listas_vigentes.append(lista)
+        response = render(request, 'lista_precios.html', {'listas_vigentes': listas_vigentes})
         return response
     else:
         response = redirect('dashboard')
@@ -146,19 +151,24 @@ def lista_precios_view(request):
 @login_required(login_url='login')
 def lista_precios_detalle_view(request, lista_precios_id=None):
     if request.user.perfil.rol == 'admin':
+        categorias = TipoCliente.objects.all()
         if lista_precios_id is None:
             producto = Producto.objects.all()
-            response = render(request, 'lista_precios_detalle.html', {'lista_precios': None, 'producto': producto})
+            response = render(request, 'lista_precios_detalle.html', {'lista_precios': None, 'producto': producto, 'categorias': categorias})
             return response
 
         else:
             producto = Producto.objects.all()
             lista_precios = ListaPrecios.objects.get(pk=lista_precios_id)
             precios = Precio.objects.filter(lista_precio=lista_precios)
-            response = render(request, 'lista_precios_detalle.html', {'lista_precios': lista_precios, 'producto': producto, 'precios': precios})
+
+            precios_por_producto = {}
+            for precio in precios:
+                precios_por_producto[precio.producto.id] = precio.precio
+
+            response = render(request, 'lista_precios_detalle.html', {'lista_precios': lista_precios, 'producto': producto, 'precios_por_producto': precios_por_producto, 'categorias': categorias})
             return response
     else:
         response = redirect('dashboard')
         return response
-
     

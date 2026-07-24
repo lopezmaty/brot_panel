@@ -34,11 +34,12 @@ class ProductoSerializer(serializers.ModelSerializer):
             fields = ['id', 'nombre', 'variedad', 'variedad_detalle', 'tamaño', 'tamaño_detalle', 'tipo_medida', 'medida_1', 'medida_2', 'medida_3', 'familia', 'familia_detalle', 'unidades_paquete', 'activo']
 
 class ListaPrecioSerializer(serializers.ModelSerializer):
-    tipo_cliente = TipoClienteSerializer(read_only=True)
+    tipo_cliente_detalle = TipoClienteSerializer(source='tipo_cliente', read_only=True)
+    tipo_cliente = serializers.PrimaryKeyRelatedField(queryset=models.TipoCliente.objects.all())
 
     class Meta:
         model = models.ListaPrecios
-        fields = ['id', 'nombre', 'tipo_cliente', 'fecha']
+        fields = ['id', 'nombre', 'tipo_cliente', 'fecha', 'tipo_cliente_detalle']
 
 class PrecioSerializer(serializers.ModelSerializer):
     lista_precio = ListaPrecioSerializer(read_only=True)

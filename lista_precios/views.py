@@ -78,14 +78,16 @@ def guardar_lista_completa(request):
     fecha = request.data.get('fecha')
     lista_id = request.data.get('lista_id')
     precios = request.data.get('precios')
+    tipo_cliente = request.data.get('tipo_cliente')
 
     if lista_id:
         lista = models.ListaPrecios.objects.get(pk=lista_id)
         lista.nombre = nombre
         lista.fecha = fecha
+        lista.tipo_cliente_id = tipo_cliente
         lista.save()
     else:
-        lista = models.ListaPrecios.objects.create(nombre=nombre, fecha=fecha)
+        lista = models.ListaPrecios.objects.create(nombre=nombre, fecha=fecha, tipo_cliente=tipo_cliente)
 
     for item in precios:
         producto_id = item.get('producto')

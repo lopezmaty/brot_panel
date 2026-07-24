@@ -15,7 +15,8 @@ function getCookie(name) {
 
 async function guardarListaPrecios() {
   const nombre = document.getElementById('inputNombre').value;
-  const fecha = document.getElementById('inputFecha').value;
+  const fecha = `${document.getElementById('inputFecha').value}-01`;
+  const tipoCliente = document.getElementById('inputTipoCliente').value;
   const listaId = document.getElementById('formListaPrecios').dataset.listaId;
 
   const preciosCargados = [];
@@ -38,6 +39,7 @@ async function guardarListaPrecios() {
       lista_id: listaId,
       nombre: nombre,
       fecha: fecha,
+      tipo_cliente: tipoCliente,
       precios: preciosCargados
     })
   });

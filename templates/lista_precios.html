@@ -5,28 +5,53 @@
 
 {% block content %}
 
+{% csrf_token %}
+
 <span class="page-eyebrow">Administración</span>
 <h1 class="page-title">Lista de precios</h1>
 
 <div class="card">
-  {% if lista_precios %}
-    <div class="lista-actual-box">
-      <div>
-        <label>Lista vigente</label>
-        <p class="lista-actual-nombre">{{ lista_precios.nombre }}</p>
-        <p class="lista-actual-fecha">{{ lista_precios.fecha|date:"F Y" }}</p>
-      </div>
-      <a href="{% url 'lista_precios_editar' lista_precios.id %}" class="btn-secondary">Editar precios</a>
-    </div>
-  {% else %}
-    <p style="color: var(--text-secondary);">Todavía no creaste ninguna lista de precios.</p>
-  {% endif %}
-
   <div class="usuarios-toolbar">
     <a href="{% url 'lista_precios_nuevo' %}" class="btn-primary">
       <i class="ti ti-plus"></i> Crear nueva lista
     </a>
   </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Categoría</th>
+        <th>Mes</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lista in listas_vigentes %}
+      <tr>
+        <td>{{ lista.nombre }}</td>
+        <td>{{ lista.tipo_cliente.nombre }}</td>
+        <td>{{ lista.fecha|date:"F Y" }}</td>
+        <td style="display: flex; gap: 8px; justify-content: flex-end;">
+          <a href="{% url 'lista_precios_editar' lista.id %}" class="btn-delete" style="color: var(--text-secondary);">
+            <i class="ti ti-pencil"></i>
+          </a>
+          <button class="btn-delete" data-lista-id="{{ lista.id }}">
+            <i class="ti ti-trash"></i>
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if not listas_vigentes %}
+  <p style="color: var(--text-secondary); padding: 16px;">Todavía no creaste ninguna lista de precios.</p>
+  {% endif %}
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/lista_precios.js' %}"></script>
 {% endblock %}
