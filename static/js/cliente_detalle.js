@@ -52,6 +52,7 @@ async function crearOEditarCliente() {
             mail: mail,
             condicion_iva: condicionIva,
             tipo_cliente: tipoCliente,
+            lista_precios: listaPrecios,
             activo: activo,
             posee_deuda: poseeDeuda
         })
