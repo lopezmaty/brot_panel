@@ -77,6 +77,14 @@
           {% endfor %}
         </select>
       </div>
+      <div>
+        <label>Lista de precios</label>
+        <select id="inputListaPrecios" required>
+          {% for lista in listas_vigentes %}
+          <option value="{{ lista.id }}" {% if cliente.lista_precios.id == lista.id %}selected{% endif %}>{{ lista.tipo_cliente.nombre }} — {{ lista.fecha|date:"F Y" }}</option>
+          {% endfor %}
+        </select>
+      </div>
     </div>
 
     <div class="form-checkboxes">

@@ -1,15 +1,17 @@
 from rest_framework import serializers
 from . import models
-from lista_precios.serializers import TipoClienteSerializer, ProductoSerializer
+from lista_precios.serializers import TipoClienteSerializer, ProductoSerializer, ListaPrecioSerializer
 import secrets
 
 class ClienteSerializer(serializers.ModelSerializer):
     tipo_cliente_detalle = TipoClienteSerializer(source='tipo_cliente', read_only=True)
     tipo_cliente = serializers.PrimaryKeyRelatedField(queryset=models.TipoCliente.objects.all())
+    lista_precios_detalle = ListaPrecioSerializer(source='lista_precios', read_only=True)
+    lista_precios = serializers.PrimaryKeyRelatedField(queryset=models.ListaPrecios.objects.all())
 
     class Meta:
         model = models.Cliente
-        fields = ['id', 'nombre', 'razon_social','cuit', 'nombre_comercio', 'direccion', 'ciudad', 'provincia', 'telefono', 'mail', 'condicion_iva', 'tipo_cliente', 'tipo_cliente_detalle','activo', 'posee_deuda']
+        fields = ['id', 'nombre', 'razon_social','cuit', 'nombre_comercio', 'direccion', 'ciudad', 'provincia', 'telefono', 'mail', 'condicion_iva', 'tipo_cliente', 'tipo_cliente_detalle','activo', 'posee_deuda', 'lista_precios', 'lista_precios_detalle']
 
     def create(self, validated_data):
         validated_data['token'] = secrets.token_urlsafe(10)

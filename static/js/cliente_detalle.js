@@ -18,6 +18,7 @@ async function crearOEditarCliente() {
     const tipoCliente = document.getElementById('inputTipoCliente').value;
     const activo = document.getElementById('inputActivo').checked;
     const poseeDeuda = document.getElementById('inputPoseeDeuda').checked;
+    const listaPrecios = document.getElementById('inputListaPrecios').value;
 
 
     const clienteId = document.getElementById('formCliente').dataset.clienteId;

@@ -86,19 +86,24 @@ def clientes_view(request):
 @login_required(login_url='login')
 def cliente_detalle_view(request, cliente_id=None):
     if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
-        if cliente_id is None:
-            tipos_cliente = TipoCliente.objects.all()
-            return render(request, 'cliente_detalle.html', {'cliente': None, 'tipos_cliente': tipos_cliente})
+        tipos_cliente = TipoCliente.objects.all()
 
+        listas_vigentes = []
+        categorias = TipoCliente.objects.all()
+        for categoria in categorias:
+            lista = ListaPrecios.objects.filter(tipo_cliente=categoria).order_by('-fecha').first()
+            if lista is not None:
+                listas_vigentes.append(lista)
+
+        if cliente_id is None:
+            return render(request, 'cliente_detalle.html', {'cliente': None, 'tipos_cliente': tipos_cliente, 'listas_vigentes': listas_vigentes})
         else:
             cliente = Cliente.objects.get(pk=cliente_id)
-            tipos_cliente = TipoCliente.objects.all()
             ruta = f'/catalogo/{cliente.token}/'
             magic_link = request.build_absolute_uri(ruta)
-            return render(request, 'cliente_detalle.html', {'cliente': cliente, 'tipos_cliente': tipos_cliente, 'magic_link': magic_link})
+            return render(request, 'cliente_detalle.html', {'cliente': cliente, 'tipos_cliente': tipos_cliente, 'listas_vigentes': listas_vigentes, 'magic_link': magic_link})
     else:
-        response = redirect('dashboard')
-        return response
+        return redirect('dashboard')
 
 @login_required(login_url='login')
 def producto_view(request):

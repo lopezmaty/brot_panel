@@ -18,12 +18,16 @@
   <form id="formListaPrecios" data-lista-id="{% if lista_precios %}{{ lista_precios.id }}{% endif %}">
     <div class="form-grid">
       <div>
-        <label>Nombre de la lista</label>
-        <input type="text" id="inputNombre" value="{% if lista_precios %}{{ lista_precios.nombre }}{% endif %}" required>
-      </div>
-      <div>
         <label>Mes de la lista</label>
         <input type="month" id="inputFecha" value="{% if lista_precios %}{{ lista_precios.fecha|date:'Y-m' }}{% endif %}" required>
+      </div>
+      <div>
+        <label>Categoría</label>
+        <select id="inputTipoCliente" required>
+          {% for c in categorias %}
+          <option value="{{ c.id }}" {% if lista_precios.tipo_cliente.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
+          {% endfor %}
+        </select>
       </div>
     </div>
 

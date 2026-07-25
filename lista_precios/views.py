@@ -74,11 +74,12 @@ class PreciosViewset(viewsets.ModelViewSet):
 @api_view(['POST'])
 @permission_classes([EsAdmin])
 def guardar_lista_completa(request):
-    nombre = request.data.get('nombre')
     fecha = request.data.get('fecha')
     lista_id = request.data.get('lista_id')
     precios = request.data.get('precios')
     tipo_cliente = request.data.get('tipo_cliente')
+    categoria = models.TipoCliente.objects.get(pk=tipo_cliente)
+    nombre = categoria.nombre
 
     if lista_id:
         lista = models.ListaPrecios.objects.get(pk=lista_id)
@@ -87,7 +88,7 @@ def guardar_lista_completa(request):
         lista.tipo_cliente_id = tipo_cliente
         lista.save()
     else:
-        lista = models.ListaPrecios.objects.create(nombre=nombre, fecha=fecha, tipo_cliente=tipo_cliente)
+        lista = models.ListaPrecios.objects.create(nombre=nombre, fecha=fecha, tipo_cliente=categoria)
 
     for item in precios:
         producto_id = item.get('producto')
