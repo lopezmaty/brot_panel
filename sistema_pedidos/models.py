@@ -49,6 +49,7 @@ class Pedido(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=50, choices=ESTADO_PEDIDO, default='nuevo')
     metodo_entrega = models.CharField(max_length=50, choices=ENTREGA)
+    observaciones = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return f"Pedido #{str(self.id).zfill(4)}"

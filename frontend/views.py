@@ -6,8 +6,10 @@ import requests
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
-from sistema_pedidos.models import Cliente, TipoCliente, Producto
+from sistema_pedidos.models import Cliente, TipoCliente, Producto, ItemPedido, Pedido
 from lista_precios.models import Variedad, Tamaño, Familia, ListaPrecios, Precio
+from django.utils import timezone
+from datetime import timedelta
 
 @login_required(login_url='login')
 def dashboard_view(request):
@@ -176,4 +178,39 @@ def lista_precios_detalle_view(request, lista_precios_id=None):
     else:
         response = redirect('dashboard')
         return response
-    
+
+@login_required(login_url='login')
+def centro_pedidos_view(request):
+    if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
+        desde = request.GET.get('desde')
+        estado = request.GET.get('estado')
+        if desde:
+            fecha_desde = desde
+        else:
+            fecha_desde = timezone.now() - timedelta(days=7)
+
+        if estado:
+            todos_estados = estado
+
+        else:
+            todos_estados = ['nuevo', 'en_proceso']
+
+        estados_filtrados = Pedido.objects.filter(estado__in=todos_estados, fecha__gte=fecha_desde).order_by('-fecha')
+
+        response = render(request, 'centro_pedidos.html', {'estados_filtrados': estados_filtrados})
+        return response
+
+    else:
+            response = redirect('dashboard')
+            return response
+
+
+    cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT)
+    fecha = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=50, choices=ESTADO_PEDIDO, default='nuevo')
+    metodo_entrega = models.CharField(max_length=50, choices=ENTREGA)
+    observaciones = models.CharField(max_length=200, null=True, blank=True)
+    producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
+    cantidad = models.IntegerField()
+    precio = models.DecimalField(max_digits=4, decimal_places=2)
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)

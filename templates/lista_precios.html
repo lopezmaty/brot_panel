@@ -20,7 +20,6 @@
   <table>
     <thead>
       <tr>
-        <th>Nombre</th>
         <th>Categoría</th>
         <th>Mes</th>
         <th></th>
@@ -29,9 +28,8 @@
     <tbody>
       {% for lista in listas_vigentes %}
       <tr>
-        <td>{{ lista.nombre }}</td>
         <td>{{ lista.tipo_cliente.nombre }}</td>
-        <td>{{ lista.fecha|date:"F Y" }}</td>
+        <td>{{ lista.fecha|date:"F Y"|capfirst }}</td>
         <td style="display: flex; gap: 8px; justify-content: flex-end;">
           <button class="btn-secondary" data-aplicar-lista-id="{{ lista.id }}" style="font-size: 12px;">
             Aplicar a clientes

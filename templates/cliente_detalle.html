@@ -81,7 +81,7 @@
         <label>Lista de precios</label>
         <select id="inputListaPrecios" required>
           {% for lista in listas_vigentes %}
-          <option value="{{ lista.id }}" {% if cliente.lista_precios.id == lista.id %}selected{% endif %}>{{ lista.tipo_cliente.nombre }} — {{ lista.fecha|date:"F Y" }}</option>
+          <option value="{{ lista.id }}" {% if cliente.lista_precios.id == lista.id %}selected{% endif %}>{{ lista.tipo_cliente.nombre }} — {{ lista.fecha|date:"F Y"|capfirst }}</option>
           {% endfor %}
         </select>
       </div>
