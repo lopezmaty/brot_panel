@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_class %}no-sidebar{% endblock %}
+
+{% block content %}
+
+{% csrf_token %}
+
+<span class="page-eyebrow">Producción</span>
+<h1 class="page-title">Centro de pedidos</h1>
+
+<div class="card" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+  <div style="display: flex; align-items: center; gap: 10px;">
+
+    <div class="filtro-icono-wrap">
+      <button type="button" class="filtro-icono-btn" id="btnFiltroFecha">
+        <i class="ti ti-calendar"></i>
+      </button>
+      <form method="get" class="filtro-desplegable" id="desplegableFecha">
+        <label>Desde</label>
+        <input type="date" name="desde" value="{{ request.GET.desde }}">
+        <input type="hidden" name="estado" value="{{ request.GET.estado }}">
+        <button type="submit" class="btn-primary" style="margin-top: 10px; width: 100%;">Aplicar</button>
+      </form>
+    </div>
+
+    <div class="filtro-icono-wrap">
+      <button type="button" class="filtro-icono-btn" id="btnFiltroEstado">
+        <i class="ti ti-flag"></i>
+      </button>
+      <form method="get" class="filtro-desplegable" id="desplegableEstado">
+        <label>Estado</label>
+        <select name="estado">
+          <option value="">Todos (nuevo + en proceso)</option>
+          <option value="nuevo" {% if request.GET.estado == 'nuevo' %}selected{% endif %}>Nuevo</option>
+          <option value="en_proceso" {% if request.GET.estado == 'en_proceso' %}selected{% endif %}>En proceso</option>
+          <option value="completado" {% if request.GET.estado == 'completado' %}selected{% endif %}>Completado</option>
+          <option value="cancelado" {% if request.GET.estado == 'cancelado' %}selected{% endif %}>Cancelado</option>
+        </select>
+        <input type="hidden" name="desde" value="{{ request.GET.desde }}">
+        <button type="submit" class="btn-primary" style="margin-top: 10px; width: 100%;">Aplicar</button>
+      </form>
+    </div>
+
+    <div class="filtro-icono-wrap">
+      <button type="button" class="filtro-icono-btn" id="btnFiltroEntrega">
+        <i class="ti ti-truck"></i>
+      </button>
+      <div class="filtro-desplegable" id="desplegableEntrega">
+        <label>Método de entrega</label>
+        <select id="selectFiltroEntrega">
+          <option value="todos">Todos</option>
+          <option value="retiro">Retiro en fábrica</option>
+          <option value="entrega_domicilio">Entrega a domicilio</option>
+        </select>
+      </div>
+    </div>
+
+    <input type="text" id="buscarRazonSocial" placeholder="Buscar por razón social..." style="border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--bg-surface); color: var(--text-primary); width: 220px;">
+
+    <a href="{% url 'centro_pedidos' %}" class="btn-secondary" style="font-size: 13px;">Limpiar</a>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 16px;">
+    <span id="cantidadSeleccionados" style="color: var(--text-secondary); font-size: 14px;">0 pedidos seleccionados</span>
+    <button class="btn-primary" id="btnCalcularTotal">Calcular total de productos</button>
+  </div>
+</div>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th><input type="checkbox" id="seleccionarTodos"></th>
+        <th></th>
+        <th>Pedido</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Razón social</th>
+        <th>Local</th>
+        <th>Estado</th>
+        <th>Entrega</th>
+        <th>Unidades</th>
+        <th>Total</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pedido in estados_filtrados %}
+      <tr class="fila-pedido" data-pedido-id="{{ pedido.id }}" data-razon-social="{{ pedido.cliente.razon_social|lower }}" data-metodo-entrega="{{ pedido.metodo_entrega }}">
+        <td><input type="checkbox" class="checkbox-pedido" data-pedido-id="{{ pedido.id }}"></td>
+        <td>
+          <button class="btn-expandir" data-pedido-id="{{ pedido.id }}">
+            <i class="ti ti-chevron-right"></i>
+          </button>
+        </td>
+        <td>#{{ pedido.id|stringformat:"04d" }}</td>
+        <td>{{ pedido.fecha|date:"d/m/y" }}</td>
+        <td>{{ pedido.fecha|date:"H:i" }}</td>
+        <td>{{ pedido.cliente.razon_social }}</td>
+        <td>{{ pedido.cliente.nombre_comercio }}</td>
+        <td>
+          <span class="badge-estado badge-{{ pedido.estado }}">{{ pedido.get_estado_display }}</span>
+        </td>
+        <td>{{ pedido.get_metodo_entrega_display }}</td>
+        <td>{{ pedido.total_unidades }}</td>
+        <td>${{ pedido.total_precio }}</td>
+        <td>
+          <button class="btn-delete" data-imprimir-id="{{ pedido.id }}">
+            <i class="ti ti-printer"></i>
+          </button>
+        </td>
+      </tr>
+      <tr class="fila-detalle" id="detalle-{{ pedido.id }}" style="display: none;">
+        <td colspan="12">
+          <table class="tabla-items">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio unit.</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in pedido.items %}
+              <tr class="fila-item" data-item-id="{{ item.id }}">
+                <td>{{ item.producto.nombre }}</td>
+                <td>{{ item.cantidad }}</td>
+                <td>${{ item.precio }}</td>
+                <td>${{ item.subtotal }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if not estados_filtrados %}
+  <p style="color: var(--text-secondary); padding: 16px;">No hay pedidos para mostrar en este rango.</p>
+  {% endif %}
+</div>
+
+<div class="modal-overlay" id="modalTotalProductos">
+  <div class="modal-box" style="max-width: 480px;">
+    <h2 class="modal-title">Total de productos a producir</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad total</th>
+        </tr>
+      </thead>
+      <tbody id="tablaTotalProductos"></tbody>
+    </table>
+    <div class="modal-actions" style="margin-top: 20px;">
+      <button type="button" class="btn-secondary" id="btnCerrarTotal" style="flex: 1;">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/centro_pedidos.js' %}"></script>
+{% endblock %}

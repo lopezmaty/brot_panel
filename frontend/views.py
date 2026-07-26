@@ -184,6 +184,7 @@ def centro_pedidos_view(request):
     if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
         desde = request.GET.get('desde')
         estado = request.GET.get('estado')
+
         if desde:
             fecha_desde = desde
         else:
@@ -197,20 +198,20 @@ def centro_pedidos_view(request):
 
         estados_filtrados = Pedido.objects.filter(estado__in=todos_estados, fecha__gte=fecha_desde).order_by('-fecha')
 
+        for pedido in estados_filtrados:
+            items = pedido.itempedido_set.all()
+
+            pedido.total_unidades = sum(item.cantidad for item in items)
+            pedido.total_precio = sum(item.cantidad * item.precio for item in items)
+
+            for item in items:
+                item.subtotal = item.cantidad * item.precio
+
+            pedido.items = items
+
         response = render(request, 'centro_pedidos.html', {'estados_filtrados': estados_filtrados})
         return response
 
     else:
             response = redirect('dashboard')
             return response
-
-
-    cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT)
-    fecha = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=50, choices=ESTADO_PEDIDO, default='nuevo')
-    metodo_entrega = models.CharField(max_length=50, choices=ENTREGA)
-    observaciones = models.CharField(max_length=200, null=True, blank=True)
-    producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
-    cantidad = models.IntegerField()
-    precio = models.DecimalField(max_digits=4, decimal_places=2)
-    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
