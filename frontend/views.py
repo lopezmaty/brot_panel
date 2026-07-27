@@ -118,6 +118,23 @@ def producto_view(request):
         variedad = Variedad.objects.all()
         tamaño = Tamaño.objects.all()
         familia = Familia.objects.all()
+
+        PALETA_TAMAÑOS = [
+            {'bg': '#EAF3DE', 'texto': '#2E6B0A'},
+            {'bg': '#FEF3E7', 'texto': '#9B5800'},
+            {'bg': '#E6F1FB', 'texto': '#0D4490'},
+        ]
+
+        tamaños_vistos = {}
+        for p in productos:
+            tam = p.tamaño
+            if tam.nombre not in tamaños_vistos:
+                idx = len(tamaños_vistos)
+                tamaños_vistos[tam.nombre] = PALETA_TAMAÑOS[idx % len(PALETA_TAMAÑOS)]
+            color = tamaños_vistos[tam.nombre]
+            tam.color_bg = color['bg']
+            tam.color_texto = color['texto']
+
         response = render(request, 'productos.html', {'productos': productos, 'variedad': variedad, 'tamaño': tamaño, 'familia': familia})
         return response
     else:

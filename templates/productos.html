@@ -23,32 +23,27 @@
     </a>
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Variedad</th>
-        <th>Tamaño</th>
-        <th>Familia</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in productos %}
-      <tr data-familia="{{ p.familia.nombre }}">
-        <td><a href="{% url 'producto_editar' p.id %}" style="color: var(--text-heading); font-weight: 600; text-decoration: none;">{{ p.nombre }}</a></td>
-        <td>{{ p.variedad.nombre }}</td>
-        <td>{{ p.tamaño.nombre }}</td>
-        <td>{{ p.familia.nombre }}</td>
-        <td>
-          <button class="btn-delete" data-producto-id="{{ p.id }}">
-            <i class="ti ti-trash"></i>
-          </button>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="tabla-productos">
+    <div class="fila-header">
+      <span>Producto</span>
+      <span class="familia-centrada-label">Familia</span>
+      <span></span>
+    </div>
+    {% for p in productos %}
+    <div class="fila-producto" data-familia="{{ p.familia.nombre }}">
+      <div>
+        <a href="{% url 'producto_editar' p.id %}" style="color: var(--text-heading); font-weight: 600; text-decoration: none; font-size: 14px;">
+          {{ p.nombre }} {{ p.variedad.nombre }}
+        </a>
+        <span class="badge-tamaño" style="background: {{ p.tamaño.color_bg }}; color: {{ p.tamaño.color_texto }};">{{ p.tamaño.nombre }}</span>
+      </div>
+      <span class="familia-centrada">{{ p.familia.nombre }}</span>
+      <button class="btn-delete" data-producto-id="{{ p.id }}">
+        <i class="ti ti-trash"></i>
+      </button>
+    </div>
+    {% endfor %}
+  </div>
 </div>
 
 {% endblock %}
