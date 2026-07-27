@@ -5,6 +5,8 @@ from users.permissions import EsAdmin, EsColab, EsLector
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from django.contrib.auth.decorators import login_required
+from . import models
 
 # Create your views here.
 
@@ -100,3 +102,4 @@ def guardar_lista_completa(request):
         )
 
     return Response({'id': lista.id}, status=201)
+

@@ -34,6 +34,9 @@
           <button class="btn-secondary" data-aplicar-lista-id="{{ lista.id }}" style="font-size: 12px;">
             Aplicar a clientes
           </button>
+          <a href="{% url 'lista_precios_pdf' lista.id %}" class="btn-delete" style="color: var(--text-secondary);">
+            <i class="ti ti-file-download"></i>
+          </a>
           <a href="{% url 'lista_precios_editar' lista.id %}" class="btn-delete" style="color: var(--text-secondary);">
             <i class="ti ti-pencil"></i>
           </a>

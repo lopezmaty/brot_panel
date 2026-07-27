@@ -17,4 +17,5 @@ urlpatterns = [
     path('lista_precios/', views.lista_precios_view, name='lista_precios'),
     path('lista_precios/nuevo/', views.lista_precios_detalle_view, name='lista_precios_nuevo'),
     path('lista_precios/<lista_precios_id>/', views.lista_precios_detalle_view, name='lista_precios_editar'), 
+    path('lista_precios_pdf/<lista_precios_id>/pdf/', views.lista_precios_pdf_view, name='lista_precios_pdf')
 ]

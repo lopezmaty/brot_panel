@@ -10,6 +10,10 @@ from sistema_pedidos.models import Cliente, TipoCliente, Producto, ItemPedido, P
 from lista_precios.models import Variedad, Tamaño, Familia, ListaPrecios, Precio
 from django.utils import timezone
 from datetime import timedelta
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from django.http import HttpResponse
+from django.contrib.staticfiles import finders
 
 @login_required(login_url='login')
 def dashboard_view(request):
@@ -215,3 +219,86 @@ def centro_pedidos_view(request):
     else:
             response = redirect('dashboard')
             return response
+
+@login_required(login_url='login')
+def lista_precios_pdf_view(request, lista_precios_id):
+    lista = ListaPrecios.objects.get(pk=lista_precios_id)
+    precios = Precio.objects.filter(lista_precio=lista)
+
+    agrupado = {}
+    for precio in precios:
+        familia = precio.producto.familia
+        if familia not in agrupado:
+            agrupado[familia] = []
+        agrupado[familia].append(precio)
+
+    PALETA_FAMILIAS = [
+        {'bg': '#FEF3E7', 'texto': '#8B5200', 'borde': '#E8A020'},
+        {'bg': '#FFF0EB', 'texto': '#8B2800', 'borde': '#E8521A'},
+        {'bg': '#EAF3DE', 'texto': '#234D0A', 'borde': '#5A9E20'},
+        {'bg': '#E1F5EE', 'texto': '#0A3D28', 'borde': '#1D9E75'},
+        {'bg': '#E6F1FB', 'texto': '#0A2E5C', 'borde': '#3080D0'},
+        {'bg': '#F5EEFE', 'texto': '#320A6E', 'borde': '#7F4DD8'},
+    ]
+
+    PALETA_TAMAÑOS = [
+        {'bg': '#EAF3DE', 'texto': '#2E6B0A'},
+        {'bg': '#FEF3E7', 'texto': '#9B5800'},
+        {'bg': '#E6F1FB', 'texto': '#0D4490'},
+    ]
+
+    tamaños_vistos = {}
+    for i, familia in enumerate(agrupado.keys()):
+        color = PALETA_FAMILIAS[i % len(PALETA_FAMILIAS)]
+        familia.color_bg = color['bg']
+        familia.color_texto = color['texto']
+        familia.color_borde = color['borde']
+
+        for precio in agrupado[familia]:
+            tamaño = precio.producto.tamaño
+            if tamaño.nombre not in tamaños_vistos:
+                idx = len(tamaños_vistos)
+                tamaños_vistos[tamaño.nombre] = PALETA_TAMAÑOS[idx % len(PALETA_TAMAÑOS)]
+            color_tam = tamaños_vistos[tamaño.nombre]
+            tamaño.color_bg = color_tam['bg']
+            tamaño.color_texto = color_tam['texto']
+
+    def formatear_medida(producto):
+        if producto.tipo_medida == 'diametro':
+            return f'Ø {producto.medida_1} cm'
+        elif producto.tipo_medida == 'largo_ancho':
+            return f'Largo {producto.medida_1} cm · Ancho {producto.medida_2} cm'
+        elif producto.tipo_medida == 'largo_ancho_alto':
+            return f'{producto.medida_1} cm · {producto.medida_2} cm · {producto.medida_3} cm'
+        return ''
+
+    ficha_tecnica = {}
+    for precio in precios:
+        producto = precio.producto
+        clave = (producto.nombre, producto.tamaño.nombre)
+        if clave not in ficha_tecnica:
+            ficha_tecnica[clave] = {
+                'nombre': f'{producto.nombre} {producto.tamaño.nombre}',
+                'dimensiones': formatear_medida(producto),
+                'variedades': set(),
+            }
+        ficha_tecnica[clave]['variedades'].add(producto.variedad.nombre)
+
+    ficha_tecnica_lista = []
+    for item in ficha_tecnica.values():
+        item['variedades'] = ', '.join(sorted(item['variedades']))
+        ficha_tecnica_lista.append(item)
+
+    logo_path = finders.find('img/logo.png')
+    logo_url = 'file:///' + logo_path.replace('\\', '/')
+
+    html_string = render_to_string('lista_precios_pdf.html', {
+        'agrupado': agrupado,
+        'lista': lista,
+        'ficha_tecnica': ficha_tecnica_lista,
+        'logo_url': logo_url,
+    })
+    pdf = HTML(string=html_string).write_pdf()
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="lista_precios_{lista.nombre}.pdf"'
+    return response

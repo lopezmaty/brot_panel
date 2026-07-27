@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 12mm 10mm;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DejaVu Sans', sans-serif;
+    color: #1a1a18;
+    font-size: 10px;
+  }
+
+  .header {
+    background: #E8521A;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px 4px 0 0;
+  }
+  .header-logo {
+    height: 22px;
+  }
+  .header-center {
+    text-align: center;
+    color: #fff;
+  }
+  .header-tipo {
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    opacity: 0.85;
+  }
+  .header-sub {
+    font-size: 8.5px;
+    opacity: 0.65;
+    margin-top: 2px;
+  }
+  .header-right {
+    text-align: right;
+    color: #fff;
+  }
+  .header-mes {
+    font-size: 16px;
+    font-weight: 800;
+  }
+  .header-vig {
+    font-size: 7px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
+  }
+
+  .card {
+    border: 1px solid #d8d4ce;
+    border-top: none;
+  }
+
+  .familia-bloque {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .cat-header {
+    padding: 6px 18px;
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border-left: 4px solid;
+  }
+
+  .col-header {
+    display: flex;
+    padding: 4px 18px;
+    background: #faf9f7;
+    border-bottom: 1px solid #ede9e3;
+  }
+  .col-header span {
+    font-size: 7.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #bbb;
+  }
+  .col-header .ch-nombre { width: 55%; }
+  .col-header .ch-precio { width: 22%; text-align: right; }
+  .col-header .ch-unidades { width: 23%; text-align: right; }
+
+  table.productos {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  table.productos td {
+    padding: 5px 18px;
+    border-bottom: 1px solid #f5f3f0;
+    font-size: 9.5px;
+    vertical-align: middle;
+  }
+  table.productos tr:last-child td {
+    border-bottom: 1px solid #ede9e3;
+  }
+  .col-nombre { width: 55%; }
+  .tag {
+    font-size: 7px;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 2px;
+    margin-left: 5px;
+  }
+  .col-precio {
+    width: 22%;
+    text-align: right;
+    font-weight: 700;
+  }
+  .col-precio .psym {
+    color: #bbb;
+    font-weight: 400;
+    margin-right: 2px;
+  }
+  .col-unidades {
+    width: 23%;
+    text-align: right;
+    color: #888;
+    font-size: 9px;
+  }
+
+  .ficha {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    padding: 14px 18px 16px;
+    border: 1px solid #d8d4ce;
+    border-top: 2px solid #f0ede8;
+  }
+  .ficha-title {
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #aaa;
+    margin-bottom: 10px;
+  }
+  .ficha table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .ficha th {
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #bbb;
+    text-align: left;
+    padding: 0 8px 6px 0;
+    border-bottom: 1px solid #ede9e3;
+  }
+  .ficha td {
+    font-size: 9.5px;
+    padding: 5px 8px 5px 0;
+    border-bottom: 1px solid #f5f3f0;
+    color: #555;
+    vertical-align: top;
+  }
+  .ficha td:first-child {
+    font-weight: 600;
+    color: #1a1a18;
+    width: 26%;
+  }
+  .ficha td:nth-child(2) {
+    width: 26%;
+    color: #888;
+  }
+
+  .footer {
+    padding: 8px 18px;
+    background: #faf9f7;
+    border: 1px solid #d8d4ce;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.5px;
+    color: #bbb;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <img src="{{ logo_url }}" class="header-logo" alt="Brot Panes">
+    <div class="header-center">
+      <div class="header-tipo">Lista de precios — {{ lista.tipo_cliente.nombre }}</div>
+      <div class="header-sub">{{ lista.fecha|date:"F Y"|capfirst }} · Precios por unidad con IVA</div>
+    </div>
+    <div class="header-right">
+      <div class="header-mes">{{ lista.fecha|date:"F Y"|capfirst }}</div>
+      <div class="header-vig">Vigencia</div>
+    </div>
+  </div>
+
+  <div class="card">
+    {% for familia, lista_precios_familia in agrupado.items %}
+    <div class="familia-bloque">
+      <div class="cat-header" style="background: {{ familia.color_bg }}; color: {{ familia.color_texto }}; border-left-color: {{ familia.color_borde }};">
+        {{ familia.nombre }}
+      </div>
+      <div class="col-header">
+        <span class="ch-nombre">Producto</span>
+        <span class="ch-precio">Precio</span>
+        <span class="ch-unidades">Unid. por envase</span>
+      </div>
+      <table class="productos">
+        {% for precio in lista_precios_familia %}
+        <tr>
+          <td class="col-nombre">
+            {{ precio.producto.nombre }} {{ precio.producto.variedad.nombre }}
+            <span class="tag" style="background: {{ precio.producto.tamaño.color_bg }}; color: {{ precio.producto.tamaño.color_texto }};">{{ precio.producto.tamaño.nombre }}</span>
+          </td>
+          <td class="col-precio"><span class="psym">$</span>{{ precio.precio|floatformat:0 }}</td>
+          <td class="col-unidades">{{ precio.producto.unidades_paquete }} unidades</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="ficha">
+    <div class="ficha-title">Ficha técnica de productos</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Dimensiones</th>
+          <th>Variedades</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in ficha_tecnica %}
+        <tr>
+          <td>{{ item.nombre }}</td>
+          <td>{{ item.dimensiones }}</td>
+          <td>{{ item.variedades }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <span>Nuestros productos son de elaboración artesanal. Pueden variar en tamaño y color.</span>
+    <span>Precios en ARS · IVA incluido · por unidad</span>
+  </div>
+
+</body>
+</html>
