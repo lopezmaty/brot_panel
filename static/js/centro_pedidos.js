@@ -94,3 +94,29 @@ document.getElementById('seleccionarTodos').addEventListener('change', function 
   });
   actualizarContadorSeleccionados();
 });
+
+document.querySelectorAll('[data-detalle-id]').forEach(function (boton) {
+  boton.addEventListener('click', function () {
+    const fila = boton.closest('.fila-pedido');
+
+    document.getElementById('detNumero').textContent = fila.dataset.numero;
+    document.getElementById('detCliente').textContent = `${fila.dataset.clienteNombre} (${fila.dataset.razonSocial})`;
+    document.getElementById('detLocal').textContent = fila.dataset.nombreComercio;
+    document.getElementById('detFecha').textContent = fila.dataset.fechaTexto;
+    document.getElementById('detEntrega').textContent = fila.dataset.metodoTexto;
+    document.getElementById('detTelefono').textContent = fila.dataset.telefono;
+    document.getElementById('detDireccion').textContent = fila.dataset.direccion;
+    document.getElementById('detObservaciones').textContent = fila.dataset.observaciones || 'Sin observaciones';
+
+    const pedidoId = fila.dataset.pedidoId;
+    const filaDetalle = document.getElementById(`detalle-${pedidoId}`);
+    const tablaOrigen = filaDetalle.querySelector('.tabla-items tbody');
+    document.querySelector('#detItems tbody').innerHTML = tablaOrigen ? tablaOrigen.innerHTML : '';
+
+    document.getElementById('modalDetallePedido').classList.add('open');
+  });
+});
+
+document.getElementById('btnCerrarDetalle').addEventListener('click', function () {
+  document.getElementById('modalDetallePedido').classList.remove('open');
+});

@@ -78,7 +78,7 @@
         <th>Fecha</th>
         <th>Hora</th>
         <th>Razón social</th>
-        <th>Nombre Comercial</th>
+        <th>Local</th>
         <th>Estado</th>
         <th>Entrega</th>
         <th>Unidades</th>
@@ -88,7 +88,18 @@
     </thead>
     <tbody>
       {% for pedido in estados_filtrados %}
-      <tr class="fila-pedido" data-pedido-id="{{ pedido.id }}" data-razon-social="{{ pedido.cliente.razon_social|lower }}" data-metodo-entrega="{{ pedido.metodo_entrega }}">
+      <tr class="fila-pedido"
+          data-pedido-id="{{ pedido.id }}"
+          data-razon-social="{{ pedido.cliente.razon_social|lower }}"
+          data-metodo-entrega="{{ pedido.metodo_entrega }}"
+          data-metodo-texto="{{ pedido.get_metodo_entrega_display }}"
+          data-telefono="{{ pedido.cliente.telefono }}"
+          data-direccion="{{ pedido.cliente.direccion }}"
+          data-observaciones="{{ pedido.observaciones|default:'' }}"
+          data-cliente-nombre="{{ pedido.cliente.nombre }}"
+          data-nombre-comercio="{{ pedido.cliente.nombre_comercio }}"
+          data-fecha-texto="{{ pedido.fecha|date:'d/m/y H:i' }}"
+          data-numero="#{{ pedido.id|stringformat:'04d' }}">
         <td><input type="checkbox" class="checkbox-pedido" data-pedido-id="{{ pedido.id }}"></td>
         <td>
           <button class="btn-expandir" data-pedido-id="{{ pedido.id }}">
@@ -106,7 +117,10 @@
         <td>{{ pedido.get_metodo_entrega_display }}</td>
         <td>{{ pedido.total_unidades }}</td>
         <td>${{ pedido.total_precio }}</td>
-        <td>
+        <td style="display: flex; gap: 4px;">
+          <button class="btn-delete" data-detalle-id="{{ pedido.id }}">
+            <i class="ti ti-eye"></i>
+          </button>
           <button class="btn-delete" data-imprimir-id="{{ pedido.id }}">
             <i class="ti ti-printer"></i>
           </button>
@@ -159,6 +173,31 @@
     </table>
     <div class="modal-actions" style="margin-top: 20px;">
       <button type="button" class="btn-secondary" id="btnCerrarTotal" style="flex: 1;">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalDetallePedido">
+  <div class="modal-box" style="max-width: 520px;">
+    <h2 class="modal-title" id="detNumero"></h2>
+    <div class="detalle-grid">
+      <div><label>Cliente</label><p id="detCliente"></p></div>
+      <div><label>Local</label><p id="detLocal"></p></div>
+      <div><label>Fecha</label><p id="detFecha"></p></div>
+      <div><label>Entrega</label><p id="detEntrega"></p></div>
+      <div><label>Teléfono</label><p id="detTelefono"></p></div>
+      <div><label>Dirección de envío</label><p id="detDireccion"></p></div>
+    </div>
+    <div style="margin-top: 14px;">
+      <label>Observaciones</label>
+      <p id="detObservaciones"></p>
+    </div>
+    <div style="margin-top: 16px;">
+      <label>Productos</label>
+      <table id="detItems"><tbody></tbody></table>
+    </div>
+    <div class="modal-actions" style="margin-top: 20px;">
+      <button type="button" class="btn-secondary" id="btnCerrarDetalle" style="flex: 1;">Cerrar</button>
     </div>
   </div>
 </div>

@@ -1020,3 +1020,26 @@ tbody td {
 .fila-producto .btn-delete {
   margin-left: auto;
 }
+
+.detalle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+.detalle-grid label,
+#detObservaciones + label,
+.modal-box label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 2px;
+}
+.detalle-grid p,
+#detObservaciones {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin: 0;
+}
