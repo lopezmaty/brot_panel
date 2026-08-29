@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Comanda #{{ pedido.id }}</title>
+    <style>
+        @page {
+            size: 80mm auto;
+            margin: 4mm;
+        }
+        body {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            width: 72mm;
+            margin: 0;
+        }
+        .encabezado {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .encabezado .razon-social {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .encabezado .comercio {
+            font-size: 13px;
+        }
+        .encabezado .entrega {
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+        .linea {
+            border-top: 1px dashed #000;
+            margin: 6px 0;
+        }
+        .fila {
+            display: flex;
+            justify-content: space-between;
+        }
+        .items {
+            margin: 8px 0;
+        }
+        .item-fila {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+        .obs {
+            margin-top: 8px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="encabezado">
+        <div class="razon-social">{{ pedido.cliente.razon_social }}</div>
+        <div class="comercio">{{ pedido.cliente.nombre_comercio }}</div>
+        <div class="entrega">{{ pedido.get_metodo_entrega_display }}</div>
+    </div>
+
+    <div class="linea"></div>
+
+    <div class="fila">
+        <span>Pedido:</span>
+        <span>#{{ pedido.id }}</span>
+    </div>
+    <div class="fila">
+        <span>Fecha:</span>
+        <span>{{ pedido.fecha|date:"d/m/Y H:i" }}</span>
+    </div>
+
+    <div class="linea"></div>
+
+    <div class="items">
+        {% for item in items %}
+        <div class="item-fila">
+            <span>{{ item.producto }}</span>
+            <span>x{{ item.cantidad }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if pedido.observaciones %}
+    <div class="linea"></div>
+    <div class="obs">Obs: {{ pedido.observaciones }}</div>
+    {% endif %}
+
+    <script>
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html>

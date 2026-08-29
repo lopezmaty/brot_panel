@@ -19,6 +19,7 @@ class ClienteSerializer(serializers.ModelSerializer):
 
 class PedidoSerializer(serializers.ModelSerializer):
     cliente = ClienteSerializer(read_only=True)
+    metodo_entrega = serializers.CharField(required=False)
 
     class Meta:
         model = models.Pedido

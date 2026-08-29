@@ -99,14 +99,20 @@
           data-cliente-nombre="{{ pedido.cliente.nombre }}"
           data-nombre-comercio="{{ pedido.cliente.nombre_comercio }}"
           data-fecha-texto="{{ pedido.fecha|date:'d/m/y H:i' }}"
-          data-numero="#{{ pedido.id|stringformat:'04d' }}">
+          data-numero="#{{ pedido.id|stringformat:'04d' }}"
+          data-estado="{{ pedido.estado }}">
         <td><input type="checkbox" class="checkbox-pedido" data-pedido-id="{{ pedido.id }}"></td>
         <td>
           <button class="btn-expandir" data-pedido-id="{{ pedido.id }}">
             <i class="ti ti-chevron-right"></i>
           </button>
         </td>
-        <td>#{{ pedido.id|stringformat:"04d" }}</td>
+        <td>
+          <a href="#" class="btn-numero-pedido" data-detalle-id="{{ pedido.id }}"
+             style="color: var(--text-heading); font-weight: 600; text-decoration: none; cursor: pointer;">
+            #{{ pedido.id|stringformat:"04d" }}
+          </a>
+        </td>
         <td>{{ pedido.fecha|date:"d/m/y" }}</td>
         <td>{{ pedido.fecha|date:"H:i" }}</td>
         <td>{{ pedido.cliente.razon_social }}</td>
@@ -117,11 +123,17 @@
         <td>{{ pedido.get_metodo_entrega_display }}</td>
         <td>{{ pedido.total_unidades }}</td>
         <td>${{ pedido.total_precio }}</td>
-        <td style="display: flex; gap: 4px;">
-          <button class="btn-delete" data-detalle-id="{{ pedido.id }}">
-            <i class="ti ti-eye"></i>
+        <td style="display: flex; gap: 4px; align-items: center;">
+          {% if pedido.estado == 'nuevo' %}
+          <button class="btn-accion-pedido btn-estado-avanzar" title="Pasar a En proceso" data-avanzar-id="{{ pedido.id }}" data-nuevo-estado="en_proceso">
+            <i class="ti ti-arrows-exchange"></i>
           </button>
-          <button class="btn-delete" data-imprimir-id="{{ pedido.id }}">
+          {% elif pedido.estado == 'en_proceso' %}
+          <button class="btn-accion-pedido btn-estado-avanzar" title="Pasar a Completado" data-avanzar-id="{{ pedido.id }}" data-nuevo-estado="completado">
+            <i class="ti ti-arrows-exchange"></i>
+          </button>
+          {% endif %}
+          <button class="btn-accion-pedido btn-imprimir" data-imprimir-id="{{ pedido.id }}">
             <i class="ti ti-printer"></i>
           </button>
         </td>
@@ -196,8 +208,13 @@
       <label>Productos</label>
       <table id="detItems"><tbody></tbody></table>
     </div>
+    <div style="margin-top: 16px;" id="seccionCancelar">
+      <label>Motivo de cancelación</label>
+      <textarea id="motivoCancelacion" rows="3" placeholder="Ingresá el motivo de cancelación..." style="width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--bg-surface); color: var(--text-primary); resize: vertical; margin-top: 6px;"></textarea>
+    </div>
     <div class="modal-actions" style="margin-top: 20px;">
       <button type="button" class="btn-secondary" id="btnCerrarDetalle" style="flex: 1;">Cerrar</button>
+      <button type="button" class="btn-primary" id="btnCancelarPedido" style="flex: 1; background: #DC2626;">Cancelar pedido</button>
     </div>
   </div>
 </div>

@@ -14,6 +14,8 @@ from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.http import HttpResponse
 from django.contrib.staticfiles import finders
+from django.shortcuts import render, get_object_or_404
+from sistema_pedidos.models import Pedido
 
 @login_required(login_url='login')
 def dashboard_view(request):
@@ -212,10 +214,10 @@ def centro_pedidos_view(request):
             fecha_desde = timezone.now() - timedelta(days=7)
 
         if estado:
-            todos_estados = estado
+            todos_estados = [estado]
 
         else:
-            todos_estados = ['nuevo', 'en_proceso']
+            todos_estados = ['nuevo', 'en_proceso', 'completado', 'cancelado']
 
         estados_filtrados = Pedido.objects.filter(estado__in=todos_estados, fecha__gte=fecha_desde).order_by('-fecha')
 
@@ -319,3 +321,12 @@ def lista_precios_pdf_view(request, lista_precios_id):
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="lista_precios_{lista.nombre}.pdf"'
     return response
+
+def comanda(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    items = pedido.itempedido_set.all()
+
+    return render(request, 'comanda.html', {
+        'pedido': pedido,
+        'items': items,
+    })
