@@ -6,6 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.core.mail import send_mail
+from .xubio import obtener_token, XUBIO_BASE
+import requests
 
 
 # Create your views here.
@@ -107,3 +109,71 @@ def pedidos_nuevos(request):
     ultimo_id = request.GET.get('ultimo_id', 0)
     cantidad = models.Pedido.objects.filter(id__gt=ultimo_id).count()
     return Response({'cantidad': cantidad})
+
+from .xubio import facturar_pedido
+
+@api_view(['POST'])
+@permission_classes([EsAdmin | EsColab])
+def facturar_pedidos(request):
+    ids = request.data.get('pedido_ids', [])
+    if not ids:
+        return Response({'error': 'No se enviaron pedidos.'}, status=400)
+
+    resultados = []
+    for pedido_id in ids:
+        try:
+            pedido = models.Pedido.objects.get(id=pedido_id)
+            status_code, respuesta = facturar_pedido(pedido)
+            resultados.append({
+                'pedido_id': pedido_id,
+                'ok': status_code in [200, 201],
+                'detalle': respuesta,
+            })
+        except models.Pedido.DoesNotExist:
+            resultados.append({'pedido_id': pedido_id, 'ok': False, 'detalle': 'Pedido no encontrado'})
+        except Exception as e:
+            resultados.append({'pedido_id': pedido_id, 'ok': False, 'detalle': str(e)})
+
+    return Response(resultados)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def buscar_cliente_xubio(request):
+    cuit = request.GET.get('cuit', '')
+    if not cuit:
+        return Response({'error': 'CUIT requerido'}, status=400)
+
+    try:
+        token = obtener_token()
+        response = requests.get(
+            f'{XUBIO_BASE}/clienteBean',
+            params={'numeroIdentificacion': cuit},
+            headers={
+                'Authorization': f'Bearer {token}',
+                'Accept': 'application/json',
+            }
+        )
+        data = response.json()
+        if not data:
+            return Response({'error': 'No se encontró el cliente en Xubio'}, status=404)
+
+        cliente = data[0]
+        categoria = cliente.get('categoriaFiscal', {}).get('codigo', '')
+        condicion_iva_map = {
+            'RI': 'responsable_inscripto',
+            'MT': 'monotributista',
+            'CF': 'consumidor_final',
+        }
+
+        return Response({
+            'xubio_cliente_id': cliente.get('cliente_id'),
+            'razon_social': cliente.get('razonSocial', ''),
+            'direccion': cliente.get('direccion', ''),
+            'mail': cliente.get('email', ''),
+            'telefono': cliente.get('telefono', ''),
+            'condicion_iva': condicion_iva_map.get(categoria, ''),
+            'provincia': cliente.get('provincia', {}).get('nombre', ''),
+        })
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)

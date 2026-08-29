@@ -22,16 +22,20 @@ class FamiliaSerializer(serializers.ModelSerializer):
         fields = ['id', 'nombre']
 
 class ProductoSerializer(serializers.ModelSerializer):
-        variedad_detalle = VariedadSerializer(source='variedad', read_only=True)
-        variedad = serializers.PrimaryKeyRelatedField(queryset=models.Variedad.objects.all())
-        tamaño_detalle = TamañoSerializer(source='tamaño', read_only=True)
-        tamaño = serializers.PrimaryKeyRelatedField(queryset=models.Tamaño.objects.all())
-        familia_detalle = FamiliaSerializer(source='familia', read_only=True)
-        familia = serializers.PrimaryKeyRelatedField(queryset=models.Familia.objects.all())
-        
-        class Meta:
-            model = models.Producto
-            fields = ['id', 'nombre', 'variedad', 'variedad_detalle', 'tamaño', 'tamaño_detalle', 'tipo_medida', 'medida_1', 'medida_2', 'medida_3', 'familia', 'familia_detalle', 'unidades_paquete', 'activo']
+    variedad_detalle = VariedadSerializer(source='variedad', read_only=True)
+    variedad = serializers.PrimaryKeyRelatedField(queryset=models.Variedad.objects.all())
+    tamaño_detalle = TamañoSerializer(source='tamaño', read_only=True)
+    tamaño = serializers.PrimaryKeyRelatedField(queryset=models.Tamaño.objects.all())
+    familia_detalle = FamiliaSerializer(source='familia', read_only=True)
+    familia = serializers.PrimaryKeyRelatedField(queryset=models.Familia.objects.all())
+
+    class Meta:
+        model = models.Producto
+        fields = [
+            'id', 'nombre', 'variedad', 'variedad_detalle', 'tamaño', 'tamaño_detalle',
+            'tipo_medida', 'medida_1', 'medida_2', 'medida_3', 'familia', 'familia_detalle',
+            'unidades_paquete', 'activo', 'xubio_producto_id',
+        ]
 
 class ListaPrecioSerializer(serializers.ModelSerializer):
     tipo_cliente_detalle = TipoClienteSerializer(source='tipo_cliente', read_only=True)
@@ -48,6 +52,3 @@ class PrecioSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Precio
         fields = ['id', 'lista_precio', 'producto', 'precio']
-
-
-

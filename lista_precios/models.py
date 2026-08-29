@@ -38,6 +38,8 @@ class Producto(models.Model):
     unidades_paquete = models.IntegerField()
     activo = models.BooleanField(default=True)
 
+    xubio_producto_id = models.IntegerField(null=True, blank=True)
+
     def __str__(self):
         return f'{self.nombre} {self.variedad} {self.tamaño}'
 

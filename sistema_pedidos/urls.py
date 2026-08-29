@@ -10,4 +10,6 @@ router.register('item_pedido', views.ItemPedidoViewset)
 urlpatterns = [
     path('aplicar-lista-a-todos/', views.aplicar_lista_a_todos, name='aplicar-lista-a-todos'),
     path('pedidos/nuevos/', views.pedidos_nuevos, name='pedidos_nuevos'),
+    path('pedidos/facturar/', views.facturar_pedidos, name='facturar_pedidos'),
+    path('clientes/buscar-xubio/', views.buscar_cliente_xubio, name='buscar_cliente_xubio'),
 ]+ router.urls

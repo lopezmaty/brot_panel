@@ -67,6 +67,10 @@
         <label id="labelMedida3">Medida 3</label>
         <input type="number" step="0.1" id="inputMedida3" value="{% if producto %}{{ producto.medida_3 }}{% endif %}">
       </div>
+      <div>
+        <label>ID producto en Xubio</label>
+        <input type="number" id="inputXubioProductoId" value="{% if producto %}{{ producto.xubio_producto_id|default:'' }}{% endif %}">
+      </div>
     </div>
 
     <div class="form-checkboxes">

@@ -6,20 +6,16 @@ function getCookie(name) {
 
 function actualizarCamposMedida() {
   const tipoMedida = document.getElementById('inputTipoMedida').value;
-  const medida1 = document.getElementById('inputMedida1');
   const medida2 = document.getElementById('inputMedida2');
   const medida3 = document.getElementById('inputMedida3');
 
   if (tipoMedida === 'diametro') {
-    medida1.disabled = false;
     medida2.disabled = true;
     medida3.disabled = true;
   } else if (tipoMedida === 'largo_ancho') {
-    medida1.disabled = false;
     medida2.disabled = false;
     medida3.disabled = true;
   } else if (tipoMedida === 'largo_ancho_alto') {
-    medida1.disabled = false;
     medida2.disabled = false;
     medida3.disabled = false;
   }
@@ -39,19 +35,12 @@ async function crearOEditarProducto() {
     const medida2 = document.getElementById('inputMedida2').value;
     const medida3 = document.getElementById('inputMedida3').value;
     const activo = document.getElementById('inputActivo').checked;
+    const xubioProductoId = document.getElementById('inputXubioProductoId').value;
 
     const productoId = document.getElementById('formProducto').dataset.productoId;
 
-    let metodo;
-    let url;
-
-    if (productoId === "") {
-        metodo = 'POST';
-        url = '/api/lista_precios/productos/';
-    } else {
-        metodo = 'PUT';
-        url = `/api/lista_precios/productos/${productoId}/`;
-    }
+    const metodo = productoId === '' ? 'POST' : 'PUT';
+    const url = productoId === '' ? '/api/lista_precios/productos/' : `/api/lista_precios/productos/${productoId}/`;
 
     const response = await fetch(url, {
         method: metodo,
@@ -60,16 +49,17 @@ async function crearOEditarProducto() {
             'X-CSRFToken': getCookie('csrftoken')
         },
         body: JSON.stringify({
-            nombre: nombre,
-            variedad: variedad,
-            tamaño: tamaño,
-            familia: familia,
+            nombre,
+            variedad,
+            tamaño,
+            familia,
             unidades_paquete: unidadesPaquete,
             tipo_medida: tipoMedida,
             medida_1: medida1 || null,
             medida_2: medida2 || null,
             medida_3: medida3 || null,
-            activo: activo
+            activo,
+            xubio_producto_id: xubioProductoId || null,
         })
     });
 

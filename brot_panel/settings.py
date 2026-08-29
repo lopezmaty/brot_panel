@@ -144,3 +144,6 @@ STATICFILES_DIRS = [
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'no-reply@brotpanes.com'
+
+XUBIO_CLIENT_ID = config('XUBIO_CLIENT_ID')
+XUBIO_SECRET_ID = config('XUBIO_SECRET_ID')

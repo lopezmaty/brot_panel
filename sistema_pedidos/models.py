@@ -11,6 +11,11 @@ class Cliente(models.Model):
         ('consumidor_final', 'Consumidor Final')
     ]
 
+    TIPO_COMPROBANTE = [
+        (1, 'Factura'),
+        (6, 'Recibo'),
+    ]
+
     nombre = models.CharField(max_length=50)
     razon_social = models.CharField(max_length=50)
     cuit = models.CharField(max_length=13)
@@ -27,6 +32,12 @@ class Cliente(models.Model):
     token_expiracion = models.DateTimeField(null=True, blank=True)
     posee_deuda = models.BooleanField(default=False)
     lista_precios = models.ForeignKey(ListaPrecios, on_delete=models.PROTECT, null=True, blank=True)
+
+    # Campos Xubio
+    xubio_cliente_id = models.IntegerField(null=True, blank=True)
+    xubio_punto_venta_id = models.IntegerField(null=True, blank=True)
+    xubio_tipo_comprobante = models.IntegerField(choices=TIPO_COMPROBANTE, null=True, blank=True)
+    dias_cc = models.IntegerField(default=0)
 
     def __str__(self):
         return self.nombre

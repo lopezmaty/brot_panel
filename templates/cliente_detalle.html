@@ -23,7 +23,7 @@
   </div>
   {% endif %}
 
-  <form id="formCliente" data-cliente-id="{% if cliente %}{{ cliente.id }}{% endif %}">
+  <form id="formCliente" data-cliente-id="{% if cliente %}{{ cliente.id }}{% endif %}" data-xubio-cliente-id="{% if cliente %}{{ cliente.xubio_cliente_id|default:'' }}{% endif %}">
     <div class="form-grid">
       <div>
         <label>Nombre de contacto</label>
@@ -35,7 +35,10 @@
       </div>
       <div>
         <label>CUIT</label>
-        <input type="text" id="inputCuit" value="{% if cliente %}{{ cliente.cuit }}{% endif %}" required>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="inputCuit" value="{% if cliente %}{{ cliente.cuit }}{% endif %}" required placeholder="20-12345678-9" style="flex: 1;">
+          <button type="button" class="btn-secondary" id="btnBuscarXubio" style="white-space: nowrap;">Buscar en Xubio</button>
+        </div>
       </div>
       <div>
         <label>Nombre comercial</label>
@@ -84,6 +87,30 @@
           <option value="{{ lista.id }}" {% if cliente.lista_precios.id == lista.id %}selected{% endif %}>{{ lista.tipo_cliente.nombre }} — {{ lista.fecha|date:"F Y"|capfirst }}</option>
           {% endfor %}
         </select>
+      </div>
+    </div>
+
+    <div class="form-section-title" style="margin-top: 24px; margin-bottom: 12px; font-weight: 600; color: var(--text-secondary); font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">Facturación (Xubio)</div>
+    <div class="form-grid">
+      <div>
+        <label>Punto de venta</label>
+        <select id="inputXubioPuntoVenta">
+          <option value="">— Sin asignar —</option>
+          <option value="214112" {% if cliente.xubio_punto_venta_id == 214112 %}selected{% endif %}>Factura (Web Service)</option>
+          <option value="154275" {% if cliente.xubio_punto_venta_id == 154275 %}selected{% endif %}>Proforma</option>
+        </select>
+      </div>
+      <div>
+        <label>Tipo de comprobante</label>
+        <select id="inputXubioTipoComprobante">
+          <option value="">— Sin asignar —</option>
+          <option value="1" {% if cliente.xubio_tipo_comprobante == 1 %}selected{% endif %}>Factura</option>
+          <option value="6" {% if cliente.xubio_tipo_comprobante == 6 %}selected{% endif %}>Recibo</option>
+        </select>
+      </div>
+      <div>
+        <label>Días de cuenta corriente</label>
+        <input type="number" id="inputDiasCC" value="{% if cliente %}{{ cliente.dias_cc|default:0 }}{% endif %}">
       </div>
     </div>
 
