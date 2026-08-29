@@ -46,3 +46,10 @@ def aplicar_lista_a_todos(request):
     clientes_a_actualizar = models.Cliente.objects.filter(lista_precios__tipo_cliente=categoria).update(lista_precios=lista_precios)
 
     return Response({'clientes_a_actualizar': clientes_a_actualizar}, status=200)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def pedidos_nuevos(request):
+    ultimo_id = request.GET.get('ultimo_id', 0)
+    cantidad = models.Pedido.objects.filter(id__gt=ultimo_id).count()
+    return Response({'cantidad': cantidad})

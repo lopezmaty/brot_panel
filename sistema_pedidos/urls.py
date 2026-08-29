@@ -8,5 +8,6 @@ router.register('pedidos', views.PedidoViewset)
 router.register('item_pedido', views.ItemPedidoViewset)
 
 urlpatterns = [
-    path('aplicar-lista-a-todos/', views.aplicar_lista_a_todos, name='aplicar-lista-a-todos')
+    path('aplicar-lista-a-todos/', views.aplicar_lista_a_todos, name='aplicar-lista-a-todos'),
+    path('pedidos/nuevos/', views.pedidos_nuevos, name='pedidos_nuevos'),
 ]+ router.urls

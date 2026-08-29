@@ -219,3 +219,44 @@ document.getElementById('btnExportarExcel').addEventListener('click', function (
   XLSX.utils.book_append_sheet(libro, hoja, 'Totales');
   XLSX.writeFile(libro, 'total_productos.xlsx');
 });
+
+(function () {
+  const filasPedido = document.querySelectorAll('.fila-pedido');
+  if (filasPedido.length === 0) return;
+
+  const ultimoId = Math.max(...[...filasPedido].map(f => parseInt(f.dataset.pedidoId, 10)));
+  const btnActualizar = document.getElementById('btnActualizar');
+
+  function beep() {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscilador = ctx.createOscillator();
+    const ganancia = ctx.createGain();
+    oscilador.connect(ganancia);
+    ganancia.connect(ctx.destination);
+    oscilador.type = 'sine';
+    oscilador.frequency.setValueAtTime(880, ctx.currentTime);
+    ganancia.gain.setValueAtTime(0.3, ctx.currentTime);
+    ganancia.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+    oscilador.start(ctx.currentTime);
+    oscilador.stop(ctx.currentTime + 0.8);
+  }
+
+  async function verificarNuevos() {
+    try {
+      const response = await fetch(`/api/sistema_pedidos/pedidos/nuevos/?ultimo_id=${ultimoId}`, {
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+      });
+      const data = await response.json();
+      if (data.cantidad > 0) {
+        btnActualizar.textContent = `⚠️ ${data.cantidad} pedido${data.cantidad > 1 ? 's' : ''} nuevo${data.cantidad > 1 ? 's' : ''} — Actualizar`;
+        btnActualizar.classList.add('btn-primary');
+        btnActualizar.classList.remove('btn-secondary');
+        beep();
+      }
+    } catch (e) {
+      // silencioso si falla la red
+    }
+  }
+
+  setInterval(verificarNuevos, 30000);
+})();
