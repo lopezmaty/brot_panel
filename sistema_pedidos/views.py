@@ -5,6 +5,7 @@ from users.permissions import EsAdmin, EsColab, EsLector
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from django.core.mail import send_mail
 
 
 # Create your views here.
@@ -26,6 +27,59 @@ class PedidoViewset(viewsets.ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return [IsAuthenticated()]
         return [(EsAdmin | EsColab)()]
+
+    def update(self, request, *args, **kwargs):
+        pedido = self.get_object()
+        estado_anterior = pedido.estado
+
+        response = super().update(request, *args, **kwargs)
+
+        pedido.refresh_from_db()
+        estado_nuevo = pedido.estado
+
+        if estado_anterior != estado_nuevo and pedido.cliente.mail:
+            mensajes = {
+                'en_proceso': (
+                    f'Hola {pedido.cliente.nombre},\n\n'
+                    f'Tu pedido #{pedido.id:04d} ha sido confirmado y está siendo preparado.\n\n'
+                    f'Recordá no tener saldos vencidos para poder proceder con la entrega del mismo. '
+                    f'Si no es el caso, por favor contactate con administración al WhatsApp: '
+                    f'+54 9 3513 24-3882\n\n'
+                    f'Gracias,\nBrot Panes'
+                ),
+                'completado': (
+                    f'Hola {pedido.cliente.nombre},\n\n'
+                    f'Tu pedido #{pedido.id:04d} está listo.\n\n'
+                    f'Recordá no tener saldos vencidos para poder proceder con la entrega del mismo. '
+                    f'Si no es el caso, por favor contactate con administración al WhatsApp: '
+                    f'+54 9 3513 24-3882\n\n'
+                    f'Gracias,\nBrot Panes'
+                ),
+                'cancelado': (
+                    f'Hola {pedido.cliente.nombre},\n\n'
+                    f'Tu pedido #{pedido.id:04d} fue cancelado.\n\n'
+                    f'Para más información contactate con administración al WhatsApp: '
+                    f'+54 9 3513 24-3882\n\n'
+                    f'Gracias,\nBrot Panes'
+                ),
+            }
+            asuntos = {
+                'en_proceso': f'Pedido #{pedido.id:04d} confirmado — Brot Panes',
+                'completado': f'Pedido #{pedido.id:04d} listo — Brot Panes',
+                'cancelado': f'Pedido #{pedido.id:04d} cancelado — Brot Panes',
+            }
+            mensaje = mensajes.get(estado_nuevo)
+            asunto = asuntos.get(estado_nuevo)
+            if mensaje:
+                send_mail(
+                    subject=asunto,
+                    message=mensaje,
+                    from_email=None,
+                    recipient_list=[pedido.cliente.mail],
+                    fail_silently=True,
+                )
+
+        return response
 
 class ItemPedidoViewset(viewsets.ModelViewSet):
     queryset = models.ItemPedido.objects.all()
