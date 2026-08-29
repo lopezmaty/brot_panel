@@ -168,3 +168,54 @@ document.querySelectorAll('.btn-imprimir').forEach(function (boton) {
     window.open(`/panel/pedidos/${pedidoId}/comanda/`, '_blank', 'width=900,height=800');
   });
 });
+
+document.getElementById('btnCalcularTotal').addEventListener('click', function () {
+  const seleccionados = document.querySelectorAll('.checkbox-pedido:checked');
+
+  if (seleccionados.length === 0) {
+    alert('Seleccioná al menos un pedido.');
+    return;
+  }
+
+  const totales = {};
+
+  seleccionados.forEach(function (checkbox) {
+    const pedidoId = checkbox.dataset.pedidoId;
+    const filaDetalle = document.getElementById(`detalle-${pedidoId}`);
+    const filas = filaDetalle.querySelectorAll('.tabla-items tbody tr');
+
+    filas.forEach(function (fila) {
+      const celdas = fila.querySelectorAll('td');
+      if (celdas.length < 2) return;
+      const producto = celdas[0].textContent.trim();
+      const cantidad = parseInt(celdas[1].textContent.trim(), 10);
+      if (!totales[producto]) totales[producto] = 0;
+      totales[producto] += cantidad;
+    });
+  });
+
+  const tbody = document.getElementById('tablaTotalProductos');
+  tbody.innerHTML = '';
+  const entradas = Object.entries(totales).sort((a, b) => a[0].localeCompare(b[0]));
+  entradas.forEach(function ([producto, cantidad]) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${producto}</td><td>${cantidad}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('modalTotalProductos').dataset.totales = JSON.stringify(entradas);
+  document.getElementById('modalTotalProductos').classList.add('open');
+});
+
+document.getElementById('btnCerrarTotal').addEventListener('click', function () {
+  document.getElementById('modalTotalProductos').classList.remove('open');
+});
+
+document.getElementById('btnExportarExcel').addEventListener('click', function () {
+  const entradas = JSON.parse(document.getElementById('modalTotalProductos').dataset.totales);
+  const filas = [['Producto', 'Cantidad total'], ...entradas];
+  const libro = XLSX.utils.book_new();
+  const hoja = XLSX.utils.aoa_to_sheet(filas);
+  XLSX.utils.book_append_sheet(libro, hoja, 'Totales');
+  XLSX.writeFile(libro, 'total_productos.xlsx');
+});

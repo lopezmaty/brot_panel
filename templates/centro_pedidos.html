@@ -152,7 +152,7 @@
             <tbody>
               {% for item in pedido.items %}
               <tr class="fila-item" data-item-id="{{ item.id }}">
-                <td>{{ item.producto.nombre }}</td>
+                <td>{{ item.producto }}</td>
                 <td>{{ item.cantidad }}</td>
                 <td>${{ item.precio }}</td>
                 <td>${{ item.subtotal }}</td>
@@ -185,6 +185,7 @@
     </table>
     <div class="modal-actions" style="margin-top: 20px;">
       <button type="button" class="btn-secondary" id="btnCerrarTotal" style="flex: 1;">Cerrar</button>
+      <button type="button" class="btn-primary" id="btnExportarExcel" style="flex: 1;">Exportar Excel</button>
     </div>
   </div>
 </div>
@@ -222,5 +223,6 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="{% static 'js/centro_pedidos.js' %}"></script>
 {% endblock %}
