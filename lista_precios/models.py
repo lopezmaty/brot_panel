@@ -58,6 +58,7 @@ class ListaPrecios(models.Model):
     nombre = models.CharField(max_length=50)
     tipo_cliente = models.ForeignKey(TipoCliente, on_delete=models.PROTECT)
     fecha = models.DateField()
+    pdf_catalogo = models.FileField(upload_to='catalogos/', null=True, blank=True)
 
     def __str__(self):
         return self.nombre

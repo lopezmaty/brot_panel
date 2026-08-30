@@ -41,9 +41,15 @@
       <tbody>
         {% for p in producto %}
         <tr>
-          <td>{{ p.nombre }}</td>
+          <td>{{ p.nombre }} {{ p.variedad.nombre }} {{ p.tamaño.nombre }}</td>
           <td>
-            <input type="number" step="0.01" class="input-precio-producto" data-producto-id="{{ p.id }}" placeholder="0.00">
+            <div style="position: relative; display: inline-flex; align-items: center;">
+              <span style="position: absolute; left: 10px; color: var(--text-secondary); font-size: 13px; pointer-events: none;">$</span>
+              <input type="text" inputmode="decimal" class="input-precio-producto"
+                     data-producto-id="{{ p.id }}"
+                     placeholder="0,00"
+                     style="padding-left: 22px; width: 130px; font-weight: 600; font-size: 13px; border: 1px solid var(--border); border-radius: 10px; padding-top: 8px; padding-bottom: 8px; padding-right: 10px; font-family: 'DM Sans', sans-serif; background: var(--bg-surface); color: var(--text-heading);">
+            </div>
           </td>
         </tr>
         {% endfor %}
@@ -58,6 +64,22 @@
     </div>
   </form>
 </div>
+
+{% if lista_precios %}
+<div class="card" style="margin-top: 16px;">
+  <h2 style="font-size: 15px; font-weight: 700; margin-bottom: 16px;">PDF del catálogo</h2>
+  <form enctype="multipart/form-data" method="post" action="{% url 'subir_pdf_catalogo' lista_precios.id %}">
+    {% csrf_token %}
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <input type="file" name="pdf_catalogo" accept=".pdf" style="border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--bg-surface); color: var(--text-primary);">
+      <button type="submit" class="btn-primary">Subir PDF</button>
+      {% if lista_precios.pdf_catalogo %}
+      <a href="{{ lista_precios.pdf_catalogo.url }}" target="_blank" class="btn-secondary">Ver PDF actual</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+{% endif %}
 
 {% endblock %}
 

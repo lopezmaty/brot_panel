@@ -15,6 +15,8 @@ from weasyprint import HTML
 from django.http import HttpResponse
 from django.contrib.staticfiles import finders
 from django.shortcuts import render, get_object_or_404
+from lista_precios.models import ListaPrecios
+
 
 
 @login_required(login_url='login')
@@ -396,3 +398,16 @@ def catalogo_view(request, token):
         'productos_con_precio': productos_con_precio,
         'metodos': metodos,
     })
+
+@login_required(login_url='login')
+def subir_pdf_catalogo_view(request, lista_id):
+    if request.user.perfil.rol != 'admin':
+        return redirect('dashboard')
+    
+    lista = get_object_or_404(ListaPrecios, id=lista_id)
+    
+    if request.method == 'POST' and request.FILES.get('pdf_catalogo'):
+        lista.pdf_catalogo = request.FILES['pdf_catalogo']
+        lista.save()
+    
+    return redirect('lista_precios_editar', lista_precios_id=lista_id)

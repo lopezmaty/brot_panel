@@ -25,6 +25,12 @@
   <div class="catalogo-saludo">Hola, {{ cliente.nombre_comercio|title }} 👋</div>
   <div class="catalogo-subtitulo">Seleccioná los productos que querés pedir.</div>
 
+  {% if cliente.lista_precios.pdf_catalogo %}
+  <a href="{{ cliente.lista_precios.pdf_catalogo.url }}" target="_blank" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 6px; margin-bottom: 24px; font-size: 14px;">
+    <i class="ti ti-download"></i> Descargar catálogo
+  </a>
+  {% endif %}
+
   {% if sin_lista %}
   <div style="border: 1px solid var(--border); border-radius: 14px; padding: 24px; background: var(--bg-surface); color: var(--text-secondary); text-align: center;">
     No tenés una lista de precios asignada. Contactate con Brot Panes.
