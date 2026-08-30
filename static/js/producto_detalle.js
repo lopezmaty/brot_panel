@@ -24,6 +24,38 @@ function actualizarCamposMedida() {
 document.getElementById('inputTipoMedida').addEventListener('change', actualizarCamposMedida);
 actualizarCamposMedida();
 
+document.getElementById('toggleClientesExclusivos').addEventListener('click', function () {
+  const panel = document.getElementById('panelClientesExclusivos');
+  const icon = document.getElementById('iconToggleClientes');
+  const abierto = panel.style.display !== 'none';
+  panel.style.display = abierto ? 'none' : 'block';
+  icon.className = abierto ? 'ti ti-chevron-down' : 'ti ti-chevron-up';
+});
+
+document.getElementById('btnSeleccionarTodosClientes').addEventListener('click', function () {
+  document.querySelectorAll('.checkbox-cliente-exclusivo').forEach(cb => cb.checked = true);
+  actualizarLabelClientes();
+});
+
+document.getElementById('btnDeseleccionarTodosClientes').addEventListener('click', function () {
+  document.querySelectorAll('.checkbox-cliente-exclusivo').forEach(cb => cb.checked = false);
+  actualizarLabelClientes();
+});
+
+document.querySelectorAll('.checkbox-cliente-exclusivo').forEach(cb => {
+  cb.addEventListener('change', actualizarLabelClientes);
+});
+
+function actualizarLabelClientes() {
+  const seleccionados = document.querySelectorAll('.checkbox-cliente-exclusivo:checked').length;
+  const label = document.getElementById('labelClientesExclusivos');
+  if (seleccionados === 0) {
+    label.textContent = 'Visible para todos los clientes';
+  } else {
+    label.textContent = `Visible para ${seleccionados} cliente${seleccionados !== 1 ? 's' : ''}`;
+  }
+}
+
 async function crearOEditarProducto() {
     const nombre = document.getElementById('inputNombre').value;
     const variedad = document.getElementById('inputVariedad').value;
@@ -36,6 +68,9 @@ async function crearOEditarProducto() {
     const medida3 = document.getElementById('inputMedida3').value;
     const activo = document.getElementById('inputActivo').checked;
     const xubioProductoId = document.getElementById('inputXubioProductoId').value;
+
+    const clientesExclusivos = [...document.querySelectorAll('.checkbox-cliente-exclusivo:checked')]
+        .map(cb => parseInt(cb.value, 10));
 
     const productoId = document.getElementById('formProducto').dataset.productoId;
 
@@ -60,6 +95,7 @@ async function crearOEditarProducto() {
             medida_3: medida3 || null,
             activo,
             xubio_producto_id: xubioProductoId || null,
+            clientes_exclusivos: clientesExclusivos,
         })
     });
 

@@ -1,7 +1,6 @@
 import requests
 from datetime import date, timedelta
 from django.conf import settings
-import requests
 
 XUBIO_BASE = 'https://xubio.com:443/API/1.1'
 DEPOSITO_ID = -2
@@ -19,12 +18,19 @@ CATEGORIA_FISCAL = {
 PUNTOS_VENTA = {
     'factura': {
         'puntoVentaId': 214112,
+        'puntoVentaNumero': '00003',
         'circuitoContableId': 2247,
     },
     'proforma': {
         'puntoVentaId': 154275,
+        'puntoVentaNumero': '09999',
         'circuitoContableId': -2,
     },
+}
+
+NOMBRE_COMPROBANTE = {
+    1: 'Factura',
+    6: 'Recibo',
 }
 
 
@@ -89,11 +95,11 @@ def facturar_pedido(pedido):
     fecha_hoy = date.today()
     fecha_vto = fecha_hoy + timedelta(days=cliente.dias_cc)
 
-    punto_venta_key = 'factura' if cliente.xubio_tipo_comprobante == 1 else 'proforma'
+    punto_venta_key = 'proforma' if cliente.xubio_punto_venta_id == 154275 else 'factura'
     punto_venta = PUNTOS_VENTA[punto_venta_key]
 
-    # tipo comprobante: 1=Factura, 6=Recibo
     tipo = cliente.xubio_tipo_comprobante
+    nombre_comprobante = NOMBRE_COMPROBANTE.get(tipo, 'Factura')
 
     items = []
     for item in pedido.itempedido_set.all():
@@ -102,8 +108,11 @@ def facturar_pedido(pedido):
         subtotal = float(item.precio) * item.cantidad
 
         items.append({
-            'producto': {'id': item.producto.xubio_producto_id},
-            'centroDeCosto': {'id': -1},
+            'producto': {
+                'id': item.producto.xubio_producto_id,
+                'productoid': item.producto.xubio_producto_id,
+            },
+            'centroDeCosto': None,
             'deposito': {'id': DEPOSITO_ID},
             'descripcion': str(item.producto),
             'cantidad': item.cantidad,
@@ -120,10 +129,13 @@ def facturar_pedido(pedido):
         'externalId': str(pedido.id),
         'cliente': {'id': cliente.xubio_cliente_id},
         'tipo': tipo,
-        'nombre': f'Pedido #{pedido.id:04d}',
+        'nombre': nombre_comprobante,
         'fecha': fecha_hoy.strftime('%Y-%m-%d'),
         'fechaVto': fecha_vto.strftime('%Y-%m-%d'),
-        'puntoVenta': {'id': punto_venta['puntoVentaId']},
+        'puntoVenta': {
+            'id': punto_venta['puntoVentaId'],
+            'codigo': punto_venta['puntoVentaNumero'],
+        },
         'circuitoContable': {'id': punto_venta['circuitoContableId']},
         'numeroDocumento': cliente.cuit,
         'condicionDePago': 1,
@@ -132,9 +144,7 @@ def facturar_pedido(pedido):
         'cantComprobantesCancelados': 0,
         'cotizacion': 1,
         'provincia': {'provincia_id': PROVINCIA_ID},
-        'cotizacionListaDePrecio': 1,
-        'listaDePrecio': {'id': -1},
-        'vendedor': {'vendedorId': -1},
+        'vendedor': {'vendedorId': 8399},
         'porcentajeComision': 0,
         'mailEstado': '',
         'descripcion': f'Pedido Brot Panes #{pedido.id:04d}',
@@ -145,10 +155,15 @@ def facturar_pedido(pedido):
         'transaccionCobranzaItems': [],
     }
 
+    print(f"Xubio payload: {payload}")
+
     response = requests.post(
         f'{XUBIO_BASE}/comprobanteVentaBean',
         json=payload,
         headers=headers,
     )
 
-    return response.status_code, response.json()
+    print(f"Xubio status: {response.status_code}")
+    print(f"Xubio response: {response.text}")
+
+    return response.status_code, response.json() if response.text else {}

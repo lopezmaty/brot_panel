@@ -31,7 +31,7 @@ class Producto(models.Model):
     variedad = models.ForeignKey(Variedad, on_delete=models.PROTECT)
     tamaño = models.ForeignKey(Tamaño, on_delete=models.PROTECT)
     tipo_medida = models.CharField(max_length=20, choices=TIPO_MEDIDA)
-    medida_1 = models.DecimalField(max_digits=6, decimal_places=1)
+    medida_1 = models.DecimalField(max_digits=6, decimal_places=1, null=True, blank=True)
     medida_2 = models.DecimalField(max_digits=6, decimal_places=1, null=True, blank=True)
     medida_3 = models.DecimalField(max_digits=6, decimal_places=1, null=True, blank=True)
     familia = models.ForeignKey(Familia, on_delete=models.PROTECT)
@@ -39,6 +39,11 @@ class Producto(models.Model):
     activo = models.BooleanField(default=True)
 
     xubio_producto_id = models.IntegerField(null=True, blank=True)
+
+    clientes_exclusivos = models.ManyToManyField(
+    'sistema_pedidos.Cliente',
+    blank=True,
+    related_name='productos_exclusivos')
 
     def __str__(self):
         return f'{self.nombre} {self.variedad} {self.tamaño}'

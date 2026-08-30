@@ -39,6 +39,9 @@ class Cliente(models.Model):
     xubio_tipo_comprobante = models.IntegerField(choices=TIPO_COMPROBANTE, null=True, blank=True)
     dias_cc = models.IntegerField(default=0)
 
+    permite_retiro = models.BooleanField(default=True)
+    permite_domicilio = models.BooleanField(default=True)
+
     def __str__(self):
         return self.nombre
 

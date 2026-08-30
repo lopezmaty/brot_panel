@@ -73,7 +73,38 @@
       </div>
     </div>
 
-    <div class="form-checkboxes">
+    <div class="form-section-title" style="margin-top: 24px; margin-bottom: 12px; font-weight: 600; color: var(--text-secondary); font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">Visibilidad en catálogo</div>
+
+    <div style="border: 1px solid var(--border); border-radius: 10px; overflow: hidden;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--bg-surface); border-bottom: 1px solid var(--border); cursor: pointer;" id="toggleClientesExclusivos">
+        <span style="font-size: 14px; font-weight: 500;" id="labelClientesExclusivos">
+          {% if producto and producto.clientes_exclusivos.exists %}
+            Visible para {{ producto.clientes_exclusivos.count }} cliente{% if producto.clientes_exclusivos.count != 1 %}s{% endif %}
+          {% else %}
+            Visible para todos los clientes
+          {% endif %}
+        </span>
+        <i class="ti ti-chevron-down" id="iconToggleClientes"></i>
+      </div>
+      <div id="panelClientesExclusivos" style="display: none; padding: 12px 14px;">
+        <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 10px;">Si no seleccionás ninguno, el producto es visible para todos.</p>
+        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+          <button type="button" class="btn-secondary" id="btnSeleccionarTodosClientes" style="font-size: 13px;">Seleccionar todos</button>
+          <button type="button" class="btn-secondary" id="btnDeseleccionarTodosClientes" style="font-size: 13px;">Deseleccionar todos</button>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          {% for c in clientes %}
+          <label class="checkbox-label" style="border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer;">
+            <input type="checkbox" class="checkbox-cliente-exclusivo" value="{{ c.id }}"
+              {% if producto and c in producto.clientes_exclusivos.all %}checked{% endif %}>
+            {{ c.razon_social }}
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-checkboxes" style="margin-top: 20px;">
       <label class="checkbox-label">
         <input type="checkbox" id="inputActivo" {% if producto.activo|default:True %}checked{% endif %}>
         Producto activo

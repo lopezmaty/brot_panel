@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from . import models
+from sistema_pedidos.models import Cliente
 
 class TipoClienteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,14 +29,33 @@ class ProductoSerializer(serializers.ModelSerializer):
     tamaño = serializers.PrimaryKeyRelatedField(queryset=models.Tamaño.objects.all())
     familia_detalle = FamiliaSerializer(source='familia', read_only=True)
     familia = serializers.PrimaryKeyRelatedField(queryset=models.Familia.objects.all())
+    clientes_exclusivos = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Cliente.objects.all(),
+        required=False,
+    )
 
     class Meta:
         model = models.Producto
         fields = [
             'id', 'nombre', 'variedad', 'variedad_detalle', 'tamaño', 'tamaño_detalle',
             'tipo_medida', 'medida_1', 'medida_2', 'medida_3', 'familia', 'familia_detalle',
-            'unidades_paquete', 'activo', 'xubio_producto_id',
+            'unidades_paquete', 'activo', 'xubio_producto_id', 'clientes_exclusivos',
         ]
+
+    def update(self, instance, validated_data):
+        clientes_exclusivos = validated_data.pop('clientes_exclusivos', None)
+        instance = super().update(instance, validated_data)
+        if clientes_exclusivos is not None:
+            instance.clientes_exclusivos.set(clientes_exclusivos)
+        return instance
+
+    def create(self, validated_data):
+        clientes_exclusivos = validated_data.pop('clientes_exclusivos', None)
+        instance = super().create(validated_data)
+        if clientes_exclusivos is not None:
+            instance.clientes_exclusivos.set(clientes_exclusivos)
+        return instance
 
 class ListaPrecioSerializer(serializers.ModelSerializer):
     tipo_cliente_detalle = TipoClienteSerializer(source='tipo_cliente', read_only=True)

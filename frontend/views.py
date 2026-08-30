@@ -17,6 +17,8 @@ from django.contrib.staticfiles import finders
 from django.shortcuts import render, get_object_or_404
 from sistema_pedidos.models import Pedido
 
+
+
 @login_required(login_url='login')
 def dashboard_view(request):
     return render(request, 'dashboard.html')
@@ -146,21 +148,32 @@ def producto_view(request):
 @login_required(login_url='login')
 def producto_detalle_view(request, producto_id=None):
     if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
+        clientes = Cliente.objects.filter(activo=True).order_by('razon_social')
         if producto_id is None:
             variedad = Variedad.objects.all()
             tamaño = Tamaño.objects.all()
             familia = Familia.objects.all()
-            return render(request, 'producto_detalle.html', {'producto': None, 'variedad': variedad, 'tamaño': tamaño, 'familia': familia})
-
+            return render(request, 'producto_detalle.html', {
+                'producto': None,
+                'variedad': variedad,
+                'tamaño': tamaño,
+                'familia': familia,
+                'clientes': clientes,
+            })
         else:
             producto = Producto.objects.get(pk=producto_id)
             variedad = Variedad.objects.all()
             tamaño = Tamaño.objects.all()
             familia = Familia.objects.all()
-            return render(request, 'producto_detalle.html', {'producto': producto, 'variedad': variedad, 'tamaño': tamaño, 'familia': familia})
+            return render(request, 'producto_detalle.html', {
+                'producto': producto,
+                'variedad': variedad,
+                'tamaño': tamaño,
+                'familia': familia,
+                'clientes': clientes,
+            })
     else:
-        response = redirect('dashboard')
-        return response
+        return redirect('dashboard')
 
 
 @login_required(login_url='login')

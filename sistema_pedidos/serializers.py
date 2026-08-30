@@ -18,6 +18,7 @@ class ClienteSerializer(serializers.ModelSerializer):
             'condicion_iva', 'tipo_cliente', 'tipo_cliente_detalle',
             'activo', 'posee_deuda', 'lista_precios', 'lista_precios_detalle',
             'xubio_cliente_id', 'xubio_punto_venta_id', 'xubio_tipo_comprobante', 'dias_cc',
+            'permite_retiro', 'permite_domicilio',
         ]
 
     def create(self, validated_data):
@@ -30,7 +31,7 @@ class ClienteSerializer(serializers.ModelSerializer):
                 cliente.xubio_cliente_id = xubio_id
                 cliente.save(update_fields=['xubio_cliente_id'])
         except Exception:
-            pass  # si falla Xubio, el cliente se crea igual en Brot
+            pass
 
         return cliente
 

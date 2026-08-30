@@ -123,6 +123,14 @@
         <input type="checkbox" id="inputPoseeDeuda" {% if cliente.posee_deuda %}checked{% endif %}>
         Posee deuda
       </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="inputPermiteRetiro" {% if cliente.permite_retiro|default:True %}checked{% endif %}>
+        Permite retiro en fábrica
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="inputPermiteDomicilio" {% if cliente.permite_domicilio|default:True %}checked{% endif %}>
+        Permite entrega a domicilio
+      </label>
     </div>
 
     <div class="form-actions">

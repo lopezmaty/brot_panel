@@ -220,6 +220,65 @@ document.getElementById('btnExportarExcel').addEventListener('click', function (
   XLSX.writeFile(libro, 'total_productos.xlsx');
 });
 
+document.getElementById('btnFacturar').addEventListener('click', async function () {
+  const seleccionados = document.querySelectorAll('.checkbox-pedido:checked');
+
+  if (seleccionados.length === 0) {
+    alert('Seleccioná al menos un pedido.');
+    return;
+  }
+
+  const confirmado = await confirmarAccion(`¿Querés facturar ${seleccionados.length} pedido${seleccionados.length > 1 ? 's' : ''} en Xubio?`);
+  if (!confirmado) return;
+
+  const btn = document.getElementById('btnFacturar');
+  btn.textContent = 'Facturando...';
+  btn.disabled = true;
+
+  const pedidoIds = [...seleccionados].map(cb => parseInt(cb.dataset.pedidoId, 10));
+
+  try {
+    const response = await fetch('/api/sistema_pedidos/pedidos/facturar/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: JSON.stringify({ pedido_ids: pedidoIds })
+    });
+
+    const resultados = await response.json();
+
+    const tbody = document.getElementById('tablaFacturacion');
+    tbody.innerHTML = '';
+    resultados.forEach(function (r) {
+      const tr = document.createElement('tr');
+      const ok = r.ok;
+      const detalle = ok ? 'OK' : (typeof r.detalle === 'string' ? r.detalle : JSON.stringify(r.detalle));
+      tr.innerHTML = `
+        <td>#${String(r.pedido_id).padStart(4, '0')}</td>
+        <td style="color: ${ok ? 'var(--color-success, green)' : '#DC2626'}; font-weight: 600;">
+          ${ok ? '✓ Facturado' : '✗ Error'}
+        </td>
+        <td style="font-size: 12px; color: var(--text-secondary);">${detalle}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('modalFacturacion').classList.add('open');
+
+  } catch (e) {
+    alert('Error de conexión al facturar.');
+  } finally {
+    btn.textContent = 'Facturar seleccionados';
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('btnCerrarFacturacion').addEventListener('click', function () {
+  document.getElementById('modalFacturacion').classList.remove('open');
+});
+
 (function () {
   const filasPedido = document.querySelectorAll('.fila-pedido');
   if (filasPedido.length === 0) return;

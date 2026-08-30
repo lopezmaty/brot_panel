@@ -71,6 +71,8 @@ async function crearOEditarCliente() {
     const xubioTipoComprobante = document.getElementById('inputXubioTipoComprobante').value;
     const diasCC = document.getElementById('inputDiasCC').value;
     const xubioClienteId = document.getElementById('formCliente').dataset.xubioClienteId || null;
+    const permiteRetiro = document.getElementById('inputPermiteRetiro').checked;
+    const permiteDomicilio = document.getElementById('inputPermiteDomicilio').checked;
 
     const clienteId = document.getElementById('formCliente').dataset.clienteId;
 
@@ -102,6 +104,8 @@ async function crearOEditarCliente() {
             xubio_punto_venta_id: xubioPuntoVenta || null,
             xubio_tipo_comprobante: xubioTipoComprobante || null,
             dias_cc: diasCC || 0,
+            permite_retiro: permiteRetiro,
+            permite_domicilio: permiteDomicilio,
         })
     });
 

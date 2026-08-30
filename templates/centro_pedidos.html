@@ -65,7 +65,8 @@
 
   <div style="display: flex; align-items: center; gap: 16px;">
     <span id="cantidadSeleccionados" style="color: var(--text-secondary); font-size: 14px;">0 pedidos seleccionados</span>
-    <button class="btn-primary" id="btnCalcularTotal">Calcular total de productos</button>
+    <button class="btn-secondary" id="btnCalcularTotal">Calcular total de productos</button>
+    <button class="btn-primary" id="btnFacturar">Facturar seleccionados</button>
   </div>
 </div>
 
@@ -217,6 +218,25 @@
     <div class="modal-actions" style="margin-top: 20px;">
       <button type="button" class="btn-secondary" id="btnCerrarDetalle" style="flex: 1;">Cerrar</button>
       <button type="button" class="btn-primary" id="btnCancelarPedido" style="flex: 1; background: #DC2626;">Cancelar pedido</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalFacturacion">
+  <div class="modal-box" style="max-width: 520px;">
+    <h2 class="modal-title">Resultado de facturación</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Pedido</th>
+          <th>Resultado</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody id="tablaFacturacion"></tbody>
+    </table>
+    <div class="modal-actions" style="margin-top: 20px;">
+      <button type="button" class="btn-primary" id="btnCerrarFacturacion" style="flex: 1;">Cerrar</button>
     </div>
   </div>
 </div>
