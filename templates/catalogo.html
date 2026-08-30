@@ -19,6 +19,12 @@
     <img src="{% static 'img/logo.png' %}" alt="Brot Panes" class="topbar-logo">
   </div>
   <div class="topbar-right">
+    {% if cliente.lista_precios.pdf_catalogo %}
+    <a href="{{ cliente.lista_precios.pdf_catalogo.url }}" target="_blank" class="topbar-perfil-btn" style="margin-right: 4px;">
+      <i class="ti ti-download"></i>
+      <span>Catálogo</span>
+    </a>
+    {% endif %}
     <a href="/catalogo/{{ cliente.token }}/perfil/" class="topbar-perfil-btn">
       <i class="ti ti-user-circle"></i>
       <span>{{ cliente.nombre|title }}</span>
@@ -30,12 +36,6 @@
 
   <div class="catalogo-saludo">Hola, {{ cliente.nombre_comercio|title }} 👋</div>
   <div class="catalogo-subtitulo">Seleccioná los productos que querés pedir.</div>
-
-  {% if cliente.lista_precios.pdf_catalogo %}
-  <a href="{{ cliente.lista_precios.pdf_catalogo.url }}" target="_blank" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 6px; margin-bottom: 24px; font-size: 14px;">
-    <i class="ti ti-download"></i> Descargar catálogo
-  </a>
-  {% endif %}
 
   {% if sin_lista %}
   <div style="border: 1px solid var(--border); border-radius: 14px; padding: 24px; background: var(--bg-surface); color: var(--text-secondary); text-align: center;">
@@ -51,8 +51,9 @@
     {% for item in familia_group.list %}
     <div class="producto-fila">
       <div class="producto-info">
-        <div class="producto-nombre">{{ item.producto }}</div>
-        <div class="producto-precio">{{ item.precio|floatformat:2 }}</div>
+        <span class="producto-nombre">{{ item.producto.nombre }} {{ item.producto.variedad.nombre }}</span>
+        <span class="producto-tamaño-badge" style="background: {{ item.tamaño_bg }}; color: {{ item.tamaño_color }};">{{ item.producto.tamaño.nombre }}</span>
+        <span class="producto-precio">${{ item.precio|floatformat:2 }}</span>
       </div>
       <div class="producto-cantidad-ctrl">
         <button type="button" class="btn-cantidad btn-restar" data-id="{{ item.producto.id }}">−</button>
@@ -102,7 +103,6 @@
   </div>
 </div>
 
-<!-- Modal de confirmación -->
 <div class="modal-overlay" id="modalConfirmar" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center;">
   <div class="modal-box" style="max-width:420px; width:90%;">
     <h2 class="modal-title">Confirmá tu pedido</h2>

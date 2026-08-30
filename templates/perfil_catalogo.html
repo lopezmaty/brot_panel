@@ -31,6 +31,17 @@
   <span class="page-eyebrow">Mi cuenta</span>
   <h1 class="page-title">Mi perfil</h1>
 
+  <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+    <a href="/catalogo/{{ cliente.token }}/" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
+      <i class="ti ti-shopping-cart"></i> Hacer un pedido
+    </a>
+    {% if cliente.lista_precios.pdf_catalogo %}
+    <a href="{{ cliente.lista_precios.pdf_catalogo.url }}" target="_blank" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px;">
+      <i class="ti ti-download"></i> Descargar catálogo PDF
+    </a>
+    {% endif %}
+  </div>
+
   <div class="card" style="margin-bottom: 24px;">
     <div class="detalle-grid">
       <div><label>Nombre</label><p>{{ cliente.nombre|title }}</p></div>
@@ -117,12 +128,6 @@
     Todavía no tenés pedidos registrados.
   </div>
   {% endif %}
-
-  <div style="text-align: center; margin-top: 32px; margin-bottom: 16px;">
-    <a href="/catalogo/{{ cliente.token }}/" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
-      <i class="ti ti-shopping-cart"></i> Ir al catálogo
-    </a>
-  </div>
 
 </div>
 

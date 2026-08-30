@@ -75,7 +75,7 @@ html, body {
 }
 
 .familia-section {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   border: 1px solid var(--border);
   border-radius: 14px;
   overflow: hidden;
@@ -83,36 +83,64 @@ html, body {
 }
 
 .familia-header {
-  padding: 14px 18px;
+  padding: 12px 18px;
   font-weight: 800;
-  font-size: 17px;
-  color: var(--text-heading);
-  letter-spacing: -0.3px;
-  background: var(--bg-surface);
-  border-left: 4px solid #E87722;
+  font-size: 13px;
+  color: white;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: #16213E;
 }
 
 .producto-fila {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 18px;
+  padding: 14px 18px;
   border-top: 1px solid var(--border);
   gap: 16px;
 }
 
-.producto-info { flex: 1; min-width: 0; }
+.producto-fila:hover {
+  background: var(--bg-hover, #f8f9fa);
+}
+
+.producto-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
 
 .producto-nombre {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
   color: var(--text-heading);
 }
 
+.producto-variedad {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.producto-tamaño-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .producto-precio {
   font-size: 13px;
-  color: var(--text-secondary);
-  margin-top: 2px;
+  font-weight: 600;
+  color: #E87722;
+  margin-left: auto;
+  white-space: nowrap;
 }
 
 .producto-cantidad-ctrl {
@@ -141,7 +169,7 @@ html, body {
 .btn-cantidad:hover { background: var(--bg-hover, #f0f0f0); }
 
 .input-cantidad {
-  width: 72px;
+  width: 60px;
   text-align: center;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -261,3 +289,9 @@ html, body {
   padding: 2px 7px;
   margin-left: 6px;
 }
+
+.tamaño-0 { background: #EAF3DE; color: #2E6B0A; }
+.tamaño-1 { background: #FEF3E7; color: #9B5800; }
+.tamaño-2 { background: #E6F1FB; color: #0D4490; }
+.tamaño-3 { background: #FFF0EB; color: #8B2800; }
+.tamaño-4 { background: #F5EEFE; color: #320A6E; }

@@ -358,7 +358,6 @@ def comanda(request, pedido_id):
 
 
 def catalogo_view(request, token):
-    print(f"CATALOGO VIEW - token: {token}")
     cliente = get_object_or_404(Cliente, token=token, activo=True)
 
     lista = cliente.lista_precios
@@ -374,6 +373,15 @@ def catalogo_view(request, token):
         'producto', 'producto__variedad', 'producto__tamaño', 'producto__familia'
     )
 
+    PALETA_TAMAÑOS = [
+        {'bg': '#EAF3DE', 'color': '#2E6B0A'},
+        {'bg': '#FEF3E7', 'color': '#9B5800'},
+        {'bg': '#E6F1FB', 'color': '#0D4490'},
+        {'bg': '#FFF0EB', 'color': '#8B2800'},
+        {'bg': '#F5EEFE', 'color': '#320A6E'},
+    ]
+
+    tamaños_vistos = {}
     productos_con_precio = []
     for precio in precios:
         p = precio.producto
@@ -382,9 +390,16 @@ def catalogo_view(request, token):
         exclusivos = p.clientes_exclusivos.all()
         if exclusivos.exists() and cliente not in exclusivos:
             continue
+        tamaño_nombre = p.tamaño.nombre
+        if tamaño_nombre not in tamaños_vistos:
+            idx = len(tamaños_vistos)
+            tamaños_vistos[tamaño_nombre] = PALETA_TAMAÑOS[idx % len(PALETA_TAMAÑOS)]
+        color = tamaños_vistos[tamaño_nombre]
         productos_con_precio.append({
             'producto': p,
             'precio': precio.precio,
+            'tamaño_bg': color['bg'],
+            'tamaño_color': color['color'],
         })
 
     metodos = []
@@ -401,7 +416,6 @@ def catalogo_view(request, token):
 
 
 def perfil_catalogo_view(request, token):
-    print(f"PERFIL VIEW - token: {token}")
     cliente = get_object_or_404(Cliente, token=token, activo=True)
     pedidos = Pedido.objects.filter(cliente=cliente).order_by('-fecha')
     mostrar_todos = request.GET.get('todos') == '1'
@@ -424,14 +438,14 @@ def perfil_catalogo_view(request, token):
 
 
 @login_required(login_url='login')
-def subir_pdf_catalogo_view(request, lista_id):
+def subir_pdf_catalogo_view(request, lista_precios_id):
     if request.user.perfil.rol != 'admin':
         return redirect('dashboard')
 
-    lista = get_object_or_404(ListaPrecios, id=lista_id)
+    lista = get_object_or_404(ListaPrecios, id=lista_precios_id)
 
     if request.method == 'POST' and request.FILES.get('pdf_catalogo'):
         lista.pdf_catalogo = request.FILES['pdf_catalogo']
         lista.save()
 
-    return redirect('lista_precios_editar', lista_precios_id=lista_id)
+    return redirect('lista_precios_editar', lista_precios_id=lista_precios_id)
