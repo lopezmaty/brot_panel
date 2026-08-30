@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi perfil — Brot Panes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/catalogo.css' %}">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <img src="{% static 'img/logo.png' %}" alt="Brot Panes" class="topbar-logo">
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-perfil-btn">
+      <i class="ti ti-user-circle"></i>
+      <span>{{ cliente.nombre|title }}</span>
+    </span>
+  </div>
+</header>
+
+<div class="catalogo-contenido">
+
+  <span class="page-eyebrow">Mi cuenta</span>
+  <h1 class="page-title">Mi perfil</h1>
+
+  <div class="card" style="margin-bottom: 24px;">
+    <div class="detalle-grid">
+      <div><label>Nombre</label><p>{{ cliente.nombre|title }}</p></div>
+      <div><label>Razón social</label><p>{{ cliente.razon_social }}</p></div>
+      <div><label>Nombre comercial</label><p>{{ cliente.nombre_comercio }}</p></div>
+      <div><label>CUIT</label><p>{{ cliente.cuit }}</p></div>
+      <div><label>Tipo de cliente</label><p>{{ cliente.tipo_cliente.nombre }}</p></div>
+      <div><label>Condición IVA</label><p>{{ cliente.get_condicion_iva_display }}</p></div>
+      <div><label>Dirección</label><p>{{ cliente.direccion }}</p></div>
+      <div><label>Ciudad</label><p>{{ cliente.ciudad }}</p></div>
+      <div><label>Teléfono</label><p>{{ cliente.telefono }}</p></div>
+      <div><label>Mail</label><p>{{ cliente.mail }}</p></div>
+    </div>
+  </div>
+
+  <h2 class="page-title" style="font-size: 18px; margin-bottom: 16px;">Historial de pedidos</h2>
+
+  {% if pedidos %}
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <table>
+      <thead>
+        <tr>
+          <th>Pedido</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th>Unidades</th>
+          <th>Total</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pedido in pedidos %}
+        <tr class="fila-pedido-perfil" style="cursor: pointer;" data-pedido-id="{{ pedido.id }}">
+          <td style="font-weight: 600;">#{{ pedido.id|stringformat:"04d" }}</td>
+          <td>{{ pedido.fecha|date:"d/m/Y" }}</td>
+          <td><span class="badge-estado badge-{{ pedido.estado }}">{{ pedido.get_estado_display }}</span></td>
+          <td>{{ pedido.total_unidades }}</td>
+          <td>${{ pedido.total_precio }}</td>
+          <td>
+            <button type="button" class="btn-secondary btn-volver-a-pedir"
+                    data-pedido-id="{{ pedido.id }}"
+                    style="font-size: 12px; padding: 4px 10px; white-space: nowrap;">
+              Volver a pedir
+            </button>
+          </td>
+        </tr>
+        <tr class="fila-detalle-perfil" id="detalle-perfil-{{ pedido.id }}" style="display: none;">
+          <td colspan="6" style="padding: 0 18px 16px;">
+            <table class="tabla-items" style="margin-top: 8px;">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>Precio unit.</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in pedido.items %}
+                <tr data-producto-id="{{ item.producto.id }}">
+                  <td>{{ item.producto }}</td>
+                  <td>{{ item.cantidad }}</td>
+                  <td>${{ item.precio }}</td>
+                  <td>${{ item.subtotal }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if not mostrar_todos and total_pedidos > 10 %}
+  <div style="text-align: center; margin-top: 16px;">
+    <a href="?todos=1" class="btn-secondary">Ver todos los pedidos ({{ total_pedidos }})</a>
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div class="card" style="text-align: center; color: var(--text-secondary); padding: 32px;">
+    Todavía no tenés pedidos registrados.
+  </div>
+  {% endif %}
+
+  <div style="text-align: center; margin-top: 32px; margin-bottom: 16px;">
+    <a href="/catalogo/{{ cliente.token }}/" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
+      <i class="ti ti-shopping-cart"></i> Ir al catálogo
+    </a>
+  </div>
+
+</div>
+
+<script>
+document.querySelectorAll('.fila-pedido-perfil').forEach(function (fila) {
+  fila.addEventListener('click', function (e) {
+    if (e.target.closest('.btn-volver-a-pedir')) return;
+    const id = fila.dataset.pedidoId;
+    const detalle = document.getElementById(`detalle-perfil-${id}`);
+    detalle.style.display = detalle.style.display === 'none' ? 'table-row' : 'none';
+  });
+});
+
+document.querySelectorAll('.btn-volver-a-pedir').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    const pedidoId = btn.dataset.pedidoId;
+    const fila = document.getElementById(`detalle-perfil-${pedidoId}`);
+
+    const estabaOculto = fila.style.display === 'none';
+    fila.style.display = 'table-row';
+
+    const totales = {};
+    fila.querySelectorAll('.tabla-items tbody tr').forEach(function (tr) {
+      const celdas = tr.querySelectorAll('td');
+      const productoId = tr.dataset.productoId;
+      const cantidad = parseInt(celdas[1].textContent.trim());
+      if (productoId && cantidad > 0) {
+        if (!totales[productoId]) totales[productoId] = 0;
+        totales[productoId] += cantidad;
+      }
+    });
+
+    const items = Object.entries(totales).map(([producto_id, cantidad]) => ({
+      producto_id,
+      cantidad,
+    }));
+
+    if (estabaOculto) fila.style.display = 'none';
+
+    sessionStorage.setItem('carrito_precargado', JSON.stringify(items));
+    window.location.href = '/catalogo/{{ cliente.token }}/';
+  });
+});
+</script>
+
+</body>
+</html>

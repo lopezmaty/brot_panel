@@ -15,8 +15,6 @@ from weasyprint import HTML
 from django.http import HttpResponse
 from django.contrib.staticfiles import finders
 from django.shortcuts import render, get_object_or_404
-from lista_precios.models import ListaPrecios
-
 
 
 @login_required(login_url='login')
@@ -360,6 +358,7 @@ def comanda(request, pedido_id):
 
 
 def catalogo_view(request, token):
+    print(f"CATALOGO VIEW - token: {token}")
     cliente = get_object_or_404(Cliente, token=token, activo=True)
 
     lista = cliente.lista_precios
@@ -368,6 +367,7 @@ def catalogo_view(request, token):
             'cliente': cliente,
             'productos_con_precio': [],
             'sin_lista': True,
+            'metodos': [],
         })
 
     precios = Precio.objects.filter(lista_precio=lista).select_related(
@@ -399,15 +399,39 @@ def catalogo_view(request, token):
         'metodos': metodos,
     })
 
+
+def perfil_catalogo_view(request, token):
+    print(f"PERFIL VIEW - token: {token}")
+    cliente = get_object_or_404(Cliente, token=token, activo=True)
+    pedidos = Pedido.objects.filter(cliente=cliente).order_by('-fecha')
+    mostrar_todos = request.GET.get('todos') == '1'
+    pedidos_mostrados = list(pedidos if mostrar_todos else pedidos[:10])
+
+    for pedido in pedidos_mostrados:
+        items = list(pedido.itempedido_set.all())
+        for item in items:
+            item.subtotal = item.cantidad * item.precio
+        pedido.total_unidades = sum(item.cantidad for item in items)
+        pedido.total_precio = sum(item.subtotal for item in items)
+        pedido.items = items
+
+    return render(request, 'perfil_catalogo.html', {
+        'cliente': cliente,
+        'pedidos': pedidos_mostrados,
+        'mostrar_todos': mostrar_todos,
+        'total_pedidos': pedidos.count(),
+    })
+
+
 @login_required(login_url='login')
 def subir_pdf_catalogo_view(request, lista_id):
     if request.user.perfil.rol != 'admin':
         return redirect('dashboard')
-    
+
     lista = get_object_or_404(ListaPrecios, id=lista_id)
-    
+
     if request.method == 'POST' and request.FILES.get('pdf_catalogo'):
         lista.pdf_catalogo = request.FILES['pdf_catalogo']
         lista.save()
-    
+
     return redirect('lista_precios_editar', lista_precios_id=lista_id)

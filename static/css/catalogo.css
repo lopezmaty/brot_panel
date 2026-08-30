@@ -18,8 +18,41 @@ html, body {
   padding: 0 24px !important;
 }
 
+.topbar-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
 .topbar-logo {
   height: 32px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.topbar-perfil-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.topbar-perfil-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+.topbar-perfil-btn i {
+  font-size: 20px;
 }
 
 .catalogo-contenido {

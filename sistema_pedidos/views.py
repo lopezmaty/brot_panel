@@ -1,27 +1,23 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
-from . import serializers, models
-from users.permissions import EsAdmin, EsColab, EsLector
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from django.core.mail import send_mail
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.permissions import IsAuthenticated
+from . import models, serializers
+from users.permissions import EsAdmin, EsColab
 from .xubio import obtener_token, XUBIO_BASE
 import requests
-from lista_precios.models import Precio as PrecioModel
 
-
-
-# Create your views here.
 
 class ClienteViewSet(viewsets.ModelViewSet):
-    queryset = models.Cliente.objects.all().order_by("razon_social")
+    queryset = models.Cliente.objects.all()
     serializer_class = serializers.ClienteSerializer
 
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [IsAuthenticated()]
         return [(EsAdmin | EsColab)()]
+
 
 class PedidoViewset(viewsets.ModelViewSet):
     queryset = models.Pedido.objects.all()
@@ -33,6 +29,7 @@ class PedidoViewset(viewsets.ModelViewSet):
         return [(EsAdmin | EsColab)()]
 
     def update(self, request, *args, **kwargs):
+        from django.core.mail import send_mail
         pedido = self.get_object()
         estado_anterior = pedido.estado
 
@@ -85,6 +82,7 @@ class PedidoViewset(viewsets.ModelViewSet):
 
         return response
 
+
 class ItemPedidoViewset(viewsets.ModelViewSet):
     queryset = models.ItemPedido.objects.all()
     serializer_class = serializers.ItemPedidoSerializer
@@ -95,16 +93,6 @@ class ItemPedidoViewset(viewsets.ModelViewSet):
         return [(EsAdmin | EsColab)()]
 
 
-@api_view(['POST'])
-@permission_classes([EsAdmin])
-def aplicar_lista_a_todos(request):
-    lista_id = request.data.get('lista_id')
-    lista_precios = models.ListaPrecios.objects.get(pk=lista_id)
-    categoria = lista_precios.tipo_cliente
-    clientes_a_actualizar = models.Cliente.objects.filter(lista_precios__tipo_cliente=categoria).update(lista_precios=lista_precios)
-
-    return Response({'clientes_a_actualizar': clientes_a_actualizar}, status=200)
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def pedidos_nuevos(request):
@@ -112,11 +100,11 @@ def pedidos_nuevos(request):
     cantidad = models.Pedido.objects.filter(id__gt=ultimo_id).count()
     return Response({'cantidad': cantidad})
 
-from .xubio import facturar_pedido
 
 @api_view(['POST'])
 @permission_classes([EsAdmin | EsColab])
 def facturar_pedidos(request):
+    from .xubio import facturar_pedido
     ids = request.data.get('pedido_ids', [])
     if not ids:
         return Response({'error': 'No se enviaron pedidos.'}, status=400)
@@ -137,6 +125,7 @@ def facturar_pedidos(request):
             resultados.append({'pedido_id': pedido_id, 'ok': False, 'detalle': str(e)})
 
     return Response(resultados)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -183,8 +172,11 @@ def buscar_cliente_xubio(request):
 
 @api_view(['POST'])
 @permission_classes([])
+@authentication_classes([])
 def confirmar_pedido_catalogo(request, token):
-    cliente = get_object_or_404(Cliente, token=token, activo=True)
+    from lista_precios.models import Precio as PrecioModel, Producto as ProductoModel
+
+    cliente = get_object_or_404(models.Cliente, token=token, activo=True)
 
     items = request.data.get('items', [])
     metodo_entrega = request.data.get('metodo_entrega', '')
@@ -206,7 +198,7 @@ def confirmar_pedido_catalogo(request, token):
 
     lista = cliente.lista_precios
     for item in items:
-        producto = get_object_or_404(models.Producto, id=item['producto_id'], activo=True)
+        producto = get_object_or_404(ProductoModel, id=item['producto_id'], activo=True)
         try:
             precio_obj = PrecioModel.objects.get(lista_precio=lista, producto=producto)
             precio = precio_obj.precio

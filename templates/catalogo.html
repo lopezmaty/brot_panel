@@ -18,6 +18,12 @@
   <div class="topbar-left">
     <img src="{% static 'img/logo.png' %}" alt="Brot Panes" class="topbar-logo">
   </div>
+  <div class="topbar-right">
+    <a href="/catalogo/{{ cliente.token }}/perfil/" class="topbar-perfil-btn">
+      <i class="ti ti-user-circle"></i>
+      <span>{{ cliente.nombre|title }}</span>
+    </a>
+  </div>
 </header>
 
 <div class="catalogo-contenido">
@@ -92,6 +98,18 @@
           <button type="button" class="btn-primary" id="btnEnviarPedido" style="width: 100%;">Enviar pedido</button>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div class="modal-overlay" id="modalConfirmar" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center;">
+  <div class="modal-box" style="max-width:420px; width:90%;">
+    <h2 class="modal-title">Confirmá tu pedido</h2>
+    <div id="modalResumen" style="margin-bottom:16px;"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="btnCancelarConfirmar" style="flex:1;">Cancelar</button>
+      <button type="button" class="btn-primary" id="btnConfirmarPedido" style="flex:1;">Confirmar pedido</button>
     </div>
   </div>
 </div>

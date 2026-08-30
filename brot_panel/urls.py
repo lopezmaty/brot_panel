@@ -17,11 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from frontend.views import catalogo_view
+from frontend.views import catalogo_view, perfil_catalogo_view
 from sistema_pedidos.views import confirmar_pedido_catalogo
 from django.conf import settings
 from django.conf.urls.static import static
-
 
 
 urlpatterns = [
@@ -32,8 +31,9 @@ urlpatterns = [
     path('api/sistema_pedidos/', include('sistema_pedidos.urls')),
     path('panel/', include('frontend.urls')),
     path('api/users/', include('users.urls')),
-    path('catalogo/<str:token>/', catalogo_view, name='catalogo'),
+    path('catalogo/<str:token>/perfil/', perfil_catalogo_view, name='perfil_catalogo'),
     path('catalogo/<str:token>/confirmar/', confirmar_pedido_catalogo, name='confirmar_pedido_catalogo'),
-] 
+    path('catalogo/<str:token>/', catalogo_view, name='catalogo'),
+]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

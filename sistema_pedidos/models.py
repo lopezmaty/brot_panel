@@ -72,7 +72,7 @@ class Pedido(models.Model):
 class ItemPedido(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
     cantidad = models.IntegerField()
-    precio = models.DecimalField(max_digits=4, decimal_places=2)
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
 
     def __str__(self):

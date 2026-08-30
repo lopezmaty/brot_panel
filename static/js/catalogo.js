@@ -39,6 +39,23 @@ function actualizarCarrito() {
   badge.style.display = 'inline';
 }
 
+function actualizarDesdeInput(input) {
+  const id = input.dataset.id;
+  if (!id) return;
+  const cantidad = Math.max(0, parseInt(input.value) || 0);
+  input.value = cantidad;
+  if (!carrito[id]) {
+    carrito[id] = {
+      id: parseInt(id),
+      nombre: input.dataset.nombre,
+      precio: parseFloat(input.dataset.precio),
+      cantidad: 0,
+    };
+  }
+  carrito[id].cantidad = cantidad;
+  actualizarCarrito();
+}
+
 document.querySelectorAll('.btn-sumar').forEach(btn => {
   btn.addEventListener('click', function () {
     const id = btn.dataset.id;
@@ -62,22 +79,6 @@ document.querySelectorAll('.input-cantidad').forEach(input => {
   input.addEventListener('input', function () { actualizarDesdeInput(input); });
 });
 
-function actualizarDesdeInput(input) {
-  const id = input.dataset.id;
-  const cantidad = Math.max(0, parseInt(input.value) || 0);
-  input.value = cantidad;
-  if (!carrito[id]) {
-    carrito[id] = {
-      id: parseInt(id),
-      nombre: input.dataset.nombre,
-      precio: parseFloat(input.dataset.precio),
-      cantidad: 0,
-    };
-  }
-  carrito[id].cantidad = cantidad;
-  actualizarCarrito();
-}
-
 document.getElementById('toggleCarrito').addEventListener('click', function () {
   const body = document.getElementById('carritoBody');
   const icon = document.getElementById('iconCarrito');
@@ -86,19 +87,53 @@ document.getElementById('toggleCarrito').addEventListener('click', function () {
   icon.className = abierto ? 'ti ti-chevron-down' : 'ti ti-chevron-up';
 });
 
-document.getElementById('btnEnviarPedido').addEventListener('click', async function () {
+document.getElementById('btnEnviarPedido').addEventListener('click', function () {
   const items = Object.values(carrito).filter(i => i.cantidad > 0);
   if (items.length === 0) {
     alert('Agregá al menos un producto.');
     return;
   }
 
+  const metodo = document.getElementById('selectMetodo');
+  const metodoTexto = metodo.options[metodo.selectedIndex].text;
+  const observaciones = document.getElementById('inputObservaciones').value;
+
+  let resumenHtml = '<div style="border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 12px;">';
+  let total = 0;
+  items.forEach(item => {
+    const subtotal = item.cantidad * item.precio;
+    total += subtotal;
+    resumenHtml += `<div class="carrito-item-fila" style="padding: 8px 14px;">`
+      + `<span>${item.nombre} x${item.cantidad}</span>`
+      + `<span>${formatearPrecio(subtotal)}</span></div>`;
+  });
+  resumenHtml += `<div class="carrito-item-fila" style="padding: 8px 14px; font-weight: 700;">`
+    + `<span>Total</span><span>${formatearPrecio(total)}</span></div>`;
+  resumenHtml += '</div>';
+  resumenHtml += `<p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Método de entrega: <strong>${metodoTexto}</strong></p>`;
+  if (observaciones) {
+    resumenHtml += `<p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0;">Observaciones: <strong>${observaciones}</strong></p>`;
+  }
+
+  document.getElementById('modalResumen').innerHTML = resumenHtml;
+  const modal = document.getElementById('modalConfirmar');
+  modal.style.display = 'flex';
+});
+
+document.getElementById('btnCancelarConfirmar').addEventListener('click', function () {
+  document.getElementById('modalConfirmar').style.display = 'none';
+});
+
+document.getElementById('modalConfirmar').addEventListener('click', function (e) {
+  if (e.target === this) this.style.display = 'none';
+});
+
+document.getElementById('btnConfirmarPedido').addEventListener('click', async function () {
+  const items = Object.values(carrito).filter(i => i.cantidad > 0 && i.id);
   const metodo = document.getElementById('selectMetodo').value;
   const observaciones = document.getElementById('inputObservaciones').value;
-  const confirmado = confirm('¿Confirmás el pedido?');
-  if (!confirmado) return;
 
-  const btn = document.getElementById('btnEnviarPedido');
+  const btn = document.getElementById('btnConfirmarPedido');
   btn.textContent = 'Enviando...';
   btn.disabled = true;
 
@@ -122,12 +157,34 @@ document.getElementById('btnEnviarPedido').addEventListener('click', async funct
         </div>`;
     } else {
       alert('No se pudo enviar el pedido. Intentá de nuevo.');
-      btn.textContent = 'Enviar pedido';
+      btn.textContent = 'Confirmar pedido';
       btn.disabled = false;
+      document.getElementById('modalConfirmar').style.display = 'none';
     }
   } catch (e) {
     alert('Error de conexión.');
-    btn.textContent = 'Enviar pedido';
+    btn.textContent = 'Confirmar pedido';
     btn.disabled = false;
+    document.getElementById('modalConfirmar').style.display = 'none';
   }
+});
+
+window.addEventListener('load', function () {
+  const carritoPrecargado = sessionStorage.getItem('carrito_precargado');
+  if (!carritoPrecargado) return;
+  sessionStorage.removeItem('carrito_precargado');
+
+  const items = JSON.parse(carritoPrecargado);
+  items.forEach(function (item) {
+    const input = document.getElementById(`cantidad-${item.producto_id}`);
+    if (input) {
+      input.value = item.cantidad;
+      actualizarDesdeInput(input);
+    }
+  });
+
+  const body = document.getElementById('carritoBody');
+  const icon = document.getElementById('iconCarrito');
+  body.classList.add('open');
+  icon.className = 'ti ti-chevron-up';
 });
