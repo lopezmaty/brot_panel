@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo — Brot Panes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/catalogo.css' %}">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <img src="{% static 'img/logo.png' %}" alt="Brot Panes" class="topbar-logo">
+  </div>
+</header>
+
+<div class="catalogo-contenido">
+
+  <div class="catalogo-saludo">Hola, {{ cliente.nombre_comercio|title }} 👋</div>
+  <div class="catalogo-subtitulo">Seleccioná los productos que querés pedir.</div>
+
+  {% if sin_lista %}
+  <div style="border: 1px solid var(--border); border-radius: 14px; padding: 24px; background: var(--bg-surface); color: var(--text-secondary); text-align: center;">
+    No tenés una lista de precios asignada. Contactate con Brot Panes.
+  </div>
+  {% else %}
+
+  {% regroup productos_con_precio by producto.familia as familias_agrupadas %}
+
+  {% for familia_group in familias_agrupadas %}
+  <div class="familia-section">
+    <div class="familia-header">{{ familia_group.grouper.nombre }}</div>
+    {% for item in familia_group.list %}
+    <div class="producto-fila">
+      <div class="producto-info">
+        <div class="producto-nombre">{{ item.producto }}</div>
+        <div class="producto-precio">{{ item.precio|floatformat:2 }}</div>
+      </div>
+      <div class="producto-cantidad-ctrl">
+        <button type="button" class="btn-cantidad btn-restar" data-id="{{ item.producto.id }}">−</button>
+        <input type="number" class="input-cantidad"
+               id="cantidad-{{ item.producto.id }}"
+               value="0" min="0"
+               data-id="{{ item.producto.id }}"
+               data-nombre="{{ item.producto }}"
+               data-precio="{{ item.precio }}">
+        <button type="button" class="btn-cantidad btn-sumar" data-id="{{ item.producto.id }}">+</button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+
+  {% endif %}
+
+</div>
+
+<div class="carrito-sticky">
+  <div class="carrito-inner">
+    <div class="carrito-card">
+      <div class="carrito-header" id="toggleCarrito">
+        <span>Tu pedido <span class="badge-cantidad" id="badgeCantidad" style="display:none">0</span></span>
+        <i class="ti ti-chevron-down" id="iconCarrito"></i>
+      </div>
+      <div class="carrito-body" id="carritoBody">
+        <div id="carritoItems"><p class="carrito-vacio">Todavía no agregaste productos.</p></div>
+        <div class="carrito-total-fila" id="carritoTotal" style="display:none;">
+          <span>Total</span>
+          <span id="totalPrecio">$0</span>
+        </div>
+        <div class="form-pedido" id="formPedido">
+          <label>Método de entrega</label>
+          <select id="selectMetodo">
+            {% for valor, etiqueta in metodos %}
+            <option value="{{ valor }}">{{ etiqueta }}</option>
+            {% endfor %}
+          </select>
+          <label>Observaciones (opcional)</label>
+          <textarea id="inputObservaciones" rows="2" placeholder="Aclaraciones, horarios, etc."></textarea>
+          <button type="button" class="btn-primary" id="btnEnviarPedido" style="width: 100%;">Enviar pedido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<span id="catalogo-token" data-token="{{ cliente.token }}" style="display:none;"></span>
+<script src="{% static 'js/catalogo.js' %}"></script>
+
+</body>
+</html>

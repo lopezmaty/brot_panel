@@ -1,0 +1,230 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-base);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.topbar {
+  background: #16213E !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  height: 56px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 24px !important;
+}
+
+.topbar-logo {
+  height: 32px;
+}
+
+.catalogo-contenido {
+  padding: 32px 24px 140px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.catalogo-saludo {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 4px;
+}
+
+.catalogo-subtitulo {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+.familia-section {
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--bg-surface);
+}
+
+.familia-header {
+  padding: 14px 18px;
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--text-heading);
+  letter-spacing: -0.3px;
+  background: var(--bg-surface);
+  border-left: 4px solid #E87722;
+}
+
+.producto-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  gap: 16px;
+}
+
+.producto-info { flex: 1; min-width: 0; }
+
+.producto-nombre {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--text-heading);
+}
+
+.producto-precio {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.producto-cantidad-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-cantidad {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-base);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  transition: background 0.1s;
+  flex-shrink: 0;
+}
+
+.btn-cantidad:hover { background: var(--bg-hover, #f0f0f0); }
+
+.input-cantidad {
+  width: 72px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.input-cantidad:focus {
+  outline: none;
+  border-color: #E87722;
+}
+
+.carrito-sticky {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0 16px 16px;
+  z-index: 100;
+}
+
+.carrito-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.carrito-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.10);
+}
+
+.carrito-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-heading);
+}
+
+.carrito-body {
+  display: none;
+  padding: 16px 18px;
+  border-top: 1px solid var(--border);
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.carrito-body.open { display: block; }
+
+.carrito-item-fila {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.carrito-total-fila {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 15px;
+  margin-top: 12px;
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-surface);
+  padding-top: 8px;
+}
+
+.carrito-vacio {
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.form-pedido { margin-top: 16px; display: none; }
+
+.form-pedido label {
+  display: block;
+  font-weight: 500;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+
+.form-pedido select,
+.form-pedido textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.badge-cantidad {
+  background: #E87722;
+  color: white;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  margin-left: 6px;
+}

@@ -17,13 +17,19 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from frontend.views import catalogo_view
+from sistema_pedidos.views import confirmar_pedido_catalogo
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/lista_precios/', include('lista_precios.urls'), ),
+    path('api/lista_precios/', include('lista_precios.urls')),
     path('api/sistema_pedidos/', include('sistema_pedidos.urls')),
     path('panel/', include('frontend.urls')),
-    path('api/users/', include('users.urls'))
+    path('api/users/', include('users.urls')),
+    path('catalogo/<str:token>/', catalogo_view, name='catalogo'),
+    path('catalogo/<str:token>/confirmar/', confirmar_pedido_catalogo, name='confirmar_pedido_catalogo'),
 ]

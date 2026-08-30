@@ -6,8 +6,8 @@ import requests
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
-from sistema_pedidos.models import Cliente, TipoCliente, Producto, ItemPedido, Pedido
-from lista_precios.models import Variedad, Tamaño, Familia, ListaPrecios, Precio
+from sistema_pedidos.models import Cliente, TipoCliente, Pedido, ItemPedido
+from lista_precios.models import Variedad, Tamaño, Familia, ListaPrecios, Precio, Producto
 from django.utils import timezone
 from datetime import timedelta
 from django.template.loader import render_to_string
@@ -15,17 +15,12 @@ from weasyprint import HTML
 from django.http import HttpResponse
 from django.contrib.staticfiles import finders
 from django.shortcuts import render, get_object_or_404
-from sistema_pedidos.models import Pedido
-
 
 
 @login_required(login_url='login')
 def dashboard_view(request):
     return render(request, 'dashboard.html')
 
-@login_required(login_url='login')
-def centro_pedidos_view(request):
-    return render(request, 'centro_pedidos.html')
 
 def login_view(request):
     if request.method == 'POST':
@@ -49,20 +44,21 @@ def login_view(request):
     else:
         return render(request, 'login.html')
 
+
 def logout_view(request):
     logout(request)
     return redirect('login')
 
+
 @login_required(login_url='login')
 def usuarios_view(request):
-    if request.user.perfil.rol  == 'admin':
+    if request.user.perfil.rol == 'admin':
         users = User.objects.all()
-        response = render(request, 'usuarios.html', {'users': users})
-        return response
+        return render(request, 'usuarios.html', {'users': users})
     else:
-        response = redirect('dashboard')
-        return response
-    
+        return redirect('dashboard')
+
+
 def establecer_password_view(request, uid, token):
     uid_decodificado = force_str(urlsafe_base64_decode(uid))
     user = User.objects.get(pk=uid_decodificado)
@@ -70,7 +66,7 @@ def establecer_password_view(request, uid, token):
     if token_generator.check_token(user, token):
         if request.method == 'POST':
             password = request.POST.get('password')
-            password2= request.POST.get('password2')
+            password2 = request.POST.get('password2')
             if password == password2:
                 user.set_password(password)
                 user.save()
@@ -81,18 +77,18 @@ def establecer_password_view(request, uid, token):
             return render(request, 'establecer_password.html')
     else:
         return render(request, 'token_invalido.html')
-    
+
+
 @login_required(login_url='login')
 def clientes_view(request):
     if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
         clientes = Cliente.objects.all().order_by('razon_social')
         tipos_cliente = TipoCliente.objects.all()
-        response = render(request, 'clientes.html', {'clientes': clientes, 'tipos_cliente': tipos_cliente})
-        return response
+        return render(request, 'clientes.html', {'clientes': clientes, 'tipos_cliente': tipos_cliente})
     else:
-        response = redirect('dashboard')
-        return response
-    
+        return redirect('dashboard')
+
+
 @login_required(login_url='login')
 def cliente_detalle_view(request, cliente_id=None):
     if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
@@ -106,14 +102,24 @@ def cliente_detalle_view(request, cliente_id=None):
                 listas_vigentes.append(lista)
 
         if cliente_id is None:
-            return render(request, 'cliente_detalle.html', {'cliente': None, 'tipos_cliente': tipos_cliente, 'listas_vigentes': listas_vigentes})
+            return render(request, 'cliente_detalle.html', {
+                'cliente': None,
+                'tipos_cliente': tipos_cliente,
+                'listas_vigentes': listas_vigentes,
+            })
         else:
             cliente = Cliente.objects.get(pk=cliente_id)
             ruta = f'/catalogo/{cliente.token}/'
             magic_link = request.build_absolute_uri(ruta)
-            return render(request, 'cliente_detalle.html', {'cliente': cliente, 'tipos_cliente': tipos_cliente, 'listas_vigentes': listas_vigentes, 'magic_link': magic_link})
+            return render(request, 'cliente_detalle.html', {
+                'cliente': cliente,
+                'tipos_cliente': tipos_cliente,
+                'listas_vigentes': listas_vigentes,
+                'magic_link': magic_link,
+            })
     else:
         return redirect('dashboard')
+
 
 @login_required(login_url='login')
 def producto_view(request):
@@ -139,11 +145,15 @@ def producto_view(request):
             tam.color_bg = color['bg']
             tam.color_texto = color['texto']
 
-        response = render(request, 'productos.html', {'productos': productos, 'variedad': variedad, 'tamaño': tamaño, 'familia': familia})
-        return response
+        return render(request, 'productos.html', {
+            'productos': productos,
+            'variedad': variedad,
+            'tamaño': tamaño,
+            'familia': familia,
+        })
     else:
-        response = redirect('dashboard')
-        return response
+        return redirect('dashboard')
+
 
 @login_required(login_url='login')
 def producto_detalle_view(request, producto_id=None):
@@ -185,11 +195,10 @@ def lista_precios_view(request):
             lista = ListaPrecios.objects.filter(tipo_cliente=categoria).order_by('-fecha').first()
             if lista is not None:
                 listas_vigentes.append(lista)
-        response = render(request, 'lista_precios.html', {'listas_vigentes': listas_vigentes})
-        return response
+        return render(request, 'lista_precios.html', {'listas_vigentes': listas_vigentes})
     else:
-        response = redirect('dashboard')
-        return response
+        return redirect('dashboard')
+
 
 @login_required(login_url='login')
 def lista_precios_detalle_view(request, lista_precios_id=None):
@@ -197,9 +206,11 @@ def lista_precios_detalle_view(request, lista_precios_id=None):
         categorias = TipoCliente.objects.all()
         if lista_precios_id is None:
             producto = Producto.objects.all()
-            response = render(request, 'lista_precios_detalle.html', {'lista_precios': None, 'producto': producto, 'categorias': categorias})
-            return response
-
+            return render(request, 'lista_precios_detalle.html', {
+                'lista_precios': None,
+                'producto': producto,
+                'categorias': categorias,
+            })
         else:
             producto = Producto.objects.all()
             lista_precios = ListaPrecios.objects.get(pk=lista_precios_id)
@@ -209,11 +220,15 @@ def lista_precios_detalle_view(request, lista_precios_id=None):
             for precio in precios:
                 precios_por_producto[precio.producto.id] = precio.precio
 
-            response = render(request, 'lista_precios_detalle.html', {'lista_precios': lista_precios, 'producto': producto, 'precios_por_producto': precios_por_producto, 'categorias': categorias})
-            return response
+            return render(request, 'lista_precios_detalle.html', {
+                'lista_precios': lista_precios,
+                'producto': producto,
+                'precios_por_producto': precios_por_producto,
+                'categorias': categorias,
+            })
     else:
-        response = redirect('dashboard')
-        return response
+        return redirect('dashboard')
+
 
 @login_required(login_url='login')
 def centro_pedidos_view(request):
@@ -228,29 +243,26 @@ def centro_pedidos_view(request):
 
         if estado:
             todos_estados = [estado]
-
         else:
             todos_estados = ['nuevo', 'en_proceso', 'completado', 'cancelado']
 
-        estados_filtrados = Pedido.objects.filter(estado__in=todos_estados, fecha__gte=fecha_desde).order_by('-fecha')
+        estados_filtrados = Pedido.objects.filter(
+            estado__in=todos_estados,
+            fecha__gte=fecha_desde
+        ).order_by('-fecha')
 
         for pedido in estados_filtrados:
             items = pedido.itempedido_set.all()
-
             pedido.total_unidades = sum(item.cantidad for item in items)
             pedido.total_precio = sum(item.cantidad * item.precio for item in items)
-
             for item in items:
                 item.subtotal = item.cantidad * item.precio
-
             pedido.items = items
 
-        response = render(request, 'centro_pedidos.html', {'estados_filtrados': estados_filtrados})
-        return response
-
+        return render(request, 'centro_pedidos.html', {'estados_filtrados': estados_filtrados})
     else:
-            response = redirect('dashboard')
-            return response
+        return redirect('dashboard')
+
 
 @login_required(login_url='login')
 def lista_precios_pdf_view(request, lista_precios_id):
@@ -335,11 +347,52 @@ def lista_precios_pdf_view(request, lista_precios_id):
     response['Content-Disposition'] = f'attachment; filename="lista_precios_{lista.nombre}.pdf"'
     return response
 
+
 def comanda(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id)
     items = pedido.itempedido_set.all()
-
     return render(request, 'comanda.html', {
         'pedido': pedido,
         'items': items,
+    })
+
+
+def catalogo_view(request, token):
+    cliente = get_object_or_404(Cliente, token=token, activo=True)
+
+    lista = cliente.lista_precios
+    if not lista:
+        return render(request, 'catalogo.html', {
+            'cliente': cliente,
+            'productos_con_precio': [],
+            'sin_lista': True,
+        })
+
+    precios = Precio.objects.filter(lista_precio=lista).select_related(
+        'producto', 'producto__variedad', 'producto__tamaño', 'producto__familia'
+    )
+
+    productos_con_precio = []
+    for precio in precios:
+        p = precio.producto
+        if not p.activo:
+            continue
+        exclusivos = p.clientes_exclusivos.all()
+        if exclusivos.exists() and cliente not in exclusivos:
+            continue
+        productos_con_precio.append({
+            'producto': p,
+            'precio': precio.precio,
+        })
+
+    metodos = []
+    if cliente.permite_retiro:
+        metodos.append(('retiro', 'Retiro en fábrica'))
+    if cliente.permite_domicilio:
+        metodos.append(('entrega_domicilio', 'Entrega a domicilio'))
+
+    return render(request, 'catalogo.html', {
+        'cliente': cliente,
+        'productos_con_precio': productos_con_precio,
+        'metodos': metodos,
     })

@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from django.core.mail import send_mail
 from .xubio import obtener_token, XUBIO_BASE
 import requests
+from lista_precios.models import Precio as PrecioModel
+
 
 
 # Create your views here.
@@ -177,3 +179,45 @@ def buscar_cliente_xubio(request):
 
     except Exception as e:
         return Response({'error': str(e)}, status=500)
+
+
+@api_view(['POST'])
+@permission_classes([])
+def confirmar_pedido_catalogo(request, token):
+    cliente = get_object_or_404(Cliente, token=token, activo=True)
+
+    items = request.data.get('items', [])
+    metodo_entrega = request.data.get('metodo_entrega', '')
+    observaciones = request.data.get('observaciones', '')
+
+    if not items:
+        return Response({'error': 'Sin items'}, status=400)
+
+    if metodo_entrega == 'retiro' and not cliente.permite_retiro:
+        return Response({'error': 'Método no habilitado'}, status=400)
+    if metodo_entrega == 'entrega_domicilio' and not cliente.permite_domicilio:
+        return Response({'error': 'Método no habilitado'}, status=400)
+
+    pedido = models.Pedido.objects.create(
+        cliente=cliente,
+        metodo_entrega=metodo_entrega,
+        observaciones=observaciones or None,
+    )
+
+    lista = cliente.lista_precios
+    for item in items:
+        producto = get_object_or_404(models.Producto, id=item['producto_id'], activo=True)
+        try:
+            precio_obj = PrecioModel.objects.get(lista_precio=lista, producto=producto)
+            precio = precio_obj.precio
+        except PrecioModel.DoesNotExist:
+            precio = 0
+
+        models.ItemPedido.objects.create(
+            pedido=pedido,
+            producto=producto,
+            cantidad=item['cantidad'],
+            precio=precio,
+        )
+
+    return Response({'pedido_id': pedido.id}, status=201)
