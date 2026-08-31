@@ -41,7 +41,10 @@
       <tbody>
         {% for p in producto %}
         <tr>
-          <td>{{ p.nombre }} {{ p.variedad.nombre }} {{ p.tamaño.nombre }}</td>
+          <td>
+            {{ p.nombre }} {{ p.variedad.nombre }}
+            <span style="display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: {{ p.tamaño_bg }}; color: {{ p.tamaño_color }}; margin-left: 6px;">{{ p.tamaño.nombre }}</span>
+          </td>
           <td>
             <div style="position: relative; display: inline-flex; align-items: center;">
               <span style="position: absolute; left: 10px; color: var(--text-secondary); font-size: 13px; pointer-events: none;">$</span>

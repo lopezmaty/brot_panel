@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_class %}no-sidebar{% endblock %}
+
+{% block content %}
+
+<span class="page-eyebrow">Producción</span>
+<h1 class="page-title">Calculadora de producción</h1>
+
+<div class="card" style="margin-bottom: 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+  <div>
+    <label style="font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-right: 8px;">Día de producción</label>
+    <select id="selectDia" style="border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--bg-surface); color: var(--text-primary);">
+      <option value="Lunes">Lunes (×3)</option>
+      <option value="Martes">Martes (×3.5)</option>
+      <option value="Miercoles" selected>Miércoles (×4)</option>
+      <option value="Jueves">Jueves (×4)</option>
+      <option value="Viernes">Viernes (×2)</option>
+    </select>
+  </div>
+  <button class="btn-secondary" id="btnCargarXubio" style="font-size: 13px;">
+    <i class="ti ti-refresh"></i> Cargar ventas 15 días (Xubio)
+  </button>
+  <button class="btn-primary" id="btnGuardarStock" style="font-size: 13px;">
+    <i class="ti ti-device-floppy"></i> Guardar stock
+  </button>
+  <span id="estadoXubio" style="font-size: 13px; color: var(--text-secondary);"></span>
+</div>
+
+<!-- Resumen por receta -->
+<h2 style="font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--text-heading);">Resumen por receta</h2>
+<div class="card" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+  <table>
+    <thead>
+      <tr>
+        <th>Receta</th>
+        <th style="text-align: center;">Kilos masa</th>
+        <th style="text-align: center;">Q Recetas simples</th>
+      </tr>
+    </thead>
+    <tbody id="tablaResumenBody"></tbody>
+    <tfoot>
+      <tr style="font-weight: 700; background: var(--bg-base);">
+        <td style="padding: 12px 18px;">Total</td>
+        <td style="text-align: center; padding: 12px 18px;" id="totalKilosResumen">0 kg</td>
+        <td style="text-align: center; padding: 12px 18px; color: #E87722;" id="totalRecetasResumen">0</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<!-- Detalle por producto -->
+<h2 style="font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--text-heading);">Detalle por producto</h2>
+<div class="card" style="padding: 0; overflow: hidden;">
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Receta</th>
+        <th style="text-align: center;">Ventas 15d</th>
+        <th style="text-align: center;">Prom. Diario</th>
+        <th style="text-align: center;">Stock Obj.</th>
+        <th style="text-align: center;">Stock Actual</th>
+        <th style="text-align: center;">Ventas del Día</th>
+        <th style="text-align: center;">Prod. Necesaria</th>
+        <th style="text-align: center;">Kilos Masa</th>
+      </tr>
+    </thead>
+    <tbody id="tablaDetalleBody"></tbody>
+  </table>
+</div>
+
+<script>
+const PRODUCTOS = [
+  { nombre: 'Bagels', receta: 'Soft Cotton Tipo Lactal Blanco', gramos: 112, xubio_ids: [1485486] },
+  { nombre: 'Burger Buns Clasico Chico', receta: 'Soft Cotton Burger Chica', gramos: 90, xubio_ids: [3116855, 1485465] },
+  { nombre: 'Burger Buns con Queso Chico', receta: 'Soft Cotton Burger Chica', gramos: 90, xubio_ids: [3023228, 3116859] },
+  { nombre: 'Burger Buns con Semillas Chico', receta: 'Soft Cotton Burger Chica', gramos: 90, xubio_ids: [1483893, 3116856] },
+  { nombre: 'Burger Buns con Sesamo Chico', receta: 'Soft Cotton Burger Chica', gramos: 90, xubio_ids: [1485468, 3116858] },
+  { nombre: 'Burger Buns Clasico Grande', receta: 'Soft Cotton Burger Grande', gramos: 100, xubio_ids: [3267121] },
+  { nombre: 'Burger Buns con Queso Grande', receta: 'Soft Cotton Burger Grande', gramos: 100, xubio_ids: [3267122] },
+  { nombre: 'Burger Buns con Semillas Grande', receta: 'Soft Cotton Burger Grande', gramos: 100, xubio_ids: [3267123] },
+  { nombre: 'Burger Buns con Sesamo Grande', receta: 'Soft Cotton Burger Grande', gramos: 100, xubio_ids: [3267124] },
+  { nombre: 'Pan de Campo de Uva Doble', receta: 'Pan de Uva', gramos: 320, xubio_ids: [3125331] },
+  { nombre: 'Pan de Campo Doble', receta: 'Soft Cotton Campo Doble', gramos: 320, xubio_ids: [1485488] },
+  { nombre: 'Pan de Campo Simple', receta: 'Soft Cotton Campo Doble', gramos: 200, xubio_ids: [1485490] },
+  { nombre: 'Pan de Lomo Campestre', receta: 'Soft Cotton Lomo', gramos: 200, xubio_ids: [1485455] },
+  { nombre: 'Pan de Lomo Clasico', receta: 'Soft Cotton Lomo', gramos: 200, xubio_ids: [1485453] },
+  { nombre: 'Pan de Lomo con Queso', receta: 'Soft Cotton Lomo', gramos: 200, xubio_ids: [1511561] },
+  { nombre: 'Pan de Lomo con Semillas', receta: 'Soft Cotton Lomo', gramos: 200, xubio_ids: [1485458] },
+  { nombre: 'Pan de Lomo Campestre Grande', receta: 'Soft Cotton Lomo XL', gramos: 240, xubio_ids: [3105663] },
+  { nombre: 'Pan de Lomo Clasico Grande', receta: 'Soft Cotton Lomo XL', gramos: 240, xubio_ids: [1485456] },
+  { nombre: 'Pan de Lomo con Queso Grande', receta: 'Soft Cotton Lomo XL', gramos: 240, xubio_ids: [3250612] },
+  { nombre: 'Pan de Lomo con Semillas Grande', receta: 'Soft Cotton Lomo XL', gramos: 240, xubio_ids: [3250615] },
+  { nombre: 'Pan de Lomo Campestre Mini', receta: 'Soft Cotton Lomo Mini', gramos: 100, xubio_ids: [1485463] },
+  { nombre: 'Pan de Lomo Clasico Mini', receta: 'Soft Cotton Lomo Mini', gramos: 100, xubio_ids: [1485461] },
+  { nombre: 'Pan de Lomo con Queso Mini', receta: 'Soft Cotton Lomo Mini', gramos: 100, xubio_ids: [3160665] },
+  { nombre: 'Pan de Lomo con Semillas Mini', receta: 'Soft Cotton Lomo Mini', gramos: 100, xubio_ids: [3217733] },
+  { nombre: 'Pan de Lomo Integral', receta: 'Soft Cotton Salvado (Molde)', gramos: 200, xubio_ids: [1485452] },
+  { nombre: 'Pan de Lomo Integral Grande', receta: 'Soft Cotton Salvado (Molde)', gramos: 240, xubio_ids: [3250613] },
+  { nombre: 'Pan de Lomo Integral Mini', receta: 'Soft Cotton Salvado (Molde)', gramos: 100, xubio_ids: [1485460] },
+  { nombre: 'Pan de Molde Blanco', receta: 'Soft Cotton Tipo Lactal Blanco', gramos: 600, xubio_ids: [1485493, 3046523] },
+  { nombre: 'Pan de Molde Blanco Campestre', receta: 'Soft Cotton Tipo Lactal Blanco', gramos: 600, xubio_ids: [1485494] },
+  { nombre: 'Pan de Molde Campestre Grande', receta: 'Soft Cotton Tipo Lactal Blanco', gramos: 900, xubio_ids: [1485495] },
+  { nombre: 'Pan de Molde de Uva', receta: 'Pan de Uva', gramos: 600, xubio_ids: [3090203] },
+  { nombre: 'Pan de Molde Integral', receta: 'Soft Cotton Salvado (Molde)', gramos: 600, xubio_ids: [1485492] },
+  { nombre: 'Pan para Panchos', receta: 'Soft Cotton Pebete', gramos: 50, xubio_ids: [3021008] },
+  { nombre: 'Pan para Pebetes', receta: 'Soft Cotton Pebete', gramos: 100, xubio_ids: [1485487] },
+  { nombre: 'Tortuguita Campestre', receta: 'Soft Cotton Tipo Lactal Blanco', gramos: 160, xubio_ids: [1485485] },
+  { nombre: 'Tortuguita Clasica', receta: 'Soft Cotton Tipo Lactal Blanco', gramos: 160, xubio_ids: [1485483] },
+  { nombre: 'Tortuguita con Semillas', receta: 'Soft Cotton Tipo Lactal Blanco', gramos: 160, xubio_ids: [1485484] },
+  { nombre: 'Tortuguita Integral', receta: 'Soft Cotton Salvado (Molde)', gramos: 160, xubio_ids: [1485481] },
+];
+
+const KILOS_POR_RECETA = {
+  'Soft Cotton Tipo Lactal Blanco': 49000,
+  'Soft Cotton Pebete': 40000,
+  'Soft Cotton Campo Doble': 23000,
+  'Pan de Uva': 17000,
+  'Soft Cotton Salvado (Molde)': 50000,
+  'Soft Cotton Burger Chica': 30000,
+  'Soft Cotton Burger Grande': 20000,
+  'Soft Cotton Lomo': 40000,
+  'Soft Cotton Lomo Mini': 50000,
+  'Soft Cotton Lomo XL': 48000,
+};
+
+const FACTORES_DIA = {
+  'Lunes': 3, 'Martes': 3.5, 'Miercoles': 4, 'Jueves': 4, 'Viernes': 2,
+};
+
+const estado = {};
+PRODUCTOS.forEach((p, i) => {
+  estado[i] = { ventas15d: 0, stockActual: 0, ventasDia: 0 };
+});
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function calcularProdNecesaria(i, factor) {
+  const e = estado[i];
+  const promDiario = e.ventas15d / 10;
+  const stockObj = Math.ceil(promDiario * factor);
+  const stockDespues = e.stockActual - e.ventasDia;
+  const prodNecesaria = Math.max(0, stockObj - stockDespues);
+  return { promDiario, stockObj, prodNecesaria };
+}
+
+function renderTabla() {
+  const dia = document.getElementById('selectDia').value;
+  const factor = FACTORES_DIA[dia];
+
+  const tbody = document.getElementById('tablaDetalleBody');
+  tbody.innerHTML = '';
+
+  PRODUCTOS.forEach((producto, i) => {
+    const e = estado[i];
+    const { promDiario, stockObj, prodNecesaria } = calcularProdNecesaria(i, factor);
+    const kilos = (prodNecesaria * producto.gramos) / 1000;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight: 600; color: var(--text-heading); font-size: 13px;">${producto.nombre}</td>
+      <td style="font-size: 11px; color: var(--text-secondary);">${producto.receta}</td>
+      <td style="text-align: center;">${e.ventas15d}</td>
+      <td style="text-align: center;">${promDiario.toFixed(1)}</td>
+      <td style="text-align: center; font-weight: 600;">${stockObj}</td>
+      <td style="text-align: center;">
+        <input type="number" min="0" value="${e.stockActual}"
+          style="width: 72px; text-align: center; border: 1px solid var(--border); border-radius: 8px; padding: 4px 6px; font-family: 'DM Sans', sans-serif; font-size: 13px; background: var(--bg-surface); color: var(--text-primary);"
+          data-idx="${i}" data-campo="stockActual">
+      </td>
+      <td style="text-align: center;">
+        <input type="number" min="0" value="${e.ventasDia}"
+          style="width: 72px; text-align: center; border: 1px solid var(--border); border-radius: 8px; padding: 4px 6px; font-family: 'DM Sans', sans-serif; font-size: 13px; background: var(--bg-surface); color: var(--text-primary);"
+          data-idx="${i}" data-campo="ventasDia">
+      </td>
+      <td style="text-align: center; font-weight: 700; font-size: 14px; color: ${prodNecesaria > 0 ? '#E87722' : 'var(--text-secondary)'};">
+        ${prodNecesaria}
+      </td>
+      <td style="text-align: center; font-weight: 600; font-size: 13px;">
+        ${kilos > 0 ? kilos.toFixed(2) + ' kg' : '—'}
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll('input[data-idx]').forEach(input => {
+    input.addEventListener('change', function() {
+      const idx = parseInt(this.dataset.idx);
+      const campo = this.dataset.campo;
+      estado[idx][campo] = parseInt(this.value) || 0;
+      renderTabla();
+    });
+  });
+
+  const resumenBody = document.getElementById('tablaResumenBody');
+  resumenBody.innerHTML = '';
+  const resumen = {};
+
+  PRODUCTOS.forEach((producto, i) => {
+    const { prodNecesaria } = calcularProdNecesaria(i, factor);
+    const kilosGramos = prodNecesaria * producto.gramos;
+    if (!resumen[producto.receta]) resumen[producto.receta] = 0;
+    resumen[producto.receta] += kilosGramos;
+  });
+
+  let totalKilos = 0;
+  let totalRecetas = 0;
+
+  Object.entries(resumen).forEach(([receta, gramos]) => {
+    const kilos = gramos / 1000;
+    const kilosPorReceta = KILOS_POR_RECETA[receta] || 1000;
+    const qRecetas = gramos / kilosPorReceta;
+    totalKilos += kilos;
+    totalRecetas += qRecetas;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight: 600; color: var(--text-heading);">${receta}</td>
+      <td style="text-align: center; font-weight: 600;">${kilos.toFixed(2)} kg</td>
+      <td style="text-align: center; font-weight: 700; color: #E87722;">${qRecetas.toFixed(1)}</td>
+    `;
+    resumenBody.appendChild(tr);
+  });
+
+  document.getElementById('totalKilosResumen').textContent = totalKilos.toFixed(2) + ' kg';
+  document.getElementById('totalRecetasResumen').textContent = totalRecetas.toFixed(1);
+}
+
+document.getElementById('selectDia').addEventListener('change', renderTabla);
+
+async function cargarStockBD() {
+  try {
+    const response = await fetch('/api/sistema_pedidos/stock-productos/', {
+      headers: { 'X-CSRFToken': getCookie('csrftoken') }
+    });
+    const data = await response.json();
+    PRODUCTOS.forEach((producto, i) => {
+      let stock = 0;
+      producto.xubio_ids.forEach(id => {
+        if (data[id] !== undefined) stock = data[id];
+      });
+      estado[i].stockActual = stock;
+    });
+    renderTabla();
+  } catch(e) {
+    console.error('Error cargando stock:', e);
+  }
+}
+
+document.getElementById('btnGuardarStock').addEventListener('click', async function() {
+  const btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-device-floppy"></i> Guardando...';
+
+  const items = [];
+  PRODUCTOS.forEach((producto, i) => {
+    items.push({
+      xubio_producto_id: producto.xubio_ids[0],
+      nombre: producto.nombre,
+      stock_actual: estado[i].stockActual,
+    });
+  });
+
+  try {
+    const response = await fetch('/api/sistema_pedidos/stock-productos/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify({ items }),
+    });
+
+    if (response.ok) {
+      btn.innerHTML = '<i class="ti ti-check"></i> Stock guardado';
+      setTimeout(() => {
+        btn.innerHTML = '<i class="ti ti-device-floppy"></i> Guardar stock';
+        btn.disabled = false;
+      }, 2000);
+    } else {
+      alert('Error al guardar el stock.');
+      btn.innerHTML = '<i class="ti ti-device-floppy"></i> Guardar stock';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    alert('Error de conexión.');
+    btn.innerHTML = '<i class="ti ti-device-floppy"></i> Guardar stock';
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('btnCargarXubio').addEventListener('click', async function() {
+  const btn = this;
+  const estadoEl = document.getElementById('estadoXubio');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-refresh"></i> Cargando...';
+  estadoEl.textContent = '';
+
+  try {
+    const response = await fetch('/api/sistema_pedidos/ventas-xubio-15dias/');
+    const data = await response.json();
+
+    if (data.error) {
+      estadoEl.textContent = 'Error: ' + data.error;
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-refresh"></i> Cargar ventas 15 días (Xubio)';
+      return;
+    }
+
+    const ventasNormalizadas = {};
+    Object.entries(data.ventas).forEach(([id, cant]) => {
+      ventasNormalizadas[parseInt(id)] = cant;
+    });
+
+    PRODUCTOS.forEach((producto, i) => {
+      let total = 0;
+      producto.xubio_ids.forEach(id => {
+        total += ventasNormalizadas[id] || 0;
+      });
+      estado[i].ventas15d = total;
+    });
+
+    estadoEl.textContent = `✓ Ventas cargadas (${data.fecha_desde} al ${data.fecha_hasta})`;
+    renderTabla();
+
+  } catch(e) {
+    console.error('Error cargando ventas Xubio:', e);
+    estadoEl.textContent = 'Error de conexión';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-refresh"></i> Cargar ventas 15 días (Xubio)';
+  }
+});
+
+window.addEventListener('load', async function() {
+  await cargarStockBD();
+
+  const precargado = sessionStorage.getItem('calculadora_ventas_dia');
+  if (precargado) {
+    sessionStorage.removeItem('calculadora_ventas_dia');
+    const ventasDia = JSON.parse(precargado);
+    console.log('Ventas del día precargadas:', ventasDia);
+
+    PRODUCTOS.forEach((producto, i) => {
+      const nombreProducto = producto.nombre.toLowerCase().trim();
+      Object.entries(ventasDia).forEach(([nombre, cantidad]) => {
+        if (nombre.toLowerCase().trim() === nombreProducto) {
+          estado[i].ventasDia = cantidad;
+        }
+      });
+    });
+    renderTabla();
+  }
+});
+</script>
+
+{% endblock %}

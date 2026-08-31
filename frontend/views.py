@@ -204,15 +204,44 @@ def lista_precios_view(request):
 def lista_precios_detalle_view(request, lista_precios_id=None):
     if request.user.perfil.rol == 'admin':
         categorias = TipoCliente.objects.all()
+
+        PALETA_TAMAÑOS = [
+            {'bg': '#EAF3DE', 'color': '#2E6B0A'},
+            {'bg': '#FEF3E7', 'color': '#9B5800'},
+            {'bg': '#E6F1FB', 'color': '#0D4490'},
+            {'bg': '#FFF0EB', 'color': '#8B2800'},
+            {'bg': '#F5EEFE', 'color': '#320A6E'},
+        ]
+
         if lista_precios_id is None:
-            producto = Producto.objects.all()
+            producto = list(Producto.objects.all())
+            tamaños_vistos = {}
+            for p in producto:
+                tamaño_nombre = p.tamaño.nombre
+                if tamaño_nombre not in tamaños_vistos:
+                    idx = len(tamaños_vistos)
+                    tamaños_vistos[tamaño_nombre] = PALETA_TAMAÑOS[idx % len(PALETA_TAMAÑOS)]
+                color = tamaños_vistos[tamaño_nombre]
+                p.tamaño_bg = color['bg']
+                p.tamaño_color = color['color']
+
             return render(request, 'lista_precios_detalle.html', {
                 'lista_precios': None,
                 'producto': producto,
                 'categorias': categorias,
             })
         else:
-            producto = Producto.objects.all()
+            producto = list(Producto.objects.all())
+            tamaños_vistos = {}
+            for p in producto:
+                tamaño_nombre = p.tamaño.nombre
+                if tamaño_nombre not in tamaños_vistos:
+                    idx = len(tamaños_vistos)
+                    tamaños_vistos[tamaño_nombre] = PALETA_TAMAÑOS[idx % len(PALETA_TAMAÑOS)]
+                color = tamaños_vistos[tamaño_nombre]
+                p.tamaño_bg = color['bg']
+                p.tamaño_color = color['color']
+
             lista_precios = ListaPrecios.objects.get(pk=lista_precios_id)
             precios = Precio.objects.filter(lista_precio=lista_precios)
 
@@ -449,3 +478,11 @@ def subir_pdf_catalogo_view(request, lista_precios_id):
         lista.save()
 
     return redirect('lista_precios_editar', lista_precios_id=lista_precios_id)
+
+@login_required(login_url='login')
+def calculadora_produccion_view(request):
+    print("ENTRANDO A CALCULADORA")
+    if request.user.perfil.rol not in ['admin', 'colab']:
+        return redirect('dashboard')
+    print("ROL OK:", request.user.perfil.rol)
+    return render(request, 'calculadora_produccion.html')

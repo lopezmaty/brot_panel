@@ -20,4 +20,5 @@ urlpatterns = [
     path('lista_precios_pdf/<lista_precios_id>/pdf/', views.lista_precios_pdf_view, name='lista_precios_pdf'),
     path('pedidos/<int:pedido_id>/comanda/', views.comanda, name='comanda_pedido'),
     path('lista_precios/<lista_precios_id>/subir_pdf/', views.subir_pdf_catalogo_view, name='subir_pdf_catalogo'),
+    path('produccion/calculadora/', views.calculadora_produccion_view, name='calculadora_produccion'),
 ]

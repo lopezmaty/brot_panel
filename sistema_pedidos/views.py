@@ -213,3 +213,88 @@ def confirmar_pedido_catalogo(request, token):
         )
 
     return Response({'pedido_id': pedido.id}, status=201)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def ventas_xubio_15dias(request):
+    from .xubio import obtener_token, XUBIO_BASE
+    from datetime import date, timedelta
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    fecha_hasta = date.today()
+    fecha_desde = fecha_hasta - timedelta(days=15)
+
+    try:
+        token = obtener_token()
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Accept': 'application/json',
+        }
+
+        response = requests.get(
+            f'{XUBIO_BASE}/comprobanteVentaBean',
+            params={
+                'fechaDesde': fecha_desde.strftime('%Y-%m-%d'),
+                'fechaHasta': fecha_hasta.strftime('%Y-%m-%d'),
+            },
+            headers=headers,
+        )
+
+        comprobantes = response.json()
+        ventas = {}
+
+        def traer_detalle(transaccion_id):
+            try:
+                r = requests.get(
+                    f'{XUBIO_BASE}/comprobanteVentaBean/{transaccion_id}',
+                    headers=headers,
+                    timeout=10,
+                )
+                if r.status_code == 200:
+                    return r.json().get('transaccionProductoItems', [])
+            except Exception:
+                pass
+            return []
+
+        ids = [c.get('transaccionid') for c in comprobantes if c.get('transaccionid')]
+
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            futures = {executor.submit(traer_detalle, tid): tid for tid in ids}
+            for future in as_completed(futures):
+                items = future.result()
+                for item in items:
+                    producto = item.get('producto', {})
+                    producto_id = producto.get('id') or producto.get('ID')
+                    cantidad = item.get('cantidad', 0)
+                    if producto_id and cantidad:
+                        ventas[producto_id] = ventas.get(producto_id, 0) + cantidad
+
+        return Response({
+            'ventas': ventas,
+            'fecha_desde': fecha_desde.strftime('%d/%m/%Y'),
+            'fecha_hasta': fecha_hasta.strftime('%d/%m/%Y'),
+        })
+
+    except Exception as e:
+        print(f"Xubio ventas error: {str(e)}")
+        return Response({'error': str(e)}, status=500)
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def stock_productos(request):
+    if request.method == 'GET':
+        stocks = models.StockProducto.objects.all()
+        data = {s.xubio_producto_id: s.stock_actual for s in stocks}
+        return Response(data)
+
+    if request.method == 'POST':
+        items = request.data.get('items', [])
+        for item in items:
+            models.StockProducto.objects.update_or_create(
+                xubio_producto_id=item['xubio_producto_id'],
+                defaults={
+                    'nombre': item['nombre'],
+                    'stock_actual': item['stock_actual'],
+                }
+            )
+        return Response({'ok': True})

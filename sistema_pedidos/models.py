@@ -77,3 +77,12 @@ class ItemPedido(models.Model):
 
     def __str__(self):
         return str(self.producto)
+
+class StockProducto(models.Model):
+    xubio_producto_id = models.IntegerField(unique=True)
+    nombre = models.CharField(max_length=100)
+    stock_actual = models.IntegerField(default=0)
+    actualizado = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.nombre

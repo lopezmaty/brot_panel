@@ -2,12 +2,13 @@ document.querySelectorAll('.btn-expandir').forEach(function (boton) {
   boton.addEventListener('click', function () {
     const pedidoId = boton.dataset.pedidoId;
     const filaDetalle = document.getElementById(`detalle-${pedidoId}`);
+    const icono = boton.querySelector('i');
     if (filaDetalle.style.display === 'none') {
       filaDetalle.style.display = 'table-row';
-      boton.classList.add('rotado');
+      icono.className = 'ti ti-chevron-down';
     } else {
       filaDetalle.style.display = 'none';
-      boton.classList.remove('rotado');
+      icono.className = 'ti ti-chevron-right';
     }
   });
 });
@@ -36,6 +37,12 @@ async function cambiarEstado(pedidoId, nuevoEstado, observaciones = null) {
   } else {
     alert('No se pudo actualizar el estado');
   }
+}
+
+function confirmarAccion(mensaje) {
+  return new Promise((resolve) => {
+    resolve(window.confirm(mensaje));
+  });
 }
 
 function toggleDesplegable(botonId, desplegableId) {
@@ -108,10 +115,8 @@ document.querySelectorAll('[data-avanzar-id]').forEach(function (boton) {
     const pedidoId = boton.dataset.avanzarId;
     const nuevoEstado = boton.dataset.nuevoEstado;
     const textoEstado = nuevoEstado === 'en_proceso' ? 'En proceso' : 'Completado';
-
     const confirmado = await confirmarAccion(`¿Querés cambiar el estado de este pedido a "${textoEstado}"?`);
     if (!confirmado) return;
-
     await cambiarEstado(pedidoId, nuevoEstado);
   });
 });
@@ -120,6 +125,8 @@ document.querySelectorAll('[data-detalle-id]').forEach(function (boton) {
   boton.addEventListener('click', function (evento) {
     evento.preventDefault();
     const fila = boton.closest('.fila-pedido');
+    if (!fila) return;
+
     document.getElementById('detNumero').textContent = fila.dataset.numero;
     document.getElementById('detCliente').textContent = `${fila.dataset.clienteNombre} (${fila.dataset.razonSocial})`;
     document.getElementById('detLocal').textContent = fila.dataset.nombreComercio;
@@ -134,8 +141,9 @@ document.querySelectorAll('[data-detalle-id]').forEach(function (boton) {
 
     const pedidoId = fila.dataset.pedidoId;
     const filaDetalle = document.getElementById(`detalle-${pedidoId}`);
-    const tablaOrigen = filaDetalle.querySelector('.tabla-items tbody');
-    document.querySelector('#detItems tbody').innerHTML = tablaOrigen ? tablaOrigen.innerHTML : '';
+    const tablaOrigen = filaDetalle ? filaDetalle.querySelector('.tabla-items tbody') : null;
+    const detItemsTbody = document.getElementById('detItems');
+    if (detItemsTbody) detItemsTbody.innerHTML = tablaOrigen ? tablaOrigen.innerHTML : '';
 
     document.getElementById('modalDetallePedido').classList.add('open');
   });
@@ -182,16 +190,25 @@ document.getElementById('btnCalcularTotal').addEventListener('click', function (
   seleccionados.forEach(function (checkbox) {
     const pedidoId = checkbox.dataset.pedidoId;
     const filaDetalle = document.getElementById(`detalle-${pedidoId}`);
-    const filas = filaDetalle.querySelectorAll('.tabla-items tbody tr');
+    if (!filaDetalle) return;
 
+    // Abrir temporalmente para poder leer el DOM
+    const estabaOculto = filaDetalle.style.display === 'none';
+    filaDetalle.style.display = 'table-row';
+
+    const filas = filaDetalle.querySelectorAll('.tabla-items tbody tr');
     filas.forEach(function (fila) {
       const celdas = fila.querySelectorAll('td');
       if (celdas.length < 2) return;
       const producto = celdas[0].textContent.trim();
       const cantidad = parseInt(celdas[1].textContent.trim(), 10);
-      if (!totales[producto]) totales[producto] = 0;
-      totales[producto] += cantidad;
+      if (!isNaN(cantidad) && cantidad > 0) {
+        if (!totales[producto]) totales[producto] = 0;
+        totales[producto] += cantidad;
+      }
     });
+
+    if (estabaOculto) filaDetalle.style.display = 'none';
   });
 
   const tbody = document.getElementById('tablaTotalProductos');
@@ -209,6 +226,18 @@ document.getElementById('btnCalcularTotal').addEventListener('click', function (
 
 document.getElementById('btnCerrarTotal').addEventListener('click', function () {
   document.getElementById('modalTotalProductos').classList.remove('open');
+});
+
+document.getElementById('btnIrCalculadora').addEventListener('click', function () {
+  const entradas = JSON.parse(document.getElementById('modalTotalProductos').dataset.totales);
+  // entradas es [[nombre_producto, cantidad], ...]
+  // Lo guardamos como objeto { nombre: cantidad } para facilitar el mapeo
+  const ventasDia = {};
+  entradas.forEach(function ([nombre, cantidad]) {
+    ventasDia[nombre.trim()] = cantidad;
+  });
+  sessionStorage.setItem('calculadora_ventas_dia', JSON.stringify(ventasDia));
+  window.location.href = '/panel/produccion/calculadora/';
 });
 
 document.getElementById('btnExportarExcel').addEventListener('click', function () {
@@ -313,7 +342,7 @@ document.getElementById('btnCerrarFacturacion').addEventListener('click', functi
         beep();
       }
     } catch (e) {
-      // silencioso si falla la red
+      // silencioso
     }
   }
 
