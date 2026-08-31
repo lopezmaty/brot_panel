@@ -19,12 +19,10 @@ PUNTOS_VENTA = {
     'factura': {
         'puntoVentaId': 214112,
         'puntoVentaNumero': '00003',
-        'circuitoContableId': 2247,
     },
     'proforma': {
         'puntoVentaId': 154275,
         'puntoVentaNumero': '09999',
-        'circuitoContableId': -2,
     },
 }
 
@@ -134,10 +132,10 @@ def facturar_pedido(pedido):
         'fechaVto': fecha_vto.strftime('%Y-%m-%d'),
         'puntoVenta': {
             'id': punto_venta['puntoVentaId'],
-            'codigo': punto_venta['puntoVentaNumero'],
+            'ID': punto_venta['puntoVentaId'],
+            'puntoVenta': punto_venta['puntoVentaNumero'],
         },
-        'circuitoContable': {'id': punto_venta['circuitoContableId']},
-        'numeroDocumento': cliente.cuit,
+        'numeroDocumento': 0,
         'condicionDePago': 1,
         'deposito': {'id': DEPOSITO_ID},
         'cantComprobantesEmitidos': 1,
