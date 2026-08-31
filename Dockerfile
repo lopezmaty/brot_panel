@@ -10,15 +10,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpangocairo-1.0-0 \
     libpangoft2-1.0-0 \
     libcairo2 \
-    libgdk-pixbuf2.0-0 \
+    libgdk-pixbuf-2.0-0 \
     libffi-dev \
     libglib2.0-0 \
     shared-mime-info \
     fonts-liberation \
     fontconfig \
     libjpeg62-turbo \
-    libpq-dev \
-    gcc \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
