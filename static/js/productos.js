@@ -35,7 +35,7 @@ document.querySelectorAll('.btn-delete').forEach(function (boton) {
 
 document.getElementById('filtroFamilia').addEventListener('change', function () {
   const familiaElegida = this.value;
-  const filas = document.querySelectorAll('tbody tr');
+  const filas = document.querySelectorAll('.fila-producto');
 
   filas.forEach(function (fila) {
     const familiaDeLaFila = fila.dataset.familia;
