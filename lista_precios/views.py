@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
+from sistema_pedidos import xubio
 from . import models
 
 # Create your views here.
@@ -80,6 +81,7 @@ def guardar_lista_completa(request):
     lista_id = request.data.get('lista_id')
     precios = request.data.get('precios')
     tipo_cliente = request.data.get('tipo_cliente')
+    xubio_lista_precio_id = request.data.get('xubio_lista_precio_id')
     categoria = models.TipoCliente.objects.get(pk=tipo_cliente)
     nombre = categoria.nombre
 
@@ -88,9 +90,15 @@ def guardar_lista_completa(request):
         lista.nombre = nombre
         lista.fecha = fecha
         lista.tipo_cliente_id = tipo_cliente
+        lista.xubio_lista_precio_id = xubio_lista_precio_id or None
         lista.save()
     else:
-        lista = models.ListaPrecios.objects.create(nombre=nombre, fecha=fecha, tipo_cliente=categoria)
+        lista = models.ListaPrecios.objects.create(
+            nombre=nombre,
+            fecha=fecha,
+            tipo_cliente=categoria,
+            xubio_lista_precio_id=xubio_lista_precio_id or None,
+        )
 
     for item in precios:
         producto_id = item.get('producto')
@@ -103,3 +111,46 @@ def guardar_lista_completa(request):
 
     return Response({'id': lista.id}, status=201)
 
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def importar_precios_xubio(request, lista_id):
+    lista = models.ListaPrecios.objects.get(pk=lista_id)
+
+    if not lista.xubio_lista_precio_id:
+        return Response(
+            {'error': 'Esta lista no tiene un código de lista de precios de Xubio asignado.'},
+            status=400,
+        )
+
+    items_xubio = xubio.obtener_precios_lista(lista.xubio_lista_precio_id)
+
+    productos_por_xubio_id = {
+        p.xubio_producto_id: p
+        for p in models.Producto.objects.exclude(xubio_producto_id__isnull=True)
+    }
+
+    importados = 0
+    sin_match = []
+
+    for item in items_xubio:
+        producto_xubio = item.get('producto') or {}
+        xubio_producto_id = producto_xubio.get('id')
+        precio_valor = item.get('precio')
+
+        producto = productos_por_xubio_id.get(xubio_producto_id)
+        if producto is None:
+            sin_match.append(producto_xubio.get('nombre') or xubio_producto_id)
+            continue
+
+        models.Precio.objects.update_or_create(
+            lista_precio=lista,
+            producto=producto,
+            defaults={'precio': precio_valor},
+        )
+        importados += 1
+
+    return Response({
+        'importados': importados,
+        'sin_match': sin_match,
+    })

@@ -17,11 +17,6 @@ class AdminPrecio(admin.ModelAdmin):
 class AdminTipoCliente(admin.ModelAdmin):
     fields = ['nombre']
 
-@admin.register(models.ListaPrecios)
-class AdminListaPrecios(admin.ModelAdmin):
-    fields = ['nombre', 'tipo_cliente', 'fecha']
-    search_fields = ['tipo_cliente']
-
 @admin.register(models.Variedad)
 class AdminVariedad(admin.ModelAdmin):
     fields = ['nombre']
@@ -33,3 +28,8 @@ class AdminTamaño(admin.ModelAdmin):
 @admin.register(models.Familia)
 class AdminFamilia(admin.ModelAdmin):
     fields = ['nombre']
+
+@admin.register(models.ListaPrecios)
+class AdminListaPrecios(admin.ModelAdmin):
+    fields = ['nombre', 'tipo_cliente', 'fecha', 'xubio_lista_precio_id']
+    search_fields = ['tipo_cliente']

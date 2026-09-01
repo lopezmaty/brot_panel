@@ -60,6 +60,8 @@ class ListaPrecios(models.Model):
     fecha = models.DateField()
     pdf_catalogo = models.FileField(upload_to='catalogos/', null=True, blank=True)
 
+    xubio_lista_precio_id = models.IntegerField(null=True, blank=True)
+
     def __str__(self):
         return self.nombre
 
@@ -70,6 +72,3 @@ class Precio(models.Model):
 
     def __str__(self):
         return f"{self.producto} - {str(self.precio)}"
-
-
-

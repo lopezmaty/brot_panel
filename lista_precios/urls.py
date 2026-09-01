@@ -12,5 +12,6 @@ router.register('precios', views.PreciosViewset)
 router.register('tipo_cliente', views.TipoClienteViewset)
 
 urlpatterns = [
-    path('guardar-lista-completa/', views.guardar_lista_completa, name='guardar-lista-completa')
+    path('guardar-lista-completa/', views.guardar_lista_completa, name='guardar-lista-completa'),
+    path('lista_precios/<int:lista_id>/importar-precios-xubio/', views.importar_precios_xubio, name='importar-precios-xubio'),
 ] + router.urls

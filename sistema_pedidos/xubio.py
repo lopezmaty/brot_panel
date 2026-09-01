@@ -165,3 +165,19 @@ def facturar_pedido(pedido):
     print(f"Xubio response: {response.text}")
 
     return response.status_code, response.json() if response.text else {}
+
+
+def obtener_precios_lista(xubio_lista_precio_id):
+    token = obtener_token()
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Accept': 'application/json',
+    }
+
+    response = requests.get(
+        f'{XUBIO_BASE}/listaPrecioBean/{xubio_lista_precio_id}',
+        headers=headers,
+    )
+    response.raise_for_status()
+    data = response.json()
+    return data.get('listaPrecioItem', [])

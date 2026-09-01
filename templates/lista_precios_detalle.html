@@ -29,7 +29,18 @@
           {% endfor %}
         </select>
       </div>
+      <div>
+        <label>Código de lista en Xubio</label>
+        <input type="number" id="inputXubioListaId" value="{% if lista_precios.xubio_lista_precio_id %}{{ lista_precios.xubio_lista_precio_id }}{% endif %}" placeholder="Ej: 20357">
+      </div>
     </div>
+
+    {% if lista_precios %}
+    <div style="margin-top: 16px; display: flex; align-items: center; gap: 12px;">
+      <button type="button" id="btnImportarXubio" class="btn-secondary">Importar precios de Xubio</button>
+      <span id="importandoTexto" style="display: none; font-size: 13px; color: var(--text-secondary);">Importando...</span>
+    </div>
+    {% endif %}
 
     <table style="margin-top: 24px;">
       <thead>
