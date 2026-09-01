@@ -25,13 +25,13 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path('', RedirectView.as_view(url='/panel/login/', permanent=False)),
+    path('', RedirectView.as_view(url='/login/', permanent=False)),
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/lista_precios/', include('lista_precios.urls')),
     path('api/sistema_pedidos/', include('sistema_pedidos.urls')),
-    path('panel/', include('frontend.urls')),
+    path('', include('frontend.urls')),
     path('api/users/', include('users.urls')),
     path('catalogo/<str:token>/perfil/', perfil_catalogo_view, name='perfil_catalogo'),
     path('catalogo/<str:token>/confirmar/', confirmar_pedido_catalogo, name='confirmar_pedido_catalogo'),
