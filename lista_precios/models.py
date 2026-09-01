@@ -56,10 +56,8 @@ class TipoCliente(models.Model):
 
 class ListaPrecios(models.Model):
     nombre = models.CharField(max_length=50)
-    tipo_cliente = models.ForeignKey(TipoCliente, on_delete=models.PROTECT)
     fecha = models.DateField()
     pdf_catalogo = models.FileField(upload_to='catalogos/', null=True, blank=True)
-
     xubio_lista_precio_id = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
@@ -72,3 +70,15 @@ class Precio(models.Model):
 
     def __str__(self):
         return f"{self.producto} - {str(self.precio)}"
+
+class HistorialPrecio(models.Model):
+    lista_precio = models.ForeignKey(ListaPrecios, on_delete=models.CASCADE, related_name='historial')
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='historial_precios')
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-fecha']
+
+    def __str__(self):
+        return f"{self.producto} - {self.precio} ({self.fecha:%d/%m/%Y})"

@@ -74,39 +74,33 @@ class PreciosViewset(viewsets.ModelViewSet):
             return [IsAuthenticated()]
         return [EsAdmin()]
 
+class HistorialPrecioViewset(viewsets.ReadOnlyModelViewSet):
+    queryset = models.HistorialPrecio.objects.all().select_related('producto', 'lista_precio')
+    serializer_class = serializers.HistorialPrecioSerializer
+
+    def get_permissions(self):
+        return [IsAuthenticated()]
+
+
 @api_view(['POST'])
 @permission_classes([EsAdmin])
 def guardar_lista_completa(request):
     fecha = request.data.get('fecha')
     lista_id = request.data.get('lista_id')
-    precios = request.data.get('precios')
-    tipo_cliente = request.data.get('tipo_cliente')
+    nombre = request.data.get('nombre')
     xubio_lista_precio_id = request.data.get('xubio_lista_precio_id')
-    categoria = models.TipoCliente.objects.get(pk=tipo_cliente)
-    nombre = categoria.nombre
 
     if lista_id:
         lista = models.ListaPrecios.objects.get(pk=lista_id)
         lista.nombre = nombre
         lista.fecha = fecha
-        lista.tipo_cliente_id = tipo_cliente
         lista.xubio_lista_precio_id = xubio_lista_precio_id or None
         lista.save()
     else:
         lista = models.ListaPrecios.objects.create(
             nombre=nombre,
             fecha=fecha,
-            tipo_cliente=categoria,
             xubio_lista_precio_id=xubio_lista_precio_id or None,
-        )
-
-    for item in precios:
-        producto_id = item.get('producto')
-        precio_valor = item.get('precio')
-        models.Precio.objects.update_or_create(
-            lista_precio=lista,
-            producto_id=producto_id,
-            defaults={'precio': precio_valor}
         )
 
     return Response({'id': lista.id}, status=201)
@@ -130,7 +124,13 @@ def importar_precios_xubio(request, lista_id):
         for p in models.Producto.objects.exclude(xubio_producto_id__isnull=True)
     }
 
+    precios_actuales = {
+        precio.producto_id: precio.precio
+        for precio in models.Precio.objects.filter(lista_precio=lista)
+    }
+
     importados = 0
+    con_cambio_de_precio = 0
     sin_match = []
 
     for item in items_xubio:
@@ -143,6 +143,16 @@ def importar_precios_xubio(request, lista_id):
             sin_match.append(producto_xubio.get('nombre') or xubio_producto_id)
             continue
 
+        precio_anterior = precios_actuales.get(producto.id)
+
+        if precio_anterior is None or float(precio_anterior) != float(precio_valor):
+            models.HistorialPrecio.objects.create(
+                lista_precio=lista,
+                producto=producto,
+                precio=precio_valor,
+            )
+            con_cambio_de_precio += 1
+
         models.Precio.objects.update_or_create(
             lista_precio=lista,
             producto=producto,
@@ -152,5 +162,6 @@ def importar_precios_xubio(request, lista_id):
 
     return Response({
         'importados': importados,
+        'con_cambio_de_precio': con_cambio_de_precio,
         'sin_match': sin_match,
     })

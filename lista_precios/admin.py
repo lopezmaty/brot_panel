@@ -5,7 +5,7 @@ from . import models
 
 @admin.register(models.Producto)
 class AdminProducto(admin.ModelAdmin):
-    fields = ['nombre', 'variedad', 'tamaño', 'tipo_medida', 'medida_1', 'medida_2', 'medida_3', 'familia', 'unidades_paquete', 'activo']
+    fields = ['nombre', 'variedad', 'tamaño', 'tipo_medida', 'medida_1', 'medida_2', 'medida_3', 'familia', 'unidades_paquete', 'activo', 'xubio_producto_id']
     search_fields = ['variedad', 'familia']
 
 @admin.register(models.Precio)
@@ -31,5 +31,12 @@ class AdminFamilia(admin.ModelAdmin):
 
 @admin.register(models.ListaPrecios)
 class AdminListaPrecios(admin.ModelAdmin):
-    fields = ['nombre', 'tipo_cliente', 'fecha', 'xubio_lista_precio_id']
-    search_fields = ['tipo_cliente']
+    fields = ['nombre', 'fecha', 'xubio_lista_precio_id']
+    search_fields = ['nombre']
+
+@admin.register(models.HistorialPrecio)
+class AdminHistorialPrecio(admin.ModelAdmin):
+    fields = ['lista_precio', 'producto', 'precio', 'fecha']
+    readonly_fields = ['fecha']
+    list_display = ['producto', 'lista_precio', 'precio', 'fecha']
+    search_fields = ['producto__nombre']

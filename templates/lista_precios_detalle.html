@@ -7,8 +7,6 @@
 
 {% csrf_token %}
 
-{{ precios_por_producto|json_script:"datosPrecios" }}
-
 <span class="page-eyebrow">Administración</span>
 <h1 class="page-title">
   {% if lista_precios %}Editar lista de precios{% else %}Nueva lista de precios{% endif %}
@@ -18,16 +16,12 @@
   <form id="formListaPrecios" data-lista-id="{% if lista_precios %}{{ lista_precios.id }}{% endif %}">
     <div class="form-grid">
       <div>
-        <label>Mes de la lista</label>
-        <input type="month" id="inputFecha" value="{% if lista_precios %}{{ lista_precios.fecha|date:'Y-m' }}{% endif %}" required>
+        <label>Nombre de la lista</label>
+        <input type="text" id="inputNombre" value="{% if lista_precios %}{{ lista_precios.nombre }}{% endif %}" required>
       </div>
       <div>
-        <label>Categoría</label>
-        <select id="inputTipoCliente" required>
-          {% for c in categorias %}
-          <option value="{{ c.id }}" {% if lista_precios.tipo_cliente.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
-          {% endfor %}
-        </select>
+        <label>Mes de la lista</label>
+        <input type="month" id="inputFecha" value="{% if lista_precios %}{{ lista_precios.fecha|date:'Y-m' }}{% endif %}" required>
       </div>
       <div>
         <label>Código de lista en Xubio</label>
@@ -42,33 +36,29 @@
     </div>
     {% endif %}
 
+    {% if lista_precios and precios_actuales %}
     <table style="margin-top: 24px;">
       <thead>
         <tr>
           <th>Producto</th>
-          <th>Precio</th>
+          <th>Precio actual</th>
         </tr>
       </thead>
       <tbody>
-        {% for p in producto %}
+        {% for item in precios_actuales %}
         <tr>
           <td>
-            {{ p.nombre }} {{ p.variedad.nombre }}
-            <span style="display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: {{ p.tamaño_bg }}; color: {{ p.tamaño_color }}; margin-left: 6px;">{{ p.tamaño.nombre }}</span>
+            {{ item.producto.nombre }} {{ item.producto.variedad.nombre }}
+            <span style="display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: {{ item.tamaño_bg }}; color: {{ item.tamaño_color }}; margin-left: 6px;">{{ item.producto.tamaño.nombre }}</span>
           </td>
-          <td>
-            <div style="position: relative; display: inline-flex; align-items: center;">
-              <span style="position: absolute; left: 10px; color: var(--text-secondary); font-size: 13px; pointer-events: none;">$</span>
-              <input type="text" inputmode="decimal" class="input-precio-producto"
-                     data-producto-id="{{ p.id }}"
-                     placeholder="0,00"
-                     style="padding-left: 22px; width: 130px; font-weight: 600; font-size: 13px; border: 1px solid var(--border); border-radius: 10px; padding-top: 8px; padding-bottom: 8px; padding-right: 10px; font-family: 'DM Sans', sans-serif; background: var(--bg-surface); color: var(--text-heading);">
-            </div>
-          </td>
+          <td>${{ item.precio|floatformat:2 }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+    {% elif lista_precios %}
+    <p style="color: var(--text-secondary); margin-top: 24px;">Todavía no se importó ningún precio para esta lista.</p>
+    {% endif %}
 
     <div class="form-actions">
       <a href="{% url 'lista_precios' %}" class="btn-secondary">Cancelar</a>

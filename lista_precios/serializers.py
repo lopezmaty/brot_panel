@@ -58,12 +58,9 @@ class ProductoSerializer(serializers.ModelSerializer):
         return instance
 
 class ListaPrecioSerializer(serializers.ModelSerializer):
-    tipo_cliente_detalle = TipoClienteSerializer(source='tipo_cliente', read_only=True)
-    tipo_cliente = serializers.PrimaryKeyRelatedField(queryset=models.TipoCliente.objects.all())
-
     class Meta:
         model = models.ListaPrecios
-        fields = ['id', 'nombre', 'tipo_cliente', 'fecha', 'tipo_cliente_detalle']
+        fields = ['id', 'nombre', 'fecha', 'xubio_lista_precio_id']
 
 class PrecioSerializer(serializers.ModelSerializer):
     lista_precio = ListaPrecioSerializer(read_only=True)
@@ -72,3 +69,11 @@ class PrecioSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Precio
         fields = ['id', 'lista_precio', 'producto', 'precio']
+
+class HistorialPrecioSerializer(serializers.ModelSerializer):
+    producto = ProductoSerializer(read_only=True)
+    lista_precio = ListaPrecioSerializer(read_only=True)
+
+    class Meta:
+        model = models.HistorialPrecio
+        fields = ['id', 'lista_precio', 'producto', 'precio', 'fecha']

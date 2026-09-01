@@ -96,19 +96,13 @@ def clientes_view(request):
 def cliente_detalle_view(request, cliente_id=None):
     if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
         tipos_cliente = TipoCliente.objects.all()
-
-        listas_vigentes = []
-        categorias = TipoCliente.objects.all()
-        for categoria in categorias:
-            lista = ListaPrecios.objects.filter(tipo_cliente=categoria).order_by('-fecha').first()
-            if lista is not None:
-                listas_vigentes.append(lista)
+        listas_precios = ListaPrecios.objects.all().order_by('-fecha')
 
         if cliente_id is None:
             return render(request, 'cliente_detalle.html', {
                 'cliente': None,
                 'tipos_cliente': tipos_cliente,
-                'listas_vigentes': listas_vigentes,
+                'listas_precios': listas_precios,
             })
         else:
             cliente = Cliente.objects.get(pk=cliente_id)
@@ -117,7 +111,7 @@ def cliente_detalle_view(request, cliente_id=None):
             return render(request, 'cliente_detalle.html', {
                 'cliente': cliente,
                 'tipos_cliente': tipos_cliente,
-                'listas_vigentes': listas_vigentes,
+                'listas_precios': listas_precios,
                 'magic_link': magic_link,
             })
     else:
@@ -192,13 +186,8 @@ def producto_detalle_view(request, producto_id=None):
 @login_required(login_url='login')
 def lista_precios_view(request):
     if request.user.perfil.rol == 'admin':
-        listas_vigentes = []
-        categorias = TipoCliente.objects.all()
-        for categoria in categorias:
-            lista = ListaPrecios.objects.filter(tipo_cliente=categoria).order_by('-fecha').first()
-            if lista is not None:
-                listas_vigentes.append(lista)
-        return render(request, 'lista_precios.html', {'listas_vigentes': listas_vigentes})
+        listas = ListaPrecios.objects.all().order_by('-fecha')
+        return render(request, 'lista_precios.html', {'listas': listas})
     else:
         return redirect('dashboard')
 
@@ -206,57 +195,42 @@ def lista_precios_view(request):
 @login_required(login_url='login')
 def lista_precios_detalle_view(request, lista_precios_id=None):
     if request.user.perfil.rol == 'admin':
-        categorias = TipoCliente.objects.all()
-
-        PALETA_TAMAÑOS = [
-            {'bg': '#EAF3DE', 'color': '#2E6B0A'},
-            {'bg': '#FEF3E7', 'color': '#9B5800'},
-            {'bg': '#E6F1FB', 'color': '#0D4490'},
-            {'bg': '#FFF0EB', 'color': '#8B2800'},
-            {'bg': '#F5EEFE', 'color': '#320A6E'},
-        ]
-
         if lista_precios_id is None:
-            producto = list(Producto.objects.all())
-            tamaños_vistos = {}
-            for p in producto:
-                tamaño_nombre = p.tamaño.nombre
-                if tamaño_nombre not in tamaños_vistos:
-                    idx = len(tamaños_vistos)
-                    tamaños_vistos[tamaño_nombre] = PALETA_TAMAÑOS[idx % len(PALETA_TAMAÑOS)]
-                color = tamaños_vistos[tamaño_nombre]
-                p.tamaño_bg = color['bg']
-                p.tamaño_color = color['color']
-
             return render(request, 'lista_precios_detalle.html', {
                 'lista_precios': None,
-                'producto': producto,
-                'categorias': categorias,
             })
         else:
-            producto = list(Producto.objects.all())
+            lista_precios = ListaPrecios.objects.get(pk=lista_precios_id)
+            precios = Precio.objects.filter(lista_precio=lista_precios).select_related(
+                'producto', 'producto__tamaño'
+            ).order_by('producto__nombre')
+
+            PALETA_TAMAÑOS = [
+                {'bg': '#EAF3DE', 'color': '#2E6B0A'},
+                {'bg': '#FEF3E7', 'color': '#9B5800'},
+                {'bg': '#E6F1FB', 'color': '#0D4490'},
+                {'bg': '#FFF0EB', 'color': '#8B2800'},
+                {'bg': '#F5EEFE', 'color': '#320A6E'},
+            ]
+
             tamaños_vistos = {}
-            for p in producto:
-                tamaño_nombre = p.tamaño.nombre
+            precios_actuales = []
+            for p in precios:
+                tamaño_nombre = p.producto.tamaño.nombre
                 if tamaño_nombre not in tamaños_vistos:
                     idx = len(tamaños_vistos)
                     tamaños_vistos[tamaño_nombre] = PALETA_TAMAÑOS[idx % len(PALETA_TAMAÑOS)]
                 color = tamaños_vistos[tamaño_nombre]
-                p.tamaño_bg = color['bg']
-                p.tamaño_color = color['color']
-
-            lista_precios = ListaPrecios.objects.get(pk=lista_precios_id)
-            precios = Precio.objects.filter(lista_precio=lista_precios)
-
-            precios_por_producto = {}
-            for precio in precios:
-                precios_por_producto[precio.producto.id] = precio.precio
+                precios_actuales.append({
+                    'producto': p.producto,
+                    'precio': p.precio,
+                    'tamaño_bg': color['bg'],
+                    'tamaño_color': color['color'],
+                })
 
             return render(request, 'lista_precios_detalle.html', {
                 'lista_precios': lista_precios,
-                'producto': producto,
-                'precios_por_producto': precios_por_producto,
-                'categorias': categorias,
+                'precios_actuales': precios_actuales,
             })
     else:
         return redirect('dashboard')

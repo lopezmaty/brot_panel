@@ -10,6 +10,7 @@ router.register('familia', views.FamiliaViewset)
 router.register('lista_precios', views.ListaPreciosViewset)
 router.register('precios', views.PreciosViewset)
 router.register('tipo_cliente', views.TipoClienteViewset)
+router.register('historial-precios', views.HistorialPrecioViewset)
 
 urlpatterns = [
     path('guardar-lista-completa/', views.guardar_lista_completa, name='guardar-lista-completa'),
