@@ -20,20 +20,17 @@
   <table>
     <thead>
       <tr>
-        <th>Categoría</th>
+        <th>Nombre</th>
         <th>Mes</th>
         <th></th>
       </tr>
     </thead>
     <tbody>
-      {% for lista in listas_vigentes %}
+      {% for lista in listas %}
       <tr>
-        <td>{{ lista.tipo_cliente.nombre }}</td>
+        <td>{{ lista.nombre }}</td>
         <td>{{ lista.fecha|date:"F Y"|capfirst }}</td>
         <td style="display: flex; gap: 8px; justify-content: flex-end;">
-          <button class="btn-secondary" data-aplicar-lista-id="{{ lista.id }}" style="font-size: 12px;">
-            Aplicar a clientes
-          </button>
           <a href="{% url 'lista_precios_pdf' lista.id %}" class="btn-delete" style="color: var(--text-secondary);">
             <i class="ti ti-file-download"></i>
           </a>
@@ -49,7 +46,7 @@
     </tbody>
   </table>
 
-  {% if not listas_vigentes %}
+  {% if not listas %}
   <p style="color: var(--text-secondary); padding: 16px;">Todavía no creaste ninguna lista de precios.</p>
   {% endif %}
 </div>
