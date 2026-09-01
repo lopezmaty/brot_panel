@@ -25,6 +25,9 @@
   <button class="btn-primary" id="btnGuardarStock" style="font-size: 13px;">
     <i class="ti ti-device-floppy"></i> Guardar stock
   </button>
+  <button class="btn-secondary" id="btnImprimirProduccion" style="font-size: 13px;">
+    <i class="ti ti-printer"></i> Imprimir producción diaria
+  </button>
   <span id="estadoXubio" style="font-size: 13px; color: var(--text-secondary);"></span>
 </div>
 
@@ -337,6 +340,104 @@ document.getElementById('btnCargarXubio').addEventListener('click', async functi
     btn.innerHTML = '<i class="ti ti-refresh"></i> Cargar ventas 15 días (Xubio)';
   }
 });
+
+function imprimirProduccionDiaria() {
+  const dia = document.getElementById('selectDia').value;
+  const factor = FACTORES_DIA[dia];
+  const fechaHoy = new Date().toLocaleDateString('es-AR');
+
+  // Resumen por receta
+  const resumen = {};
+  PRODUCTOS.forEach((producto, i) => {
+    const { prodNecesaria } = calcularProdNecesaria(i, factor);
+    const kilosGramos = prodNecesaria * producto.gramos;
+    if (!resumen[producto.receta]) resumen[producto.receta] = 0;
+    resumen[producto.receta] += kilosGramos;
+  });
+
+  let filasResumen = '';
+  let totalKilos = 0;
+  let totalRecetas = 0;
+  Object.entries(resumen).forEach(([receta, gramos]) => {
+    const kilos = gramos / 1000;
+    const kilosPorReceta = KILOS_POR_RECETA[receta] || 1000;
+    const qRecetas = gramos / kilosPorReceta;
+    totalKilos += kilos;
+    totalRecetas += qRecetas;
+    if (gramos > 0) {
+      filasResumen += `<tr><td>${receta}</td><td style="text-align:right;">${kilos.toFixed(2)} kg</td><td style="text-align:right;">${qRecetas.toFixed(1)}</td></tr>`;
+    }
+  });
+
+  // Detalle por producto
+  let filasDetalle = '';
+  PRODUCTOS.forEach((producto, i) => {
+    const { prodNecesaria } = calcularProdNecesaria(i, factor);
+    filasDetalle += `<tr><td>${producto.nombre}</td><td style="text-align:right;">${prodNecesaria}</td></tr>`;
+  });
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>Producción diaria</title>
+      <style>
+        @page { size: 80mm auto; margin: 4mm; }
+        * { box-sizing: border-box; }
+        body {
+          font-family: 'Courier New', monospace;
+          font-size: 11px;
+          width: 72mm;
+          margin: 0;
+          color: #000;
+        }
+        h1 { font-size: 14px; margin: 0 0 2px; text-align: center; }
+        .subtitulo { text-align: center; font-size: 11px; margin-bottom: 8px; }
+        .seccion-titulo {
+          font-weight: bold;
+          font-size: 12px;
+          margin: 10px 0 4px;
+          border-bottom: 1px solid #000;
+          padding-bottom: 2px;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+        td { padding: 2px 0; vertical-align: top; }
+        tr { border-bottom: 1px dotted #999; }
+        .fila-total { font-weight: bold; border-top: 1px solid #000; border-bottom: none; }
+      </style>
+    </head>
+    <body>
+      <h1>Brot Panes</h1>
+      <div class="subtitulo">Producción diaria — ${dia} — ${fechaHoy}</div>
+
+      <div class="seccion-titulo">Resumen por receta</div>
+      <table>
+        ${filasResumen}
+        <tr class="fila-total">
+          <td>TOTAL</td>
+          <td style="text-align:right;">${totalKilos.toFixed(2)} kg</td>
+          <td style="text-align:right;">${totalRecetas.toFixed(1)}</td>
+        </tr>
+      </table>
+
+      <div class="seccion-titulo">Producción necesaria por producto</div>
+      <table>
+        ${filasDetalle}
+      </table>
+    </body>
+    </html>
+  `;
+
+  const ventana = window.open('', '_blank', 'width=400,height=600');
+  ventana.document.write(html);
+  ventana.document.close();
+  ventana.onload = function () {
+    ventana.print();
+  };
+}
+
+document.getElementById('btnImprimirProduccion').addEventListener('click', imprimirProduccionDiaria);
 
 window.addEventListener('load', async function() {
   await cargarStockBD();
