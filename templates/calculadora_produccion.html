@@ -346,7 +346,7 @@ function imprimirProduccionDiaria() {
   const factor = FACTORES_DIA[dia];
   const fechaHoy = new Date().toLocaleDateString('es-AR');
 
-  // Resumen por receta (sin kilos)
+  // Resumen por receta (sin kilos, solo si hay algo para producir)
   const resumen = {};
   PRODUCTOS.forEach((producto, i) => {
     const { prodNecesaria } = calcularProdNecesaria(i, factor);
@@ -361,6 +361,7 @@ function imprimirProduccionDiaria() {
     if (gramos <= 0) return;
     const kilosPorReceta = KILOS_POR_RECETA[receta] || 1000;
     const qRecetas = gramos / kilosPorReceta;
+    if (qRecetas <= 0) return;
     totalRecetas += qRecetas;
     filasResumen += `
       <div class="fila-receta">
@@ -369,16 +370,24 @@ function imprimirProduccionDiaria() {
       </div>`;
   });
 
-  // Detalle por producto
+  // Detalle por producto (solo si hay producción necesaria)
   let filasDetalle = '';
   PRODUCTOS.forEach((producto, i) => {
     const { prodNecesaria } = calcularProdNecesaria(i, factor);
+    if (prodNecesaria <= 0) return;
     filasDetalle += `
       <div class="fila-producto">
         <span class="nombre-producto">${producto.nombre}</span>
         <span class="valor-producto">${prodNecesaria}</span>
       </div>`;
   });
+
+  if (!filasResumen) {
+    filasResumen = '<p style="font-size: 11px; color: #666; margin: 4px 0;">Nada para producir.</p>';
+  }
+  if (!filasDetalle) {
+    filasDetalle = '<p style="font-size: 11px; color: #666; margin: 4px 0;">Nada para producir.</p>';
+  }
 
   const html = `
     <!DOCTYPE html>
@@ -438,10 +447,11 @@ function imprimirProduccionDiaria() {
 
       <div class="seccion-titulo">Resumen por receta</div>
       ${filasResumen}
+      ${totalRecetas > 0 ? `
       <div class="fila-total">
         <span>TOTAL Q RECETAS</span>
         <span>${totalRecetas.toFixed(1)}</span>
-      </div>
+      </div>` : ''}
 
       <div class="seccion-titulo">Producción necesaria por producto</div>
       ${filasDetalle}
@@ -449,7 +459,7 @@ function imprimirProduccionDiaria() {
     </html>
   `;
 
-  const ventana = window.open('', '_blank', 'width=400,height=600');
+  const ventana = window.open('', '_blank', 'width=700,height=900');
   ventana.document.write(html);
   ventana.document.close();
   ventana.onload = function () {
