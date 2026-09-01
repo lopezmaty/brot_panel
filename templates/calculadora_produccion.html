@@ -346,7 +346,7 @@ function imprimirProduccionDiaria() {
   const factor = FACTORES_DIA[dia];
   const fechaHoy = new Date().toLocaleDateString('es-AR');
 
-  // Resumen por receta
+  // Resumen por receta (sin kilos)
   const resumen = {};
   PRODUCTOS.forEach((producto, i) => {
     const { prodNecesaria } = calcularProdNecesaria(i, factor);
@@ -356,24 +356,28 @@ function imprimirProduccionDiaria() {
   });
 
   let filasResumen = '';
-  let totalKilos = 0;
   let totalRecetas = 0;
   Object.entries(resumen).forEach(([receta, gramos]) => {
-    const kilos = gramos / 1000;
+    if (gramos <= 0) return;
     const kilosPorReceta = KILOS_POR_RECETA[receta] || 1000;
     const qRecetas = gramos / kilosPorReceta;
-    totalKilos += kilos;
     totalRecetas += qRecetas;
-    if (gramos > 0) {
-      filasResumen += `<tr><td>${receta}</td><td style="text-align:right;">${kilos.toFixed(2)} kg</td><td style="text-align:right;">${qRecetas.toFixed(1)}</td></tr>`;
-    }
+    filasResumen += `
+      <div class="fila-receta">
+        <span class="nombre-receta">${receta}</span>
+        <span class="valor-receta">${qRecetas.toFixed(1)}</span>
+      </div>`;
   });
 
   // Detalle por producto
   let filasDetalle = '';
   PRODUCTOS.forEach((producto, i) => {
     const { prodNecesaria } = calcularProdNecesaria(i, factor);
-    filasDetalle += `<tr><td>${producto.nombre}</td><td style="text-align:right;">${prodNecesaria}</td></tr>`;
+    filasDetalle += `
+      <div class="fila-producto">
+        <span class="nombre-producto">${producto.nombre}</span>
+        <span class="valor-producto">${prodNecesaria}</span>
+      </div>`;
   });
 
   const html = `
@@ -401,10 +405,31 @@ function imprimirProduccionDiaria() {
           border-bottom: 1px solid #000;
           padding-bottom: 2px;
         }
-        table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
-        td { padding: 2px 0; vertical-align: top; }
-        tr { border-bottom: 1px dotted #999; }
-        .fila-total { font-weight: bold; border-top: 1px solid #000; border-bottom: none; }
+        .fila-receta, .fila-producto {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+          gap: 6px;
+          padding: 3px 0;
+          border-bottom: 1px dotted #999;
+        }
+        .nombre-receta, .nombre-producto {
+          flex: 1;
+          word-break: break-word;
+        }
+        .valor-receta, .valor-producto {
+          flex-shrink: 0;
+          font-weight: bold;
+          white-space: nowrap;
+        }
+        .fila-total {
+          display: flex;
+          justify-content: space-between;
+          font-weight: bold;
+          border-top: 1px solid #000;
+          padding-top: 4px;
+          margin-top: 2px;
+        }
       </style>
     </head>
     <body>
@@ -412,19 +437,14 @@ function imprimirProduccionDiaria() {
       <div class="subtitulo">Producción diaria — ${dia} — ${fechaHoy}</div>
 
       <div class="seccion-titulo">Resumen por receta</div>
-      <table>
-        ${filasResumen}
-        <tr class="fila-total">
-          <td>TOTAL</td>
-          <td style="text-align:right;">${totalKilos.toFixed(2)} kg</td>
-          <td style="text-align:right;">${totalRecetas.toFixed(1)}</td>
-        </tr>
-      </table>
+      ${filasResumen}
+      <div class="fila-total">
+        <span>TOTAL Q RECETAS</span>
+        <span>${totalRecetas.toFixed(1)}</span>
+      </div>
 
       <div class="seccion-titulo">Producción necesaria por producto</div>
-      <table>
-        ${filasDetalle}
-      </table>
+      ${filasDetalle}
     </body>
     </html>
   `;
