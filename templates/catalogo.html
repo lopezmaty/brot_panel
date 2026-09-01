@@ -27,14 +27,14 @@
     {% endif %}
     <a href="/catalogo/{{ cliente.token }}/perfil/" class="topbar-perfil-btn">
       <i class="ti ti-user-circle"></i>
-      <span>{{ cliente.nombre|title }}</span>
+      <span>{{ cliente.nombre_comercio|default:cliente.razon_social|title }}</span>
     </a>
   </div>
 </header>
 
 <div class="catalogo-contenido">
 
-  <div class="catalogo-saludo">Hola, {{ cliente.nombre_comercio|title }} 👋</div>
+  <div class="catalogo-saludo">Hola, {{ cliente.nombre_comercio|default:cliente.razon_social|title }} 👋</div>
   <div class="catalogo-subtitulo">Seleccioná los productos que querés pedir.</div>
 
   {% if sin_lista %}

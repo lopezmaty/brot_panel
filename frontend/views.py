@@ -127,7 +127,7 @@ def cliente_detalle_view(request, cliente_id=None):
 @login_required(login_url='login')
 def producto_view(request):
     if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
-        productos = Producto.objects.all().order_by('nombre')
+        productos = Producto.objects.all().order_by('nombre', 'variedad__nombre', 'tamaño__nombre')
         variedad = Variedad.objects.all()
         tamaño = Tamaño.objects.all()
         familia = Familia.objects.all()
@@ -403,7 +403,7 @@ def catalogo_view(request, token):
 
     precios = Precio.objects.filter(lista_precio=lista).select_related(
         'producto', 'producto__variedad', 'producto__tamaño', 'producto__familia'
-    )
+    ).order_by('producto__familia__nombre', 'producto__nombre', 'producto__tamaño__nombre')
 
     PALETA_TAMAÑOS = [
         {'bg': '#EAF3DE', 'color': '#2E6B0A'},
