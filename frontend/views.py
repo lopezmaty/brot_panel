@@ -15,6 +15,8 @@ from weasyprint import HTML
 from django.http import HttpResponse
 from django.contrib.staticfiles import finders
 from django.shortcuts import render, get_object_or_404
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 
 
 @login_required(login_url='login')
@@ -29,13 +31,14 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            url_token = request.build_absolute_uri('/api/token/')
-            respuesta = requests.post(url_token, data={
+
+            serializer = TokenObtainPairSerializer(data={
                 'username': username,
                 'password': password
             })
-            datos = respuesta.json()
-            access_token = datos['access']
+            serializer.is_valid(raise_exception=True)
+            access_token = serializer.validated_data['access']
+
             response = redirect('dashboard')
             response.set_cookie('access_token', access_token, httponly=True)
             return response
