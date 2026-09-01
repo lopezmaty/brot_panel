@@ -47,7 +47,10 @@
 
   {% for familia_group in familias_agrupadas %}
   <div class="familia-section">
-    <div class="familia-header">{{ familia_group.grouper.nombre }}</div>
+    <div class="familia-header">
+      <span>{{ familia_group.grouper.nombre }}</span>
+      <span class="familia-header-count">{{ familia_group.list|length }} producto{{ familia_group.list|length|pluralize }}</span>
+    </div>
     {% for item in familia_group.list %}
     <div class="producto-fila">
       <div class="producto-info">
