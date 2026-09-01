@@ -344,16 +344,15 @@ window.addEventListener('load', async function() {
   const precargado = sessionStorage.getItem('calculadora_ventas_dia');
   if (precargado) {
     sessionStorage.removeItem('calculadora_ventas_dia');
-    const ventasDia = JSON.parse(precargado);
-    console.log('Ventas del día precargadas:', ventasDia);
+    const ventasDia = JSON.parse(precargado); // { xubio_producto_id: cantidad }
+    console.log('Ventas del día precargadas (por xubio_producto_id):', ventasDia);
 
     PRODUCTOS.forEach((producto, i) => {
-      const nombreProducto = producto.nombre.toLowerCase().trim();
-      Object.entries(ventasDia).forEach(([nombre, cantidad]) => {
-        if (nombre.toLowerCase().trim() === nombreProducto) {
-          estado[i].ventasDia = cantidad;
-        }
+      let total = 0;
+      producto.xubio_ids.forEach(id => {
+        if (ventasDia[id] !== undefined) total += ventasDia[id];
       });
+      if (total > 0) estado[i].ventasDia = total;
     });
     renderTabla();
   }

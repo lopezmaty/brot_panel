@@ -150,7 +150,7 @@
             <tbody>
               {% for item in pedido.items %}
               <tr>
-                <td>{{ item.producto }}</td>
+                <td data-xubio-id="{{ item.producto.xubio_producto_id|default:'' }}">{{ item.producto }}</td>
                 <td>{{ item.cantidad }}</td>
                 <td>${{ item.precio }}</td>
                 <td>${{ item.subtotal }}</td>

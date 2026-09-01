@@ -173,7 +173,7 @@ document.getElementById('btnCancelarPedido').addEventListener('click', async fun
 document.querySelectorAll('.btn-imprimir').forEach(function (boton) {
   boton.addEventListener('click', function () {
     const pedidoId = boton.dataset.imprimirId;
-    window.open(`/panel/pedidos/${pedidoId}/comanda/`, '_blank', 'width=900,height=800');
+    window.open(`/pedidos/${pedidoId}/comanda/`, '_blank', 'width=900,height=800');
   });
 });
 
@@ -186,13 +186,13 @@ document.getElementById('btnCalcularTotal').addEventListener('click', function (
   }
 
   const totales = {};
+  const sinXubioId = new Set();
 
   seleccionados.forEach(function (checkbox) {
     const pedidoId = checkbox.dataset.pedidoId;
     const filaDetalle = document.getElementById(`detalle-${pedidoId}`);
     if (!filaDetalle) return;
 
-    // Abrir temporalmente para poder leer el DOM
     const estabaOculto = filaDetalle.style.display === 'none';
     filaDetalle.style.display = 'table-row';
 
@@ -200,12 +200,19 @@ document.getElementById('btnCalcularTotal').addEventListener('click', function (
     filas.forEach(function (fila) {
       const celdas = fila.querySelectorAll('td');
       if (celdas.length < 2) return;
-      const producto = celdas[0].textContent.trim();
+
+      const xubioId = celdas[0].dataset.xubioId || '';
+      const nombreProducto = celdas[0].textContent.trim();
       const cantidad = parseInt(celdas[1].textContent.trim(), 10);
-      if (!isNaN(cantidad) && cantidad > 0) {
-        if (!totales[producto]) totales[producto] = 0;
-        totales[producto] += cantidad;
+      if (isNaN(cantidad) || cantidad <= 0) return;
+
+      if (!xubioId) sinXubioId.add(nombreProducto);
+
+      const clave = xubioId ? `id:${xubioId}` : `nombre:${nombreProducto}`;
+      if (!totales[clave]) {
+        totales[clave] = { nombre: nombreProducto, xubioId: xubioId || null, cantidad: 0 };
       }
+      totales[clave].cantidad += cantidad;
     });
 
     if (estabaOculto) filaDetalle.style.display = 'none';
@@ -213,15 +220,19 @@ document.getElementById('btnCalcularTotal').addEventListener('click', function (
 
   const tbody = document.getElementById('tablaTotalProductos');
   tbody.innerHTML = '';
-  const entradas = Object.entries(totales).sort((a, b) => a[0].localeCompare(b[0]));
-  entradas.forEach(function ([producto, cantidad]) {
+  const entradas = Object.values(totales).sort((a, b) => a.nombre.localeCompare(b.nombre));
+  entradas.forEach(function (item) {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${producto}</td><td>${cantidad}</td>`;
+    tr.innerHTML = `<td>${item.nombre}</td><td>${item.cantidad}</td>`;
     tbody.appendChild(tr);
   });
 
   document.getElementById('modalTotalProductos').dataset.totales = JSON.stringify(entradas);
   document.getElementById('modalTotalProductos').classList.add('open');
+
+  if (sinXubioId.size > 0) {
+    console.warn('Productos sin xubio_producto_id cargado (no se exportan bien a la calculadora):', [...sinXubioId]);
+  }
 });
 
 document.getElementById('btnCerrarTotal').addEventListener('click', function () {
@@ -230,19 +241,19 @@ document.getElementById('btnCerrarTotal').addEventListener('click', function () 
 
 document.getElementById('btnIrCalculadora').addEventListener('click', function () {
   const entradas = JSON.parse(document.getElementById('modalTotalProductos').dataset.totales);
-  // entradas es [[nombre_producto, cantidad], ...]
-  // Lo guardamos como objeto { nombre: cantidad } para facilitar el mapeo
   const ventasDia = {};
-  entradas.forEach(function ([nombre, cantidad]) {
-    ventasDia[nombre.trim()] = cantidad;
+  entradas.forEach(function (item) {
+    if (item.xubioId) {
+      ventasDia[item.xubioId] = item.cantidad;
+    }
   });
   sessionStorage.setItem('calculadora_ventas_dia', JSON.stringify(ventasDia));
-  window.location.href = '/panel/produccion/calculadora/';
+  window.location.href = '/produccion/calculadora/';
 });
 
 document.getElementById('btnExportarExcel').addEventListener('click', function () {
   const entradas = JSON.parse(document.getElementById('modalTotalProductos').dataset.totales);
-  const filas = [['Producto', 'Cantidad total'], ...entradas];
+  const filas = [['Producto', 'Cantidad total'], ...entradas.map(item => [item.nombre, item.cantidad])];
   const libro = XLSX.utils.book_new();
   const hoja = XLSX.utils.aoa_to_sheet(filas);
   XLSX.utils.book_append_sheet(libro, hoja, 'Totales');
