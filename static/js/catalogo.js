@@ -42,7 +42,7 @@ function actualizarCarrito() {
 function actualizarDesdeInput(input) {
   const id = input.dataset.id;
   if (!id) return;
-  const cantidad = Math.max(0, parseInt(input.value) || 0);
+  const cantidad = Math.max(0, parseInt(input.value.replace(/[^0-9]/g, ''), 10) || 0);
   input.value = cantidad;
   if (!carrito[id]) {
     carrito[id] = {
@@ -56,27 +56,12 @@ function actualizarDesdeInput(input) {
   actualizarCarrito();
 }
 
-document.querySelectorAll('.btn-sumar').forEach(btn => {
-  btn.addEventListener('click', function () {
-    const id = btn.dataset.id;
-    const input = document.getElementById(`cantidad-${id}`);
-    input.value = parseInt(input.value || 0) + 1;
-    actualizarDesdeInput(input);
-  });
-});
-
-document.querySelectorAll('.btn-restar').forEach(btn => {
-  btn.addEventListener('click', function () {
-    const id = btn.dataset.id;
-    const input = document.getElementById(`cantidad-${id}`);
-    input.value = Math.max(0, parseInt(input.value || 0) - 1);
-    actualizarDesdeInput(input);
-  });
-});
-
 document.querySelectorAll('.input-cantidad').forEach(input => {
   input.addEventListener('change', function () { actualizarDesdeInput(input); });
-  input.addEventListener('input', function () { actualizarDesdeInput(input); });
+  input.addEventListener('input', function () {
+    this.value = this.value.replace(/[^0-9]/g, '');
+    actualizarDesdeInput(input);
+  });
 });
 
 document.getElementById('toggleCarrito').addEventListener('click', function () {

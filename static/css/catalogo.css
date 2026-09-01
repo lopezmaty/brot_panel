@@ -77,7 +77,27 @@ html, body {
 .catalogo-subtitulo {
   color: var(--text-secondary);
   font-size: 14px;
-  margin-bottom: 28px;
+  margin-bottom: 16px;
+}
+
+.catalogo-aviso-precios {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #FFF4EA;
+  border: 1px solid #F5D9B8;
+  color: #8B5200;
+  font-size: 12.5px;
+  line-height: 1.4;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 24px;
+}
+
+.catalogo-aviso-precios i {
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 .familia-section {
@@ -169,34 +189,14 @@ html, body {
   flex-shrink: 0;
 }
 
-.btn-cantidad {
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  border: 1px solid #EBE7E0;
-  background: #F7F5F2;
-  cursor: pointer;
-  font-size: 17px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #16213E;
-  font-weight: 600;
-  transition: background 0.12s, transform 0.08s;
-  flex-shrink: 0;
-}
-
-.btn-cantidad:hover { background: #EFEBE3; }
-.btn-cantidad:active { transform: scale(0.92); }
-
 .input-cantidad {
   width: 56px;
   text-align: center;
   border: 1px solid #EBE7E0;
   border-radius: 9px;
-  padding: 5px 6px;
+  padding: 7px 6px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   background: #FFFFFF;
   color: #16213E;
@@ -223,11 +223,11 @@ html, body {
 }
 
 .carrito-card {
-  background: #FFFFFF;
-  border: 1px solid #EBE7E0;
+  background: #16213E;
+  border: 1px solid #16213E;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 -6px 28px rgba(22,33,62,0.14);
+  box-shadow: 0 -8px 32px rgba(22,33,62,0.35);
 }
 
 .carrito-header {
@@ -238,15 +238,16 @@ html, body {
   cursor: pointer;
   font-weight: 800;
   font-size: 15px;
-  color: #16213E;
+  color: #FFFFFF;
 }
 
 .carrito-body {
   display: none;
   padding: 14px 18px 18px;
-  border-top: 1px solid #F1EEE8;
+  border-top: 1px solid rgba(255,255,255,0.12);
   max-height: 40vh;
   overflow-y: auto;
+  background: #FFFFFF;
 }
 
 .carrito-body.open { display: block; }

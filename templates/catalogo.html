@@ -34,8 +34,15 @@
 
 <div class="catalogo-contenido">
 
-  <div class="catalogo-saludo">Hola, {{ cliente.nombre_comercio|default:cliente.razon_social|title }} 👋</div>
+  <div class="catalogo-saludo">¡Bienvenido a Brot Panes! 👋</div>
   <div class="catalogo-subtitulo">Seleccioná los productos que querés pedir.</div>
+
+  {% if not sin_lista %}
+  <div class="catalogo-aviso-precios">
+    <i class="ti ti-info-circle"></i>
+    <span>Los precios mostrados son de la lista base. Si corresponde algún descuento por volumen u otro acuerdo, se verá reflejado en la factura de compra.</span>
+  </div>
+  {% endif %}
 
   {% if sin_lista %}
   <div style="border: 1px solid var(--border); border-radius: 14px; padding: 24px; background: var(--bg-surface); color: var(--text-secondary); text-align: center;">
@@ -59,14 +66,12 @@
         <span class="producto-precio">${{ item.precio|floatformat:2 }}</span>
       </div>
       <div class="producto-cantidad-ctrl">
-        <button type="button" class="btn-cantidad btn-restar" data-id="{{ item.producto.id }}">−</button>
-        <input type="number" class="input-cantidad"
+        <input type="text" inputmode="numeric" pattern="[0-9]*" class="input-cantidad"
                id="cantidad-{{ item.producto.id }}"
                value="0" min="0"
                data-id="{{ item.producto.id }}"
                data-nombre="{{ item.producto }}"
                data-precio="{{ item.precio }}">
-        <button type="button" class="btn-cantidad btn-sumar" data-id="{{ item.producto.id }}">+</button>
       </div>
     </div>
     {% endfor %}
