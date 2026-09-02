@@ -15,6 +15,12 @@ CATEGORIA_FISCAL = {
     'consumidor_final': 3,
 }
 
+LETRA_COMPROBANTE = {
+    'responsable_inscripto': 'A',
+    'monotributista': 'B',
+    'consumidor_final': 'B',
+}
+
 PUNTOS_VENTA = {
     'factura': {
         'puntoVentaId': 214112,
@@ -81,6 +87,29 @@ def crear_cliente_en_xubio(cliente):
     return None
 
 
+def obtener_proximo_numero_comprobante(punto_venta_numero, letra):
+    token = obtener_token()
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Accept': 'application/json',
+    }
+    response = requests.get(
+        f'{XUBIO_BASE}/talonario',
+        params={'puntoDeVenta': punto_venta_numero},
+        headers=headers,
+    )
+    response.raise_for_status()
+    talonarios = response.json()
+
+    tipo_buscado = f'Facturas de Venta {letra}'
+    for talonario in talonarios:
+        if talonario.get('tipoComprobante') == tipo_buscado:
+            ultimo = int(talonario.get('ultimoUtilizado', '0'))
+            return str(ultimo + 1).zfill(8)
+
+    return None
+
+
 def facturar_pedido(pedido):
     token = obtener_token()
     headers = {
@@ -98,6 +127,12 @@ def facturar_pedido(pedido):
 
     tipo = cliente.xubio_tipo_comprobante
     nombre_comprobante = NOMBRE_COMPROBANTE.get(tipo, 'Factura')
+
+    letra = LETRA_COMPROBANTE.get(cliente.condicion_iva, 'B')
+    numero_documento = obtener_proximo_numero_comprobante(punto_venta['puntoVentaNumero'], letra)
+
+    if numero_documento is None:
+        return 400, {'error': f'No se encontró talonario para Facturas de Venta {letra} en el punto de venta {punto_venta["puntoVentaNumero"]}'}
 
     items = []
     for item in pedido.itempedido_set.all():
@@ -133,8 +168,8 @@ def facturar_pedido(pedido):
         'puntoVenta': {
             'id': punto_venta['puntoVentaId'],
             'ID': punto_venta['puntoVentaId'],
-            'puntoVenta': punto_venta['puntoVentaNumero'],
         },
+        'numeroDocumento': numero_documento,
         'condicionDePago': 1,
         'deposito': {'id': DEPOSITO_ID},
         'cantComprobantesEmitidos': 1,
@@ -180,16 +215,3 @@ def obtener_precios_lista(xubio_lista_precio_id):
     response.raise_for_status()
     data = response.json()
     return data.get('listaPrecioItem', [])
-
-def obtener_punto_venta(punto_venta_id):
-    token = obtener_token()
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Accept': 'application/json',
-    }
-    response = requests.get(
-        f'{XUBIO_BASE}/talonario',
-        params={'puntoDeVenta': '00003'},
-        headers=headers,
-    )
-    return response.status_code, response.text

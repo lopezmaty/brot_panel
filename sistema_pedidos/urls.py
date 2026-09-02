@@ -13,5 +13,4 @@ urlpatterns = [
     path('clientes/buscar-xubio/', views.buscar_cliente_xubio, name='buscar_cliente_xubio'),
     path('ventas-xubio-15dias/', views.ventas_xubio_15dias, name='ventas_xubio_15dias'),
     path('stock-productos/', views.stock_productos, name='stock_productos'),
-    path('debug-punto-venta/', views.debug_punto_venta, name='debug_punto_venta'),
 ] + router.urls
