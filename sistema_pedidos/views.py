@@ -298,3 +298,10 @@ def stock_productos(request):
                 }
             )
         return Response({'ok': True})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def debug_punto_venta(request):
+    from .xubio import obtener_punto_venta
+    status_code, texto = obtener_punto_venta(214112)
+    return Response({'status': status_code, 'body': texto})

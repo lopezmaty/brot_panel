@@ -180,3 +180,15 @@ def obtener_precios_lista(xubio_lista_precio_id):
     response.raise_for_status()
     data = response.json()
     return data.get('listaPrecioItem', [])
+
+def obtener_punto_venta(punto_venta_id):
+    token = obtener_token()
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Accept': 'application/json',
+    }
+    response = requests.get(
+        f'{XUBIO_BASE}/puntoVentaBean/{punto_venta_id}',
+        headers=headers,
+    )
+    return response.status_code, response.text
