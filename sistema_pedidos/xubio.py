@@ -189,7 +189,7 @@ def obtener_punto_venta(punto_venta_id):
     }
     response = requests.get(
         f'{XUBIO_BASE}/talonario',
-        params={'puntoDeVenta': '0003'},
+        params={'puntoDeVenta': '00003'},
         headers=headers,
     )
     return response.status_code, response.text
