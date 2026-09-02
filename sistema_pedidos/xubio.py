@@ -135,7 +135,6 @@ def facturar_pedido(pedido):
             'ID': punto_venta['puntoVentaId'],
             'puntoVenta': punto_venta['puntoVentaNumero'],
         },
-        'numeroDocumento': 0,
         'condicionDePago': 1,
         'deposito': {'id': DEPOSITO_ID},
         'cantComprobantesEmitidos': 1,
