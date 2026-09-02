@@ -168,6 +168,7 @@ def facturar_pedido(pedido):
         'puntoVenta': {
             'id': punto_venta['puntoVentaId'],
             'ID': punto_venta['puntoVentaId'],
+            'codigo': punto_venta['puntoVentaNumero'],
         },
         'numeroDocumento': numero_documento,
         'condicionDePago': 1,
