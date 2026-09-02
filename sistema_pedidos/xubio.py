@@ -188,7 +188,7 @@ def obtener_punto_venta(punto_venta_id):
         'Accept': 'application/json',
     }
     response = requests.get(
-        f'{XUBIO_BASE}/puntoVentaBean/{punto_venta_id}',
+        f'{XUBIO_BASE}/puntoVentaBean',
         headers=headers,
     )
     return response.status_code, response.text
