@@ -1,0 +1,7732 @@
+[
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 1,
+  "fields": {
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "*",
+    "rubro": "materia_prima"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 2,
+  "fields": {
+    "proveedor": "PRINCOR SRL",
+    "producto": "*",
+    "rubro": "materia_prima"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 3,
+  "fields": {
+    "proveedor": "PANHEL S R L",
+    "producto": "*",
+    "rubro": "materia_prima"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 4,
+  "fields": {
+    "proveedor": "SERGIO BARBERO S.A.S.",
+    "producto": "*",
+    "rubro": "materia_prima"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 5,
+  "fields": {
+    "proveedor": "MESAL S.A.S.",
+    "producto": "*",
+    "rubro": "materia_prima"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 6,
+  "fields": {
+    "proveedor": "BYC",
+    "producto": "*",
+    "rubro": "materia_prima"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 7,
+  "fields": {
+    "proveedor": "LA QUESERIA",
+    "producto": "*",
+    "rubro": "materia_prima"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 8,
+  "fields": {
+    "proveedor": "BOLSAS EDGARDO",
+    "producto": "*",
+    "rubro": "materia_prima"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 9,
+  "fields": {
+    "proveedor": "ALMACEN",
+    "producto": "LECHE",
+    "rubro": "materia_prima"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 10,
+  "fields": {
+    "proveedor": "ALMACEN",
+    "producto": "ARTICULOS LIMPIEZA",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 11,
+  "fields": {
+    "proveedor": "ALMACEN",
+    "producto": "GASTOS INSUMOS",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 12,
+  "fields": {
+    "proveedor": "GASTOS INSUMOS",
+    "producto": "ALCOHOL",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 13,
+  "fields": {
+    "proveedor": "GASTOS INSUMOS",
+    "producto": "LECHE",
+    "rubro": "materia_prima"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 14,
+  "fields": {
+    "proveedor": "GASTOS INSUMOS",
+    "producto": "GASTOS VARIOS",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 15,
+  "fields": {
+    "proveedor": "DISTRIBUIDORA ESTRELLA AZUL SRL",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 16,
+  "fields": {
+    "proveedor": "ALQUILER",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 17,
+  "fields": {
+    "proveedor": "EPEC",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 18,
+  "fields": {
+    "proveedor": "ECOGAS",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 19,
+  "fields": {
+    "proveedor": "BRUNETTI HERMANOS S.R.L.",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 20,
+  "fields": {
+    "proveedor": "BERNARDITA RUTH SOBA",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 21,
+  "fields": {
+    "proveedor": "CLARO INTERNET",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 22,
+  "fields": {
+    "proveedor": "LIMPIEZA  RINCÓN",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 23,
+  "fields": {
+    "proveedor": "FERRETERÍA",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 24,
+  "fields": {
+    "proveedor": "SUELDOS",
+    "producto": "*",
+    "rubro": "sueldos_productivos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 25,
+  "fields": {
+    "proveedor": "SUELDOS",
+    "producto": "SUELDO DIRECTOR",
+    "rubro": "honorarios_direccion"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 26,
+  "fields": {
+    "proveedor": "TANIA MELINA ARRIAGA",
+    "producto": "*",
+    "rubro": "administracion"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 27,
+  "fields": {
+    "proveedor": "LUCIA COMMERES BENEJAM",
+    "producto": "*",
+    "rubro": "administracion"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 28,
+  "fields": {
+    "proveedor": "XUBIO",
+    "producto": "*",
+    "rubro": "administracion"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 29,
+  "fields": {
+    "proveedor": "LIBRERÍA",
+    "producto": "*",
+    "rubro": "administracion"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 30,
+  "fields": {
+    "proveedor": "EDENRED ARGENTINA SOCIEDAD ANONIMA",
+    "producto": "*",
+    "rubro": "logistica"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 31,
+  "fields": {
+    "proveedor": "LOGISTICA",
+    "producto": "*",
+    "rubro": "logistica"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 32,
+  "fields": {
+    "proveedor": "IMPUESTOS",
+    "producto": "*",
+    "rubro": "impuestos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 33,
+  "fields": {
+    "proveedor": "MATIAS EMANUEL LOPEZ",
+    "producto": "RETIRO SOCIETARIO",
+    "rubro": "retiro_societario"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 34,
+  "fields": {
+    "proveedor": "INVERSIONES",
+    "producto": "*",
+    "rubro": "capex"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 35,
+  "fields": {
+    "proveedor": "MONTEQUIN SA",
+    "producto": "*",
+    "rubro": "capex"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 36,
+  "fields": {
+    "proveedor": "AMX ARGENTINA SOCIEDAD ANONIMA",
+    "producto": "*",
+    "rubro": "materia_prima"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 37,
+  "fields": {
+    "proveedor": "Aquavita",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 38,
+  "fields": {
+    "proveedor": "BBVA",
+    "producto": "Debitos y Creditos",
+    "rubro": "financieros"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 39,
+  "fields": {
+    "proveedor": "BBVA",
+    "producto": "Gastos Bancarios",
+    "rubro": "financieros"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 40,
+  "fields": {
+    "proveedor": "BBVA",
+    "producto": "I.V.A.",
+    "rubro": "impuestos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 41,
+  "fields": {
+    "proveedor": "BBVA",
+    "producto": "INTERES",
+    "rubro": "financieros"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 42,
+  "fields": {
+    "proveedor": "FACUNDO NICOLAS ALBARELLOS",
+    "producto": "*",
+    "rubro": "administracion"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 43,
+  "fields": {
+    "proveedor": "Gastos Insumos",
+    "producto": "*",
+    "rubro": "materia_prima"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 44,
+  "fields": {
+    "proveedor": "Gastos Insumos",
+    "producto": "Inversion",
+    "rubro": "capex"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 45,
+  "fields": {
+    "proveedor": "GISELE MARIELA MANERA",
+    "producto": "*",
+    "rubro": "administracion"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 46,
+  "fields": {
+    "proveedor": "JAVIER ESTEBAN GIANO",
+    "producto": "*",
+    "rubro": "capex"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 47,
+  "fields": {
+    "proveedor": "Mantenimiento",
+    "producto": "Mantenimiento",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 48,
+  "fields": {
+    "proveedor": "MATIAS EMANUEL LOPEZ",
+    "producto": "*",
+    "rubro": "retiro_societario"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 49,
+  "fields": {
+    "proveedor": "Mercado Pago",
+    "producto": "Comision Bancaria",
+    "rubro": "financieros"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 50,
+  "fields": {
+    "proveedor": "Mercado Pago",
+    "producto": "I.V.A.",
+    "rubro": "impuestos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 51,
+  "fields": {
+    "proveedor": "Mercado Pago",
+    "producto": "Impuestos",
+    "rubro": "impuestos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 52,
+  "fields": {
+    "proveedor": "PAYU ARGENTINA S.A.",
+    "producto": "Anuncio - Reclutamiento",
+    "rubro": "administracion"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 53,
+  "fields": {
+    "proveedor": "Pedix",
+    "producto": "*",
+    "rubro": "administracion"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 54,
+  "fields": {
+    "proveedor": "PLASTICOS O B SA",
+    "producto": "*",
+    "rubro": "materia_prima"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 55,
+  "fields": {
+    "proveedor": "SCH COMERCIAL S.A.S.",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 56,
+  "fields": {
+    "proveedor": "Sueldo Director",
+    "producto": "*",
+    "rubro": "honorarios_direccion"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 57,
+  "fields": {
+    "proveedor": "TODO LIMPIEZA PIRELUXS S.A.S.",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 58,
+  "fields": {
+    "proveedor": "BIARRITZ S.A.",
+    "producto": "*",
+    "rubro": "logistica"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 59,
+  "fields": {
+    "proveedor": "Embotelladora del Centro SA",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 60,
+  "fields": {
+    "proveedor": "CARLOS ALBERTO BROQUA",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 61,
+  "fields": {
+    "proveedor": "DANIEL ADOLFO PEREZ",
+    "producto": "*",
+    "rubro": "gastos_fijos"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 62,
+  "fields": {
+    "proveedor": "FRANCO NICOLAS MERLO",
+    "producto": "*",
+    "rubro": "administracion"
+  }
+},
+{
+  "model": "gestion_gerencial.reglacategorizacionmapa",
+  "pk": 63,
+  "fields": {
+    "proveedor": "Gastos Administrativos",
+    "producto": "*",
+    "rubro": "administracion"
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 269,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-31",
+    "documento": "B-00007-00000500",
+    "proveedor": "MATIAS EMANUEL LOPEZ",
+    "producto": "Retiro Societario",
+    "descripcion": "",
+    "importe": "1802346.00",
+    "rubro": "retiro_societario",
+    "xubio_transaccion_id": 75827412,
+    "xubio_item_id": 93282629
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 270,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-31",
+    "documento": "B-00007-00000029",
+    "proveedor": "MATIAS EMANUEL LOPEZ",
+    "producto": "Gastos Varios ",
+    "descripcion": "",
+    "importe": "43236.00",
+    "rubro": "retiro_societario",
+    "xubio_transaccion_id": 76584466,
+    "xubio_item_id": 94329322
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 271,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-30",
+    "documento": "C-00003-00000095",
+    "proveedor": "GISELE MARIELA MANERA",
+    "producto": "Asesoramiento Mentoria",
+    "descripcion": "",
+    "importe": "200000.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 75535773,
+    "xubio_item_id": 92895555
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 272,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-30",
+    "documento": "B-00007-00000022",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "8900.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75493002,
+    "xubio_item_id": 92845143
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 273,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-31",
+    "documento": "A-00060-00727339",
+    "proveedor": "EDENRED ARGENTINA SOCIEDAD ANONIMA",
+    "producto": "Combustible ",
+    "descripcion": "",
+    "importe": "313178.28",
+    "rubro": "logistica",
+    "xubio_transaccion_id": 75575769,
+    "xubio_item_id": 92946889
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 274,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-30",
+    "documento": "A-00007-00015078",
+    "proveedor": "PLASTICOS O B SA",
+    "producto": "Monolamina 640mm 30 micrones ",
+    "descripcion": "",
+    "importe": "2674049.94",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75575843,
+    "xubio_item_id": 92947030
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 275,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-30",
+    "documento": "B-00007-00000021",
+    "proveedor": "Ferretería",
+    "producto": "Gastos Insumos",
+    "descripcion": "Tornillos y 2 espatulas ",
+    "importe": "27800.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75492979,
+    "xubio_item_id": 92845121
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 276,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-31",
+    "documento": "B-00007-00000015",
+    "proveedor": "Sueldos",
+    "producto": "Sueldos",
+    "descripcion": "",
+    "importe": "32450.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 75535825,
+    "xubio_item_id": 92895570
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 277,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-31",
+    "documento": "31072026",
+    "proveedor": "Mercado Pago",
+    "producto": "Comision Bancaria",
+    "descripcion": "",
+    "importe": "581.76",
+    "rubro": "financieros",
+    "xubio_transaccion_id": 76491473,
+    "xubio_item_id": 94183850
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 278,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-31",
+    "documento": "31072026",
+    "proveedor": "Mercado Pago",
+    "producto": "I.V.A.",
+    "descripcion": "",
+    "importe": "122.17",
+    "rubro": "impuestos",
+    "xubio_transaccion_id": 76491473,
+    "xubio_item_id": 94183851
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 279,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-31",
+    "documento": "31072026",
+    "proveedor": "Mercado Pago",
+    "producto": "Impuestos",
+    "descripcion": "",
+    "importe": "436.32",
+    "rubro": "impuestos",
+    "xubio_transaccion_id": 76491473,
+    "xubio_item_id": 94183852
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 280,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-31",
+    "documento": "31072026",
+    "proveedor": "BBVA",
+    "producto": "Gastos Bancarios",
+    "descripcion": "",
+    "importe": "77553.03",
+    "rubro": "financieros",
+    "xubio_transaccion_id": 76277839,
+    "xubio_item_id": 93915871
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 281,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-31",
+    "documento": "31072026",
+    "proveedor": "BBVA",
+    "producto": "I.V.A.",
+    "descripcion": "",
+    "importe": "20529.67",
+    "rubro": "impuestos",
+    "xubio_transaccion_id": 76277839,
+    "xubio_item_id": 93915872
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 282,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-31",
+    "documento": "31072026",
+    "proveedor": "BBVA",
+    "producto": "INTERES",
+    "descripcion": "",
+    "importe": "432.83",
+    "rubro": "financieros",
+    "xubio_transaccion_id": 76277839,
+    "xubio_item_id": 93915873
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 283,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-31",
+    "documento": "31072026",
+    "proveedor": "BBVA",
+    "producto": "Debitos y Creditos",
+    "descripcion": "",
+    "importe": "355364.37",
+    "rubro": "financieros",
+    "xubio_transaccion_id": 76277839,
+    "xubio_item_id": 93915874
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 284,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-29",
+    "documento": "A-00005-00001731",
+    "proveedor": "BIARRITZ S.A.",
+    "producto": "Service",
+    "descripcion": "30 mil  kilometros",
+    "importe": "277685.95",
+    "rubro": "logistica",
+    "xubio_transaccion_id": 75536057,
+    "xubio_item_id": 92895849
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 285,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-28",
+    "documento": "A-00003-00002637",
+    "proveedor": "SERGIO BARBERO S.A.S.",
+    "producto": "Bolsa Sal x 25kg",
+    "descripcion": "",
+    "importe": "130661.17",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76279607,
+    "xubio_item_id": 93917809
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 286,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-28",
+    "documento": "A-00003-00002637",
+    "proveedor": "SERGIO BARBERO S.A.S.",
+    "producto": "Bolsa de azucar 50 kg ",
+    "descripcion": "",
+    "importe": "24047.01",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76279607,
+    "xubio_item_id": 93917810
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 287,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-28",
+    "documento": "B-00007-00000018",
+    "proveedor": "Gastos Insumos",
+    "producto": "Gastos Insumos",
+    "descripcion": "Veneno ratas ",
+    "importe": "68009.11",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75444135,
+    "xubio_item_id": 92782804
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 288,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-28",
+    "documento": "B-00007-00000019",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "14000.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75439665,
+    "xubio_item_id": 92776080
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 289,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-28",
+    "documento": "B-00007-00000002",
+    "proveedor": "MONTEQUIN SA",
+    "producto": "Inversion",
+    "descripcion": "",
+    "importe": "804608.00",
+    "rubro": "capex",
+    "xubio_transaccion_id": 75427681,
+    "xubio_item_id": 92762007
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 290,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-27",
+    "documento": "B-00007-00000011",
+    "proveedor": "MATIAS EMANUEL LOPEZ",
+    "producto": "Huevos ",
+    "descripcion": "",
+    "importe": "20000.00",
+    "rubro": "retiro_societario",
+    "xubio_transaccion_id": 75415347,
+    "xubio_item_id": 92746270
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 291,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-27",
+    "documento": "B-00007-00000019",
+    "proveedor": "JAVIER ESTEBAN GIANO",
+    "producto": "Asesoramiento Mentoria",
+    "descripcion": "",
+    "importe": "800000.00",
+    "rubro": "capex",
+    "xubio_transaccion_id": 75414911,
+    "xubio_item_id": 92745515
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 292,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-24",
+    "documento": "A-00101-00019849",
+    "proveedor": "Princor SRL",
+    "producto": "Oleo margarina",
+    "descripcion": "",
+    "importe": "1042848.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75412001,
+    "xubio_item_id": 92740526
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 293,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-24",
+    "documento": "C-00001-00000180",
+    "proveedor": "LUCIA COMMERES BENEJAM",
+    "producto": "Contaduria",
+    "descripcion": "",
+    "importe": "151275.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 75409122,
+    "xubio_item_id": 92737350
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 294,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-24",
+    "documento": "A-00020-00020889",
+    "proveedor": "TODO LIMPIEZA PIRELUXS S.A.S.",
+    "producto": "Alcohol",
+    "descripcion": "",
+    "importe": "35041.32",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75375968,
+    "xubio_item_id": 92687890
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 295,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-24",
+    "documento": "B-00007-00000021",
+    "proveedor": "Gastos Insumos",
+    "producto": "Inversion",
+    "descripcion": "Enfriadora ",
+    "importe": "1500000.00",
+    "rubro": "capex",
+    "xubio_transaccion_id": 75375852,
+    "xubio_item_id": 92736952
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 296,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-23",
+    "documento": "A-01331-00002889",
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "Bolsa Harina 000 x 25 kg",
+    "descripcion": "",
+    "importe": "1205200.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75411942,
+    "xubio_item_id": 92740443
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 297,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-23",
+    "documento": "A-01331-00002889",
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "Logistica",
+    "descripcion": "",
+    "importe": "94800.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75411942,
+    "xubio_item_id": 92740444
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 298,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-23",
+    "documento": "B-00007-00001197",
+    "proveedor": "La Queseria",
+    "producto": "Horma Queso",
+    "descripcion": "",
+    "importe": "212915.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75408900,
+    "xubio_item_id": 92737041
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 299,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-23",
+    "documento": "B-00007-00000020",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "14000.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75341737,
+    "xubio_item_id": 92644044
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 300,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-22",
+    "documento": "A-01340-00331930",
+    "proveedor": "AMX ARGENTINA SOCIEDAD ANONIMA",
+    "producto": "Internet",
+    "descripcion": "",
+    "importe": "76448.51",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76683363,
+    "xubio_item_id": 94482303
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 301,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-22",
+    "documento": "A-01340-00331930",
+    "proveedor": "AMX ARGENTINA SOCIEDAD ANONIMA",
+    "producto": "Internet",
+    "descripcion": "iva 27 %",
+    "importe": "46328.27",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76683363,
+    "xubio_item_id": 94482304
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 302,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-22",
+    "documento": "B-00007-00000018",
+    "proveedor": "Limpieza  Rincón",
+    "producto": "Articulos Limpieza",
+    "descripcion": "",
+    "importe": "30350.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75302978,
+    "xubio_item_id": 92595756
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 303,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-22",
+    "documento": "B-00007-00000018",
+    "proveedor": "MONTEQUIN SA",
+    "producto": "Inversion",
+    "descripcion": "",
+    "importe": "706801.02",
+    "rubro": "capex",
+    "xubio_transaccion_id": 75414874,
+    "xubio_item_id": 92745431
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 304,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-22",
+    "documento": "B-00007-00000023",
+    "proveedor": "Claro Internet",
+    "producto": "Internet",
+    "descripcion": "",
+    "importe": "15418.16",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75901307,
+    "xubio_item_id": 93368421
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 305,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-21",
+    "documento": "A-00003-00042526",
+    "proveedor": "PANHEL S R L",
+    "producto": "Levadura Seca x 500Gr",
+    "descripcion": "",
+    "importe": "461226.15",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75341599,
+    "xubio_item_id": 92643844
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 306,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-21",
+    "documento": "A-00003-00042526",
+    "proveedor": "PANHEL S R L",
+    "producto": "Propinato de Calcio",
+    "descripcion": "Kilos ",
+    "importe": "93177.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75341599,
+    "xubio_item_id": 92643845
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 307,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-21",
+    "documento": "A-00003-00042526",
+    "proveedor": "PANHEL S R L",
+    "producto": "Desmoldante Duo Max 5lts ",
+    "descripcion": "",
+    "importe": "20590.63",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75341599,
+    "xubio_item_id": 92643846
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 308,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-21",
+    "documento": "A-00016-00043938",
+    "proveedor": "Princor SRL",
+    "producto": "Softr Cotton x10 krs",
+    "descripcion": "",
+    "importe": "924042.63",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75341475,
+    "xubio_item_id": 92643724
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 309,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-21",
+    "documento": "B-00007-00000025",
+    "proveedor": "Ecogas",
+    "producto": "Gas",
+    "descripcion": "",
+    "importe": "376306.94",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75901429,
+    "xubio_item_id": 93368599
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 310,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-20",
+    "documento": "B-00007-00000015",
+    "proveedor": "Impuestos",
+    "producto": "IIBB",
+    "descripcion": "",
+    "importe": "19200.00",
+    "rubro": "impuestos",
+    "xubio_transaccion_id": 75248399,
+    "xubio_item_id": 92516899
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 311,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-20",
+    "documento": "B-00007-00000016",
+    "proveedor": "EPEC",
+    "producto": "Electricidad",
+    "descripcion": "",
+    "importe": "655835.30",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75248310,
+    "xubio_item_id": 92516828
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 312,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-20",
+    "documento": "B-00007-00000007",
+    "proveedor": "Bolsas Edgardo",
+    "producto": "Bolsas",
+    "descripcion": "",
+    "importe": "28500.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75201538,
+    "xubio_item_id": 92439194
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 313,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-16",
+    "documento": "A-00020-00020761",
+    "proveedor": "TODO LIMPIEZA PIRELUXS S.A.S.",
+    "producto": "Alcohol",
+    "descripcion": "",
+    "importe": "35041.32",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75144951,
+    "xubio_item_id": 92327892
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 314,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-16",
+    "documento": "B-00207-00007845",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "11800.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75093082,
+    "xubio_item_id": 92250832
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 315,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-16",
+    "documento": "B-00007-00000013",
+    "proveedor": "Sueldos",
+    "producto": "Horas Extras",
+    "descripcion": "",
+    "importe": "70200.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 75091752,
+    "xubio_item_id": 92249113
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 316,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-15",
+    "documento": "B-00007-00000016",
+    "proveedor": "Logistica",
+    "producto": "Cochera",
+    "descripcion": "",
+    "importe": "100000.00",
+    "rubro": "logistica",
+    "xubio_transaccion_id": 75035377,
+    "xubio_item_id": 92169737
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 317,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-15",
+    "documento": "B-00007-00000016",
+    "proveedor": "PAYU ARGENTINA S.A.",
+    "producto": "Anuncio - Reclutamiento",
+    "descripcion": "",
+    "importe": "277046.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 75014624,
+    "xubio_item_id": 92145502
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 318,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-14",
+    "documento": "B-00007-00000016",
+    "proveedor": "Impuestos",
+    "producto": "Municipalidad",
+    "descripcion": "Plan de pagos cuota 7",
+    "importe": "171579.31",
+    "rubro": "impuestos",
+    "xubio_transaccion_id": 76004063,
+    "xubio_item_id": 93508032
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 319,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-14",
+    "documento": "B-00007-00000015",
+    "proveedor": "Aquavita",
+    "producto": "Agua Envasada",
+    "descripcion": "",
+    "importe": "58904.57",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75012357,
+    "xubio_item_id": 92142628
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 320,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-14",
+    "documento": "B-00007-00000014",
+    "proveedor": "Claro Internet",
+    "producto": "Internet",
+    "descripcion": "",
+    "importe": "148240.13",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75012206,
+    "xubio_item_id": 92142465
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 321,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-14",
+    "documento": "B-00007-00000010",
+    "proveedor": "MATIAS EMANUEL LOPEZ",
+    "producto": "Gastos Varios ",
+    "descripcion": "",
+    "importe": "15000.00",
+    "rubro": "retiro_societario",
+    "xubio_transaccion_id": 74971396,
+    "xubio_item_id": 92084851
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 322,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-13",
+    "documento": "C-00003-00001141",
+    "proveedor": "FACUNDO NICOLAS ALBARELLOS",
+    "producto": "Contaduria",
+    "descripcion": "Balance ",
+    "importe": "895525.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 76594130,
+    "xubio_item_id": 94344364
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 323,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-13",
+    "documento": "B-00007-00000030",
+    "proveedor": "Pedix",
+    "producto": "Suscripcion",
+    "descripcion": "",
+    "importe": "19000.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 76584565,
+    "xubio_item_id": 94329447
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 324,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-13",
+    "documento": "B-00007-00000022",
+    "proveedor": "Logistica",
+    "producto": "Peaje",
+    "descripcion": "",
+    "importe": "49983.41",
+    "rubro": "logistica",
+    "xubio_transaccion_id": 75901178,
+    "xubio_item_id": 93368255
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 325,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-13",
+    "documento": "B-00007-00000021",
+    "proveedor": "Xubio",
+    "producto": "Suscripcion Xubio",
+    "descripcion": "",
+    "importe": "188276.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 75901071,
+    "xubio_item_id": 93368107
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 326,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-13",
+    "documento": "A-00003-00002577",
+    "proveedor": "SERGIO BARBERO S.A.S.",
+    "producto": "Bolsa Sal x 25kg",
+    "descripcion": "",
+    "importe": "24047.01",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74969421,
+    "xubio_item_id": 92082009
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 327,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-13",
+    "documento": "A-00003-00002577",
+    "proveedor": "SERGIO BARBERO S.A.S.",
+    "producto": "Bolsa de azucar 50 kg ",
+    "descripcion": "",
+    "importe": "174214.88",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74969421,
+    "xubio_item_id": 92082010
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 328,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-13",
+    "documento": "B-00007-00001169",
+    "proveedor": "La Queseria",
+    "producto": "Horma Queso",
+    "descripcion": "",
+    "importe": "220190.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74969033,
+    "xubio_item_id": 92081529
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 329,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-13",
+    "documento": "A-01331-00002504",
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "Bolsa Harina 000 x 25 kg",
+    "descripcion": "",
+    "importe": "1100070.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74968899,
+    "xubio_item_id": 92081336
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 330,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-13",
+    "documento": "A-01331-00002504",
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "Logistica",
+    "descripcion": "",
+    "importe": "80580.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74968899,
+    "xubio_item_id": 92081337
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 331,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-10",
+    "documento": "B-00007-00000120",
+    "proveedor": "Sueldos",
+    "producto": "Sueldos",
+    "descripcion": "",
+    "importe": "350000.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 75286639,
+    "xubio_item_id": 92575431
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 332,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-10",
+    "documento": "A-00001-00001145",
+    "proveedor": "MESAL S.A.S.",
+    "producto": "Semilla Lino ",
+    "descripcion": "",
+    "importe": "120700.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75005105,
+    "xubio_item_id": 92132672
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 333,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-10",
+    "documento": "A-00001-00001145",
+    "proveedor": "MESAL S.A.S.",
+    "producto": "Bolsa Semillas Girasol",
+    "descripcion": "",
+    "importe": "64350.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75005105,
+    "xubio_item_id": 92132673
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 334,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-10",
+    "documento": "A-00001-00001145",
+    "proveedor": "MESAL S.A.S.",
+    "producto": "Bolsa Semillas Sesamo Integral ",
+    "descripcion": "",
+    "importe": "38400.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75005105,
+    "xubio_item_id": 92132674
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 335,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-10",
+    "documento": "B-00007-00000010",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "11900.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74797245,
+    "xubio_item_id": 91819885
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 336,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-10",
+    "documento": "B-00007-00000009",
+    "proveedor": "Mantenimiento",
+    "producto": "Mantenimiento",
+    "descripcion": "",
+    "importe": "420000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74787425,
+    "xubio_item_id": 91804930
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 337,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-10",
+    "documento": "B-00007-00000009",
+    "proveedor": "Mantenimiento",
+    "producto": "Mantenimiento",
+    "descripcion": "Visita por el horno ",
+    "importe": "80000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74787425,
+    "xubio_item_id": 92672706
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 338,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-08",
+    "documento": "B-00007-00000008",
+    "proveedor": "Alquiler",
+    "producto": "Alquiler",
+    "descripcion": "",
+    "importe": "2147353.34",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74787389,
+    "xubio_item_id": 91804884
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 339,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-07",
+    "documento": "A-00003-00004081",
+    "proveedor": "PANHEL S R L",
+    "producto": "Desmoldante Duo Max 5lts ",
+    "descripcion": "",
+    "importe": "-20590.62",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76106122,
+    "xubio_item_id": 93644608
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 340,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-07",
+    "documento": "A-00003-00042158",
+    "proveedor": "PANHEL S R L",
+    "producto": "Levadura Seca x 500Gr",
+    "descripcion": "Paquetes de 500 grs ",
+    "importe": "461226.15",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74703556,
+    "xubio_item_id": 91679466
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 341,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-07",
+    "documento": "A-00003-00042158",
+    "proveedor": "PANHEL S R L",
+    "producto": "Propinato de Calcio",
+    "descripcion": "Kilos ",
+    "importe": "93177.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74703556,
+    "xubio_item_id": 91679467
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 342,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-06",
+    "documento": "A-00020-00020603",
+    "proveedor": "TODO LIMPIEZA PIRELUXS S.A.S.",
+    "producto": "Alcohol",
+    "descripcion": "",
+    "importe": "35041.32",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74665538,
+    "xubio_item_id": 91620301
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 343,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-06",
+    "documento": "B-00007-00000008",
+    "proveedor": "Sueldo Director",
+    "producto": "Sueldo Director",
+    "descripcion": "",
+    "importe": "2400000.00",
+    "rubro": "honorarios_direccion",
+    "xubio_transaccion_id": 74626418,
+    "xubio_item_id": 91564356
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 344,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-06",
+    "documento": "B-00007-00000007",
+    "proveedor": "Sueldos",
+    "producto": "Sueldos",
+    "descripcion": "Banco ",
+    "importe": "2678230.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 74626373,
+    "xubio_item_id": 91564294
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 345,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-06",
+    "documento": "B-00007-00000007",
+    "proveedor": "Sueldos",
+    "producto": "Sueldos",
+    "descripcion": "Efectivo",
+    "importe": "3715150.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 74626373,
+    "xubio_item_id": 91564295
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 346,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-06",
+    "documento": "B-00007-00000007",
+    "proveedor": "Sueldos",
+    "producto": "Formulario 931",
+    "descripcion": "",
+    "importe": "2384475.45",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 74626373,
+    "xubio_item_id": 91564296
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 347,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-06",
+    "documento": "B-00007-00000003",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "15600.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74611764,
+    "xubio_item_id": 91545517
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 348,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-06",
+    "documento": "B-00007-00000003",
+    "proveedor": "Logistica",
+    "producto": "Gps ",
+    "descripcion": "",
+    "importe": "25000.00",
+    "rubro": "logistica",
+    "xubio_transaccion_id": 74608519,
+    "xubio_item_id": 91541435
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 349,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-03",
+    "documento": "A-00101-00019286",
+    "proveedor": "Princor SRL",
+    "producto": "Oleo margarina",
+    "descripcion": "",
+    "importe": "1104192.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74666480,
+    "xubio_item_id": 91621796
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 350,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-03",
+    "documento": "C-00002-00001498",
+    "proveedor": "BERNARDITA RUTH SOBA",
+    "producto": "Bromatologa",
+    "descripcion": "",
+    "importe": "85000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74609062,
+    "xubio_item_id": 91542132
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 351,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-03",
+    "documento": "B-00007-00000001",
+    "proveedor": "MATIAS EMANUEL LOPEZ",
+    "producto": "Huevos ",
+    "descripcion": "",
+    "importe": "20000.00",
+    "rubro": "retiro_societario",
+    "xubio_transaccion_id": 74563690,
+    "xubio_item_id": 91476435
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 352,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-02",
+    "documento": "A-00008-00029353",
+    "proveedor": "SCH COMERCIAL S.A.S.",
+    "producto": "Etiquetas ",
+    "descripcion": "",
+    "importe": "128350.38",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 76470645,
+    "xubio_item_id": 94158672
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 353,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-02",
+    "documento": "B-00007-00000009",
+    "proveedor": "MATIAS EMANUEL LOPEZ",
+    "producto": "Gastos Varios ",
+    "descripcion": "",
+    "importe": "535456.00",
+    "rubro": "retiro_societario",
+    "xubio_transaccion_id": 74912536,
+    "xubio_item_id": 92000296
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 354,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-01",
+    "documento": "C-00001-00000068",
+    "proveedor": "TANIA MELINA ARRIAGA",
+    "producto": "Balance ",
+    "descripcion": "Cuota 2",
+    "importe": "895525.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 74703089,
+    "xubio_item_id": 91678858
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 355,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-01",
+    "documento": "C-00001-00000067",
+    "proveedor": "TANIA MELINA ARRIAGA",
+    "producto": "Honorarios",
+    "descripcion": "Junio",
+    "importe": "275000.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 74703027,
+    "xubio_item_id": 91678799
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 356,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-01",
+    "documento": "B-00006-00000024",
+    "proveedor": "Gastos Insumos",
+    "producto": "Gastos Insumos",
+    "descripcion": "Envio Repuesto enbasadora",
+    "importe": "24000.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74483729,
+    "xubio_item_id": 91363803
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 357,
+  "fields": {
+    "mes": "2026-07",
+    "fecha": "2026-07-01",
+    "documento": "B-00006-00000023",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "13440.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74478882,
+    "xubio_item_id": 91358571
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 358,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-30",
+    "documento": "B-00006-00000029",
+    "proveedor": "Impuestos",
+    "producto": "Debitos y Creditos",
+    "descripcion": "",
+    "importe": "314042.67",
+    "rubro": "impuestos",
+    "xubio_transaccion_id": 74609367,
+    "xubio_item_id": 91542910
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 359,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-30",
+    "documento": "A-00003-00002507",
+    "proveedor": "SERGIO BARBERO S.A.S.",
+    "producto": "Bolsa de azucar 50 kg ",
+    "descripcion": "",
+    "importe": "174214.88",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74969301,
+    "xubio_item_id": 92081836
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 360,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-30",
+    "documento": "A-00003-00002507",
+    "proveedor": "SERGIO BARBERO S.A.S.",
+    "producto": "Bolsa Sal x 25kg",
+    "descripcion": "",
+    "importe": "24796.80",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74969301,
+    "xubio_item_id": 92081837
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 361,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-30",
+    "documento": "B-00006-00000017",
+    "proveedor": "Sueldos",
+    "producto": "Sueldos",
+    "descripcion": "Aguinaldos bco",
+    "importe": "748956.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 74513560,
+    "xubio_item_id": 91410246
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 362,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-30",
+    "documento": "B-00006-00000017",
+    "proveedor": "Sueldos",
+    "producto": "Sueldos",
+    "descripcion": "Aguinaldo efec",
+    "importe": "1809600.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 74513560,
+    "xubio_item_id": 91410247
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 363,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-30",
+    "documento": "B-00006-00000155",
+    "proveedor": "Inversiones",
+    "producto": "Inversion",
+    "descripcion": "Cuota Enfriadora",
+    "importe": "1500000.00",
+    "rubro": "capex",
+    "xubio_transaccion_id": 74449197,
+    "xubio_item_id": 91312412
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 364,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-30",
+    "documento": "A-00060-00720916",
+    "proveedor": "EDENRED ARGENTINA SOCIEDAD ANONIMA",
+    "producto": "Combustible ",
+    "descripcion": "",
+    "importe": "262018.47",
+    "rubro": "logistica",
+    "xubio_transaccion_id": 74603742,
+    "xubio_item_id": 91535303
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 365,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-01",
+    "documento": "B-00007-00000017",
+    "proveedor": "Impuestos",
+    "producto": "Municipalidad",
+    "descripcion": "",
+    "importe": "161552.70",
+    "rubro": "impuestos",
+    "xubio_transaccion_id": 75251064,
+    "xubio_item_id": 92520961
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 366,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-30",
+    "documento": "B-00006-00000022",
+    "proveedor": "BRUNETTI HERMANOS S.R.L.",
+    "producto": "Mantenimiento",
+    "descripcion": "Envasadora ",
+    "importe": "110983.26",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74430476,
+    "xubio_item_id": 91287339
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 367,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-28",
+    "documento": "B-00006-00000230",
+    "proveedor": "MATIAS EMANUEL LOPEZ",
+    "producto": "Retiro Societario",
+    "descripcion": "",
+    "importe": "13000.00",
+    "rubro": "retiro_societario",
+    "xubio_transaccion_id": 75468087,
+    "xubio_item_id": 92810444
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 368,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-30",
+    "documento": "A-01331-00002172",
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "Logistica",
+    "descripcion": "",
+    "importe": "80580.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74520946,
+    "xubio_item_id": 91420035
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 369,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-30",
+    "documento": "A-01331-00002172",
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "Bolsa Harina 000 x 25 kg",
+    "descripcion": "",
+    "importe": "1100920.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74520946,
+    "xubio_item_id": 91420036
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 370,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-28",
+    "documento": "B-00006-00000500",
+    "proveedor": "MATIAS EMANUEL LOPEZ",
+    "producto": "Retiro Societario",
+    "descripcion": "",
+    "importe": "1261535.00",
+    "rubro": "retiro_societario",
+    "xubio_transaccion_id": 74596214,
+    "xubio_item_id": 91525401
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 371,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-26",
+    "documento": "B-00007-00000014",
+    "proveedor": "Impuestos",
+    "producto": "Municipalidad",
+    "descripcion": "",
+    "importe": "148538.41",
+    "rubro": "impuestos",
+    "xubio_transaccion_id": 75004451,
+    "xubio_item_id": 92131840
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 372,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-26",
+    "documento": "B-00006-00001130",
+    "proveedor": "La Queseria",
+    "producto": "Horma Queso",
+    "descripcion": "",
+    "importe": "237650.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74479193,
+    "xubio_item_id": 91358937
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 373,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-25",
+    "documento": "B-00006-00000021",
+    "proveedor": "Impuestos",
+    "producto": "Rentas ",
+    "descripcion": "",
+    "importe": "19200.00",
+    "rubro": "impuestos",
+    "xubio_transaccion_id": 74341223,
+    "xubio_item_id": 91156628
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 374,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-25",
+    "documento": "B-00006-00000022",
+    "proveedor": "EPEC",
+    "producto": "Electricidad",
+    "descripcion": "",
+    "importe": "659270.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74366412,
+    "xubio_item_id": 91188556
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 375,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-24",
+    "documento": "B-00006-00000017",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "16800.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74287071,
+    "xubio_item_id": 91088860
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 376,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-25",
+    "documento": "B-00006-00000020",
+    "proveedor": "MONTEQUIN SA",
+    "producto": "Inversion",
+    "descripcion": "",
+    "importe": "701755.18",
+    "rubro": "capex",
+    "xubio_transaccion_id": 74341193,
+    "xubio_item_id": 91156586
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 377,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-24",
+    "documento": "A-00101-00019024",
+    "proveedor": "Princor SRL",
+    "producto": "Oleo margarina",
+    "descripcion": "",
+    "importe": "1012176.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74335072,
+    "xubio_item_id": 91147414
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 378,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-25",
+    "documento": "B-00006-00000019",
+    "proveedor": "Almacen",
+    "producto": "Articulos Limpieza",
+    "descripcion": "Jabon liquido ",
+    "importe": "3000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74334960,
+    "xubio_item_id": 91147274
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 379,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-24",
+    "documento": "A-00016-00043500",
+    "proveedor": "Princor SRL",
+    "producto": "Softr Cotton x10 krs",
+    "descripcion": "",
+    "importe": "739234.13",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74335021,
+    "xubio_item_id": 91147349
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 380,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-24",
+    "documento": "B-00006-00000018",
+    "proveedor": "Limpieza  Rincón",
+    "producto": "Articulos Limpieza",
+    "descripcion": "",
+    "importe": "14800.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74289075,
+    "xubio_item_id": 91091884
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 381,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-23",
+    "documento": "A-00003-00041847",
+    "proveedor": "PANHEL S R L",
+    "producto": "Levadura Seca x 500Gr",
+    "descripcion": "",
+    "importe": "579439.49",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74287287,
+    "xubio_item_id": 91089050
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 382,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-23",
+    "documento": "A-00003-00041847",
+    "proveedor": "PANHEL S R L",
+    "producto": "Propinato de Calcio",
+    "descripcion": "KIlos ",
+    "importe": "95381.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74287287,
+    "xubio_item_id": 91089051
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 383,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-23",
+    "documento": "A-00003-00041847",
+    "proveedor": "PANHEL S R L",
+    "producto": "Desmoldante Duo Max 5lts ",
+    "descripcion": "",
+    "importe": "20590.63",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74287287,
+    "xubio_item_id": 91089052
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 384,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-22",
+    "documento": "B-00006-00000027",
+    "proveedor": "Claro Internet",
+    "producto": "Abono Telefono ",
+    "descripcion": "",
+    "importe": "14691.72",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74602846,
+    "xubio_item_id": 91533985
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 385,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-22",
+    "documento": "A-00003-00002442",
+    "proveedor": "SERGIO BARBERO S.A.S.",
+    "producto": "Bolsa de azucar 50 kg ",
+    "descripcion": "",
+    "importe": "174214.88",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74223599,
+    "xubio_item_id": 91006135
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 386,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-22",
+    "documento": "A-00003-00002442",
+    "proveedor": "SERGIO BARBERO S.A.S.",
+    "producto": "Bolsa Sal x 25kg",
+    "descripcion": "",
+    "importe": "24796.80",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74223599,
+    "xubio_item_id": 91006136
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 387,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-22",
+    "documento": "B-00006-00000016",
+    "proveedor": "Gastos Insumos",
+    "producto": "Alcohol",
+    "descripcion": "",
+    "importe": "42400.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74223337,
+    "xubio_item_id": 91005799
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 388,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-21",
+    "documento": "B-00006-00000018",
+    "proveedor": "Librería",
+    "producto": "Hojas A5",
+    "descripcion": "",
+    "importe": "38393.85",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 74226331,
+    "xubio_item_id": 91009855
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 389,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-19",
+    "documento": "B-00006-00000016",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "10300.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74154989,
+    "xubio_item_id": 90913789
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 390,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-19",
+    "documento": "B-00006-00000017",
+    "proveedor": "Ferretería",
+    "producto": "Gastos Insumos",
+    "descripcion": "Veneno para ratas ",
+    "importe": "5000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74155049,
+    "xubio_item_id": 90913932
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 391,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-18",
+    "documento": "A-00001-00001104",
+    "proveedor": "MESAL S.A.S.",
+    "producto": "Semilla Lino ",
+    "descripcion": "",
+    "importe": "105700.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74915765,
+    "xubio_item_id": 92004755
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 392,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-18",
+    "documento": "A-00001-00001104",
+    "proveedor": "MESAL S.A.S.",
+    "producto": "Bolsa Semillas Girasol",
+    "descripcion": "",
+    "importe": "122500.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74915765,
+    "xubio_item_id": 92004756
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 393,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-18",
+    "documento": "A-00001-00001104",
+    "proveedor": "MESAL S.A.S.",
+    "producto": "Bolsa Semillas Sesamo Integral ",
+    "descripcion": "",
+    "importe": "27400.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74915765,
+    "xubio_item_id": 92004757
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 394,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-18",
+    "documento": "B-00006-00000014",
+    "proveedor": "Almacen",
+    "producto": "Gastos Insumos",
+    "descripcion": "Cepillo para lavar placas ",
+    "importe": "3800.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74083496,
+    "xubio_item_id": 90821687
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 395,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-18",
+    "documento": "B-00006-00000017",
+    "proveedor": "Bolsas Edgardo",
+    "producto": "Bolsas",
+    "descripcion": "",
+    "importe": "427500.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74223616,
+    "xubio_item_id": 91006154
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 396,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-17",
+    "documento": "C-00001-00000177",
+    "proveedor": "LUCIA COMMERES BENEJAM",
+    "producto": "Contaduria",
+    "descripcion": "",
+    "importe": "382200.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 74223378,
+    "xubio_item_id": 91005842
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 397,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-17",
+    "documento": "A-00016-00014339",
+    "proveedor": "Princor SRL",
+    "producto": "Softr Cotton x10 krs",
+    "descripcion": "",
+    "importe": "1108851.15",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74081940,
+    "xubio_item_id": 90819602
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 398,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-17",
+    "documento": "B-00006-00000013",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "10300.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74024210,
+    "xubio_item_id": 90742838
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 399,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-17",
+    "documento": "B-00006-00000013",
+    "proveedor": "Almacen",
+    "producto": "Articulos Limpieza",
+    "descripcion": "Guantes de Goma ",
+    "importe": "7600.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74024210,
+    "xubio_item_id": 90742839
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 400,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-16",
+    "documento": "B-00006-00000026",
+    "proveedor": "Ecogas",
+    "producto": "Gas",
+    "descripcion": "",
+    "importe": "304073.47",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 74602723,
+    "xubio_item_id": 91533819
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 401,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-11",
+    "documento": "B-00006-00000234",
+    "proveedor": "Embotelladora del Centro SA",
+    "producto": "Agua Envasada",
+    "descripcion": "",
+    "importe": "41712.50",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75468288,
+    "xubio_item_id": 92810659
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 402,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-11",
+    "documento": "B-00006-00000234",
+    "proveedor": "Embotelladora del Centro SA",
+    "producto": "Agua Envasada",
+    "descripcion": "",
+    "importe": "61373.80",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75468288,
+    "xubio_item_id": 92810660
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 403,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-10",
+    "documento": "A-01331-00001524",
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "Bolsa Harina 000 x 25 kg",
+    "descripcion": "",
+    "importe": "2749264.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74658455,
+    "xubio_item_id": 91610677
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 404,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-10",
+    "documento": "A-01331-00001524",
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "Logistica",
+    "descripcion": "",
+    "importe": "189600.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74658455,
+    "xubio_item_id": 91610678
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 405,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-11",
+    "documento": "B-00006-00000025",
+    "proveedor": "Logistica",
+    "producto": "Peaje",
+    "descripcion": "",
+    "importe": "22637.37",
+    "rubro": "logistica",
+    "xubio_transaccion_id": 74602609,
+    "xubio_item_id": 91533669
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 406,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-10",
+    "documento": "B-00006-00000028",
+    "proveedor": "Impuestos",
+    "producto": "Municipalidad",
+    "descripcion": "Contribuciones Cuota mes 6 ",
+    "importe": "170840.60",
+    "rubro": "impuestos",
+    "xubio_transaccion_id": 74602949,
+    "xubio_item_id": 91534145
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 407,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-11",
+    "documento": "B-00006-00000012",
+    "proveedor": "La Queseria",
+    "producto": "Ricota",
+    "descripcion": "",
+    "importe": "25928.40",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74013882,
+    "xubio_item_id": 90730197
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 408,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-11",
+    "documento": "B-00006-00000012",
+    "proveedor": "La Queseria",
+    "producto": "Horma Queso",
+    "descripcion": "",
+    "importe": "182764.80",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74013882,
+    "xubio_item_id": 90730198
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 409,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-11",
+    "documento": "B-00006-00000007",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "13500.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 73809763,
+    "xubio_item_id": 90466552
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 410,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-11",
+    "documento": "B-00006-00000004",
+    "proveedor": "Librería",
+    "producto": "supermercado-libreria",
+    "descripcion": "Ganchos para la abrochadora y bolsa regalo rodri ",
+    "importe": "10100.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 73809675,
+    "xubio_item_id": 90466484
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 411,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-11",
+    "documento": "B-00006-00000012",
+    "proveedor": "Logistica",
+    "producto": "Cochera",
+    "descripcion": "",
+    "importe": "100000.00",
+    "rubro": "logistica",
+    "xubio_transaccion_id": 73815991,
+    "xubio_item_id": 90474002
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 412,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-11",
+    "documento": "B-00006-00000012",
+    "proveedor": "Logistica",
+    "producto": "Combustible ",
+    "descripcion": "",
+    "importe": "20000.00",
+    "rubro": "logistica",
+    "xubio_transaccion_id": 73815991,
+    "xubio_item_id": 90474003
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 413,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-10",
+    "documento": "B-00006-00000012",
+    "proveedor": "Sueldos",
+    "producto": "Sueldos",
+    "descripcion": "Efectivo ",
+    "importe": "2975220.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 73816373,
+    "xubio_item_id": 90474442
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 414,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-10",
+    "documento": "B-00006-00000024",
+    "proveedor": "Xubio",
+    "producto": "Suscripcion Xubio",
+    "descripcion": "",
+    "importe": "176781.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 74602525,
+    "xubio_item_id": 91533552
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 415,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-10",
+    "documento": "A-00101-00018633",
+    "proveedor": "Princor SRL",
+    "producto": "Oleo margarina",
+    "descripcion": "",
+    "importe": "1239840.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 73810965,
+    "xubio_item_id": 90467986
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 416,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-10",
+    "documento": "B-00006-00000010",
+    "proveedor": "Alquiler",
+    "producto": "Alquiler",
+    "descripcion": "",
+    "importe": "1896097.34",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 73723493,
+    "xubio_item_id": 90355304
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 417,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-08",
+    "documento": "B-00006-00000010",
+    "proveedor": "Sueldos",
+    "producto": "Formulario 931",
+    "descripcion": "",
+    "importe": "1649147.45",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 74089129,
+    "xubio_item_id": 90829219
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 418,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-04",
+    "documento": "B-00006-00000007",
+    "proveedor": "Sueldos",
+    "producto": "Sueldos",
+    "descripcion": "Banco ",
+    "importe": "2644778.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 73688035,
+    "xubio_item_id": 90311468
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 419,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-04",
+    "documento": "B-00006-00000007",
+    "proveedor": "Sueldos",
+    "producto": "Sueldo Director",
+    "descripcion": "Banco ",
+    "importe": "2400000.00",
+    "rubro": "honorarios_direccion",
+    "xubio_transaccion_id": 73688035,
+    "xubio_item_id": 90311469
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 420,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-09",
+    "documento": "A-00003-00041460",
+    "proveedor": "PANHEL S R L",
+    "producto": "Propinato de Calcio",
+    "descripcion": "Kilos ",
+    "importe": "119226.25",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75008522,
+    "xubio_item_id": 92137129
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 421,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-09",
+    "documento": "A-00003-00041460",
+    "proveedor": "PANHEL S R L",
+    "producto": "Levadura Seca x 500Gr",
+    "descripcion": "Paquetes ",
+    "importe": "398207.70",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75008522,
+    "xubio_item_id": 92137130
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 422,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-09",
+    "documento": "A-00003-00041460",
+    "proveedor": "PANHEL S R L",
+    "producto": "Sorbato de Potasio Granulado ",
+    "descripcion": "Kilos ",
+    "importe": "15090.30",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75008522,
+    "xubio_item_id": 92137131
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 423,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-03",
+    "documento": "B-00006-00000011",
+    "proveedor": "Logistica",
+    "producto": "Gps ",
+    "descripcion": "",
+    "importe": "25000.00",
+    "rubro": "logistica",
+    "xubio_transaccion_id": 73474177,
+    "xubio_item_id": 90040356
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 424,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-03",
+    "documento": "B-00006-00000007",
+    "proveedor": "Gastos Insumos",
+    "producto": "Gastos Varios ",
+    "descripcion": "",
+    "importe": "42000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 73478398,
+    "xubio_item_id": 90046987
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 425,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-08",
+    "documento": "B-00006-00000009",
+    "proveedor": "Sueldos",
+    "producto": "Sueldos",
+    "descripcion": "Tomas ",
+    "importe": "773200.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 73688205,
+    "xubio_item_id": 90311645
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 426,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-08",
+    "documento": "B-00006-00000009",
+    "proveedor": "Sueldos",
+    "producto": "Aguinaldo",
+    "descripcion": "Tomas ",
+    "importe": "581190.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 73688205,
+    "xubio_item_id": 90311646
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 427,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-04",
+    "documento": "A-00021-00032507",
+    "proveedor": "ByC",
+    "producto": "Bolsa Salvado x 25Kg",
+    "descripcion": "",
+    "importe": "65124.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 74657538,
+    "xubio_item_id": 91608814
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 428,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-01",
+    "documento": "C-00001-00000057",
+    "proveedor": "TANIA MELINA ARRIAGA",
+    "producto": "Contaduria",
+    "descripcion": "",
+    "importe": "275000.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 73692294,
+    "xubio_item_id": 90317256
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 429,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-04",
+    "documento": "C-00002-00001481",
+    "proveedor": "BERNARDITA RUTH SOBA",
+    "producto": "Bromatologa",
+    "descripcion": "",
+    "importe": "80000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 73691661,
+    "xubio_item_id": 90316415
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 430,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-04",
+    "documento": "A-00009-00002401",
+    "proveedor": "DISTRIBUIDORA ESTRELLA AZUL SRL",
+    "producto": "Alcohol",
+    "descripcion": "",
+    "importe": "41617.36",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 73692682,
+    "xubio_item_id": 90317737
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 431,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-01",
+    "documento": "C-00001-00000058",
+    "proveedor": "TANIA MELINA ARRIAGA",
+    "producto": "Balance ",
+    "descripcion": "",
+    "importe": "895525.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 73692074,
+    "xubio_item_id": 90316951
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 432,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-01",
+    "documento": "B-00006-00000003",
+    "proveedor": "Gastos Insumos",
+    "producto": "Alcohol",
+    "descripcion": "",
+    "importe": "38000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 73375546,
+    "xubio_item_id": 89921800
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 433,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-01",
+    "documento": "B-00006-00000003",
+    "proveedor": "Gastos Insumos",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "30000.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 73375546,
+    "xubio_item_id": 89921801
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 434,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-31",
+    "documento": "B-00008-00000032",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "15000.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76702576,
+    "xubio_item_id": 94499865
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 435,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-26",
+    "documento": "C-00005-00000059",
+    "proveedor": "JAVIER ESTEBAN GIANO",
+    "producto": "Asesoramiento Mentoria",
+    "descripcion": "Economico",
+    "importe": "800000.00",
+    "rubro": "capex",
+    "xubio_transaccion_id": 76594041,
+    "xubio_item_id": 94344218
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 436,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-26",
+    "documento": "A-01331-00004126",
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "Bolsa Harina 000 x 25 kg",
+    "descripcion": "",
+    "importe": "1488240.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76594424,
+    "xubio_item_id": 94344912
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 437,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-26",
+    "documento": "A-01331-00004126",
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "Logistica",
+    "descripcion": "",
+    "importe": "113760.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76594424,
+    "xubio_item_id": 94344913
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 438,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-27",
+    "documento": "C-00001-00000183",
+    "proveedor": "LUCIA COMMERES BENEJAM",
+    "producto": "Contaduria",
+    "descripcion": "",
+    "importe": "151275.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 76594056,
+    "xubio_item_id": 94344281
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 439,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-26",
+    "documento": "B-00008-00000031",
+    "proveedor": "Gastos Administrativos",
+    "producto": "Carta Documento",
+    "descripcion": "",
+    "importe": "23900.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 76596733,
+    "xubio_item_id": 94349598
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 440,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-31",
+    "documento": "B-00008-00000034",
+    "proveedor": "Sueldos",
+    "producto": "Adelando Sueldo",
+    "descripcion": "Adelanto Tomas ",
+    "importe": "150000.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 76702682,
+    "xubio_item_id": 94500109
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 441,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-26",
+    "documento": "A-00003-00002832",
+    "proveedor": "SERGIO BARBERO S.A.S.",
+    "producto": "Bolsa Sal x 25kg",
+    "descripcion": "",
+    "importe": "30214.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76786873,
+    "xubio_item_id": 94615841
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 442,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-26",
+    "documento": "A-00003-00002832",
+    "proveedor": "SERGIO BARBERO S.A.S.",
+    "producto": "Bolsa de azucar 50 kg ",
+    "descripcion": "",
+    "importe": "261322.32",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76786873,
+    "xubio_item_id": 94615842
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 443,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-26",
+    "documento": "B-00008-00000027",
+    "proveedor": "Impuestos",
+    "producto": "Municipalidad",
+    "descripcion": "",
+    "importe": "169379.62",
+    "rubro": "impuestos",
+    "xubio_transaccion_id": 76568117,
+    "xubio_item_id": 94299642
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 444,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-26",
+    "documento": "B-00008-00000026",
+    "proveedor": "Librería",
+    "producto": "Gastos Varios ",
+    "descripcion": "Separador y folios ",
+    "importe": "4000.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 76561970,
+    "xubio_item_id": 94290454
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 445,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-31",
+    "documento": "B-00008-00000033",
+    "proveedor": "Ferretería",
+    "producto": "Gastos Varios ",
+    "descripcion": "Enchufe y presintos ",
+    "importe": "7600.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 76702633,
+    "xubio_item_id": 94500032
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 446,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-25",
+    "documento": "A-00020-00021410",
+    "proveedor": "TODO LIMPIEZA PIRELUXS S.A.S.",
+    "producto": "Alcohol",
+    "descripcion": "",
+    "importe": "35041.32",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 76567890,
+    "xubio_item_id": 94299459
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 447,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-25",
+    "documento": "A-00003-00043349",
+    "proveedor": "PANHEL S R L",
+    "producto": "Levadura Seca x 500Gr",
+    "descripcion": "",
+    "importe": "658894.50",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76564340,
+    "xubio_item_id": 94294521
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 448,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-25",
+    "documento": "A-00003-00043349",
+    "proveedor": "PANHEL S R L",
+    "producto": "Propinato de Calcio",
+    "descripcion": "Kilos ",
+    "importe": "96948.45",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76564340,
+    "xubio_item_id": 94294522
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 449,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-25",
+    "documento": "A-00101-00020779",
+    "proveedor": "Princor SRL",
+    "producto": "Oleo margarina",
+    "descripcion": "",
+    "importe": "963612.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76564307,
+    "xubio_item_id": 94294465
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 450,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-25",
+    "documento": "A-00016-00044527",
+    "proveedor": "Princor SRL",
+    "producto": "Softr Cotton x10 krs",
+    "descripcion": "",
+    "importe": "1371281.38",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76564276,
+    "xubio_item_id": 94294449
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 451,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-25",
+    "documento": "B-00008-00001278",
+    "proveedor": "La Queseria",
+    "producto": "Horma Queso",
+    "descripcion": "",
+    "importe": "243045.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76527820,
+    "xubio_item_id": 94238048
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 452,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-25",
+    "documento": "B-00008-00000025",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "15000.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76527718,
+    "xubio_item_id": 94237875
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 453,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-25",
+    "documento": "B-00008-00000024",
+    "proveedor": "Sueldos",
+    "producto": "Retiro de caja ",
+    "descripcion": "",
+    "importe": "350000.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 76527694,
+    "xubio_item_id": 94237845
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 454,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-24",
+    "documento": "B-00008-00000023",
+    "proveedor": "Sueldos",
+    "producto": "Adelando Sueldo",
+    "descripcion": "",
+    "importe": "50000.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 76486483,
+    "xubio_item_id": 94177859
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 455,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-24",
+    "documento": "B-00008-00000022",
+    "proveedor": "Logistica",
+    "producto": "Gastos Varios ",
+    "descripcion": "",
+    "importe": "29650.00",
+    "rubro": "logistica",
+    "xubio_transaccion_id": 76469508,
+    "xubio_item_id": 94157400
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 456,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-22",
+    "documento": "A-01340-00495117",
+    "proveedor": "AMX ARGENTINA SOCIEDAD ANONIMA",
+    "producto": "Internet",
+    "descripcion": "",
+    "importe": "80903.77",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76682184,
+    "xubio_item_id": 94481321
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 457,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-22",
+    "documento": "A-01340-00495117",
+    "proveedor": "AMX ARGENTINA SOCIEDAD ANONIMA",
+    "producto": "Internet",
+    "descripcion": "iva 27 %",
+    "importe": "49657.36",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76682184,
+    "xubio_item_id": 94482181
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 458,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-21",
+    "documento": "B-00008-00000031",
+    "proveedor": "DANIEL ADOLFO PEREZ",
+    "producto": "Desinfección",
+    "descripcion": "",
+    "importe": "55000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 76625487,
+    "xubio_item_id": 94396572
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 459,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-21",
+    "documento": "B-00092-00037676",
+    "proveedor": "MESAL S.A.S.",
+    "producto": "Bolsa Semillas Girasol",
+    "descripcion": "Diferencia en el precio ",
+    "importe": "-3813.92",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76595971,
+    "xubio_item_id": 94348365
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 460,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-21",
+    "documento": "C-00001-00000005",
+    "proveedor": "CARLOS ALBERTO BROQUA",
+    "producto": "Mantenimiento",
+    "descripcion": "",
+    "importe": "370000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 76512255,
+    "xubio_item_id": 94216835
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 461,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-21",
+    "documento": "A-00008-00030789",
+    "proveedor": "SCH COMERCIAL S.A.S.",
+    "producto": "Etiquetas ",
+    "descripcion": "",
+    "importe": "128350.38",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 76470787,
+    "xubio_item_id": 94158790
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 462,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-21",
+    "documento": "A-00001-00001215",
+    "proveedor": "MESAL S.A.S.",
+    "producto": "Bolsa Semillas Girasol",
+    "descripcion": "",
+    "importe": "61530.84",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76470190,
+    "xubio_item_id": 94158105
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 463,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-21",
+    "documento": "A-00001-00001215",
+    "proveedor": "MESAL S.A.S.",
+    "producto": "Bolsa Semillas Lino Marron",
+    "descripcion": "",
+    "importe": "120700.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76470190,
+    "xubio_item_id": 94158106
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 464,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-20",
+    "documento": "B-00008-00000009",
+    "proveedor": "Impuestos",
+    "producto": "IIBB",
+    "descripcion": "",
+    "importe": "19200.00",
+    "rubro": "impuestos",
+    "xubio_transaccion_id": 76726502,
+    "xubio_item_id": 94535616
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 465,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-20",
+    "documento": "B-00008-00000021",
+    "proveedor": "MONTEQUIN SA",
+    "producto": "Inversion",
+    "descripcion": "",
+    "importe": "741047.41",
+    "rubro": "capex",
+    "xubio_transaccion_id": 76469229,
+    "xubio_item_id": 94156987
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 466,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-20",
+    "documento": "B-00008-00000020",
+    "proveedor": "EPEC",
+    "producto": "Electricidad",
+    "descripcion": "",
+    "importe": "714209.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 76468785,
+    "xubio_item_id": 94156337
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 467,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-20",
+    "documento": "B-00008-00000023",
+    "proveedor": "Inversiones",
+    "producto": "Inversion",
+    "descripcion": "Enfriadora ",
+    "importe": "1500000.00",
+    "rubro": "capex",
+    "xubio_transaccion_id": 76370872,
+    "xubio_item_id": 94054905
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 468,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-20",
+    "documento": "B-00008-00000022",
+    "proveedor": "Ferretería",
+    "producto": "Gastos Insumos",
+    "descripcion": "Hojas de Trincheta ",
+    "importe": "1500.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 76366370,
+    "xubio_item_id": 94048186
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 469,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-20",
+    "documento": "B-00008-00000021",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "12000.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76366337,
+    "xubio_item_id": 94048127
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 470,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-19",
+    "documento": "A-00021-00033207",
+    "proveedor": "ByC",
+    "producto": "Bolsa Salvado x 25Kg",
+    "descripcion": "",
+    "importe": "67768.40",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76366480,
+    "xubio_item_id": 94048335
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 471,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-14",
+    "documento": "B-00008-00000015",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "18000.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76139183,
+    "xubio_item_id": 93690677
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 472,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-14",
+    "documento": "B-00008-00000012",
+    "proveedor": "Sueldos",
+    "producto": "Adelando Sueldo",
+    "descripcion": "Gonzalo ",
+    "importe": "100000.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 76138187,
+    "xubio_item_id": 93689391
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 473,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-14",
+    "documento": "A-00003-00000904",
+    "proveedor": "FRANCO NICOLAS MERLO",
+    "producto": "Asesoramiento Mentoria",
+    "descripcion": "Acta de notificacion ",
+    "importe": "100000.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 76135846,
+    "xubio_item_id": 93686017
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 474,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-13",
+    "documento": "B-00008-00001252",
+    "proveedor": "La Queseria",
+    "producto": "Horma Queso",
+    "descripcion": "",
+    "importe": "128380.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76219593,
+    "xubio_item_id": 93828812
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 475,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-13",
+    "documento": "B-00008-00001252",
+    "proveedor": "La Queseria",
+    "producto": "Ricota",
+    "descripcion": "",
+    "importe": "47781.60",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76219593,
+    "xubio_item_id": 93828813
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 476,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-12",
+    "documento": "B-00008-00000018",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "12000.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 76022133,
+    "xubio_item_id": 93530845
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 477,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-12",
+    "documento": "B-00008-00000017",
+    "proveedor": "Limpieza  Rincón",
+    "producto": "Articulos Limpieza",
+    "descripcion": "",
+    "importe": "37200.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 76022041,
+    "xubio_item_id": 93530729
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 478,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-11",
+    "documento": "B-00008-00000001",
+    "proveedor": "Ferretería",
+    "producto": "Gastos Insumos",
+    "descripcion": "Cinta Aisladora ",
+    "importe": "1300.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75965127,
+    "xubio_item_id": 93453107
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 479,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-11",
+    "documento": "B-00008-00000012",
+    "proveedor": "Logistica",
+    "producto": "Cochera",
+    "descripcion": "",
+    "importe": "120000.00",
+    "rubro": "logistica",
+    "xubio_transaccion_id": 75952305,
+    "xubio_item_id": 93436731
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 480,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-10",
+    "documento": "A-01331-00003547",
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "Aceite caja x 4 bidones 5 ltrs",
+    "descripcion": "",
+    "importe": "143645.52",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75951397,
+    "xubio_item_id": 93435657
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 481,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-10",
+    "documento": "A-01044-00108113",
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "Bolsa Harina 000 x 25 kg",
+    "descripcion": "",
+    "importe": "1960319.84",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75950940,
+    "xubio_item_id": 93435049
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 482,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-10",
+    "documento": "A-01044-00108113",
+    "proveedor": "MOLINO CAÑUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "producto": "Logistica",
+    "descripcion": "",
+    "importe": "151680.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75950940,
+    "xubio_item_id": 93435050
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 483,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-10",
+    "documento": "B-00008-00000011",
+    "proveedor": "Sueldos",
+    "producto": "Sueldos",
+    "descripcion": "Banco",
+    "importe": "2726861.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 75825960,
+    "xubio_item_id": 93280543
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 484,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-10",
+    "documento": "B-00008-00000011",
+    "proveedor": "Sueldos",
+    "producto": "Sueldos",
+    "descripcion": "Efectivo",
+    "importe": "3873650.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 75825960,
+    "xubio_item_id": 93280544
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 485,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-10",
+    "documento": "B-00008-00000011",
+    "proveedor": "Sueldos",
+    "producto": "Formulario 931",
+    "descripcion": "",
+    "importe": "1706626.80",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 75825960,
+    "xubio_item_id": 93280545
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 486,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-07",
+    "documento": "B-00008-00000025",
+    "proveedor": "MATIAS EMANUEL LOPEZ",
+    "producto": "Gastos Bancarios",
+    "descripcion": "Tarjeta de credito ",
+    "importe": "347957.35",
+    "rubro": "retiro_societario",
+    "xubio_transaccion_id": 76592073,
+    "xubio_item_id": 94340460
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 487,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-07",
+    "documento": "A-00003-00002709",
+    "proveedor": "SERGIO BARBERO S.A.S.",
+    "producto": "Bolsa Sal x 25kg",
+    "descripcion": "",
+    "importe": "24047.01",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75951621,
+    "xubio_item_id": 93435938
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 488,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-07",
+    "documento": "A-00003-00002709",
+    "proveedor": "SERGIO BARBERO S.A.S.",
+    "producto": "Bolsa de azucar 50 kg ",
+    "descripcion": "",
+    "importe": "130661.16",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75951621,
+    "xubio_item_id": 93435939
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 489,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-06",
+    "documento": "B-00008-00000008",
+    "proveedor": "Sueldos",
+    "producto": "Sueldo Director",
+    "descripcion": "",
+    "importe": "2400000.00",
+    "rubro": "honorarios_direccion",
+    "xubio_transaccion_id": 76107558,
+    "xubio_item_id": 93646462
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 490,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-06",
+    "documento": "A-00020-00021092",
+    "proveedor": "TODO LIMPIEZA PIRELUXS S.A.S.",
+    "producto": "Alcohol",
+    "descripcion": "",
+    "importe": "35041.32",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75722346,
+    "xubio_item_id": 93135587
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 491,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-06",
+    "documento": "B-00008-00000004",
+    "proveedor": "Librería",
+    "producto": "supermercado-libreria",
+    "descripcion": "",
+    "importe": "8000.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 75722181,
+    "xubio_item_id": 93135415
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 492,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-06",
+    "documento": "B-00008-00000003",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "9000.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75721992,
+    "xubio_item_id": 93135219
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 493,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-05",
+    "documento": "B-00008-00000009",
+    "proveedor": "Ferretería",
+    "producto": "Ferreteria",
+    "descripcion": "Poximix ",
+    "importe": "14000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75682012,
+    "xubio_item_id": 93086812
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 494,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-04",
+    "documento": "A-00003-00042870",
+    "proveedor": "PANHEL S R L",
+    "producto": "Desmoldante Taxonera ",
+    "descripcion": "",
+    "importe": "26037.13",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75682795,
+    "xubio_item_id": 93087497
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 495,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-04",
+    "documento": "A-00003-00042870",
+    "proveedor": "PANHEL S R L",
+    "producto": "Levadura Seca x 500Gr",
+    "descripcion": "Paquete 500 grs ",
+    "importe": "724783.95",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75682795,
+    "xubio_item_id": 93087498
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 496,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-04",
+    "documento": "A-00003-00042870",
+    "proveedor": "PANHEL S R L",
+    "producto": "Propinato de Calcio",
+    "descripcion": "Kilos ",
+    "importe": "102051.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75682795,
+    "xubio_item_id": 93087499
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 497,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-05",
+    "documento": "A-00016-00044226",
+    "proveedor": "Princor SRL",
+    "producto": "Softr Cotton x10 krs",
+    "descripcion": "",
+    "importe": "979486.71",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75722451,
+    "xubio_item_id": 93135686
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 498,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-04",
+    "documento": "B-00008-00000008",
+    "proveedor": "Alquiler",
+    "producto": "Alquiler",
+    "descripcion": "",
+    "importe": "2150227.51",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75624642,
+    "xubio_item_id": 93014220
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 499,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-04",
+    "documento": "B-00008-00000005",
+    "proveedor": "Sueldos",
+    "producto": "Sueldos",
+    "descripcion": "",
+    "importe": "32500.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 75624809,
+    "xubio_item_id": 93014424
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 500,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-03",
+    "documento": "B-00008-00000019",
+    "proveedor": "Logistica",
+    "producto": "Gps ",
+    "descripcion": "",
+    "importe": "25000.00",
+    "rubro": "logistica",
+    "xubio_transaccion_id": 76002267,
+    "xubio_item_id": 93505206
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 501,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-03",
+    "documento": "C-00002-00001516",
+    "proveedor": "BERNARDITA RUTH SOBA",
+    "producto": "Bromatologa",
+    "descripcion": "",
+    "importe": "85000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 76002189,
+    "xubio_item_id": 93505098
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 502,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-03",
+    "documento": "B-00008-00000004",
+    "proveedor": "Sueldos",
+    "producto": "Sueldos",
+    "descripcion": "Gonzalo ",
+    "importe": "32500.00",
+    "rubro": "sueldos_productivos",
+    "xubio_transaccion_id": 75582066,
+    "xubio_item_id": 92957055
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 503,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-03",
+    "documento": "B-00008-00000002",
+    "proveedor": "Ferretería",
+    "producto": "Gastos Insumos",
+    "descripcion": "Espatulas ",
+    "importe": "28500.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75575587,
+    "xubio_item_id": 92946648
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 504,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-03",
+    "documento": "B-00008-00000002",
+    "proveedor": "Ferretería",
+    "producto": "Gastos Varios ",
+    "descripcion": "Foco de la luz ",
+    "importe": "1900.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75575587,
+    "xubio_item_id": 92946649
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 505,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-03",
+    "documento": "B-00008-00000001",
+    "proveedor": "Almacen",
+    "producto": "Leche ",
+    "descripcion": "",
+    "importe": "11200.00",
+    "rubro": "materia_prima",
+    "xubio_transaccion_id": 75575418,
+    "xubio_item_id": 92946420
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 506,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-01",
+    "documento": "C-00001-00000079",
+    "proveedor": "TANIA MELINA ARRIAGA",
+    "producto": "Contaduria",
+    "descripcion": "Balance",
+    "importe": "895525.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 76594280,
+    "xubio_item_id": 94344575
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 507,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-01",
+    "documento": "C-00001-00000078",
+    "proveedor": "TANIA MELINA ARRIAGA",
+    "producto": "Honorarios",
+    "descripcion": "",
+    "importe": "275000.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 75948947,
+    "xubio_item_id": 93432351
+  }
+},
+{
+  "model": "gestion_gerencial.datosmesmapa",
+  "pk": 1,
+  "fields": {
+    "mes": "2026-07",
+    "ventas_netas": "40317367.69",
+    "unidades": 63977,
+    "clientes_activos": 76,
+    "clientes_80": 24,
+    "productos_80": 12,
+    "observaciones": ""
+  }
+},
+{
+  "model": "gestion_gerencial.datosmesmapa",
+  "pk": 2,
+  "fields": {
+    "mes": "2026-06",
+    "ventas_netas": "38672721.30",
+    "unidades": 63665,
+    "clientes_activos": 75,
+    "clientes_80": 24,
+    "productos_80": 13,
+    "observaciones": ""
+  }
+},
+{
+  "model": "gestion_gerencial.datosmesmapa",
+  "pk": 3,
+  "fields": {
+    "mes": "2026-08",
+    "ventas_netas": "34212913.49",
+    "unidades": 51880,
+    "clientes_activos": 73,
+    "clientes_80": 24,
+    "productos_80": 11,
+    "observaciones": ""
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 437,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MARIA LAURA BUFE",
+    "importe": "4601759.68",
+    "cantidad": 8923
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 438,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "Walter Gonzalez",
+    "importe": "3885998.73",
+    "cantidad": 6557
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 439,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MARCOS JAVIER SALINAS",
+    "importe": "3541891.40",
+    "cantidad": 8305
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 440,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "JEREMIAS AGUSTIN MAZZOCCHI",
+    "importe": "2736225.36",
+    "cantidad": 3582
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 441,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "EDUARDO GONZALO CASTRO",
+    "importe": "1804803.62",
+    "cantidad": 1781
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 442,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "DIEGO MARTIN ALLES GUARISCO",
+    "importe": "1548505.92",
+    "cantidad": 2394
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 443,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MAURO CASTRO",
+    "importe": "1513351.13",
+    "cantidad": 1914
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 444,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "VALENTIN CUESTAS",
+    "importe": "1500164.90",
+    "cantidad": 1979
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 445,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "LUCAS MALBRAN",
+    "importe": "1432460.63",
+    "cantidad": 2357
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 446,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "LUNA ANABEL MAZZOCCHI",
+    "importe": "1242684.28",
+    "cantidad": 1678
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 447,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "PICK",
+    "importe": "1007383.41",
+    "cantidad": 1063
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 448,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "NOELIA SILVANA GOMEZ ALVARADO",
+    "importe": "895891.40",
+    "cantidad": 1800
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 449,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "DIEGO EDUARDO SANCHEZ PRATS",
+    "importe": "850297.60",
+    "cantidad": 1458
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 450,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "DIEGO SEBASTIAN VARELA",
+    "importe": "818570.14",
+    "cantidad": 1282
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 451,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "ETEREO SAN JUAN S.A.S.",
+    "importe": "641398.92",
+    "cantidad": 230
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 452,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "VALENTINA BICECCI",
+    "importe": "631692.54",
+    "cantidad": 970
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 453,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "JAVIEE S.A.S.",
+    "importe": "607232.58",
+    "cantidad": 984
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 454,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MARIA CRISTINA FRONTERA",
+    "importe": "518366.29",
+    "cantidad": 983
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 455,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "JOSE EMANUEL SAINE",
+    "importe": "513745.48",
+    "cantidad": 1036
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 456,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MARIA EMILIA ALESSANDRINI",
+    "importe": "469951.47",
+    "cantidad": 463
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 457,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "SERGIO EZEQUIEL VILAR",
+    "importe": "459728.51",
+    "cantidad": 1000
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 458,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "FABIO MARCELO HUMACATA",
+    "importe": "447388.14",
+    "cantidad": 753
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 459,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "FEDERICO AGUSTIN ZARATE",
+    "importe": "426678.73",
+    "cantidad": 768
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 460,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "RESTOBEEF S.A.S.",
+    "importe": "395586.15",
+    "cantidad": 761
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 461,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MARCOS EXEQUIEL FEMMINELLA",
+    "importe": "368867.58",
+    "cantidad": 510
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 462,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MASAI S.A.S.",
+    "importe": "367188.22",
+    "cantidad": 392
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 463,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "BUNNA S.A.S.",
+    "importe": "341449.08",
+    "cantidad": 392
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 464,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "ESTEBAN GUILLERMO ABAM TAICHURE",
+    "importe": "341084.15",
+    "cantidad": 460
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 465,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "CRISTIAN GERMAN SAILLEN",
+    "importe": "340090.56",
+    "cantidad": 426
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 466,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "PAOLA SOLEDAD ROJAS",
+    "importe": "340010.49",
+    "cantidad": 629
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 467,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "DALMA BELEN SALERNO",
+    "importe": "338948.46",
+    "cantidad": 162
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 468,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "TOMAS ALBERTO BRITO",
+    "importe": "338924.89",
+    "cantidad": 503
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 469,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "BRIAN OMAR FERNANDEZ",
+    "importe": "322827.30",
+    "cantidad": 396
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 470,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MALAGAUSTIN S.A.S.",
+    "importe": "237368.28",
+    "cantidad": 92
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 471,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "NICOLAS JOSE COMAMALA",
+    "importe": "236265.12",
+    "cantidad": 336
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 472,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "VALERIA MAGALI GALVAN",
+    "importe": "235028.96",
+    "cantidad": 348
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 473,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "ALDANA ABIGAIL ROSAS",
+    "importe": "229771.95",
+    "cantidad": 295
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 474,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "LEANDRO ENRIQUE VERDINELLI",
+    "importe": "223836.51",
+    "cantidad": 543
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 475,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "CRISTINA MARICEL COLAZO",
+    "importe": "222532.74",
+    "cantidad": 270
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 476,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "LORENA DEL LUJAN LUQUE RODRIGUEZ",
+    "importe": "206407.24",
+    "cantidad": 80
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 477,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "DIEGO MONTEMARTINI",
+    "importe": "188003.62",
+    "cantidad": 288
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 478,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "GARCIA PEREZ GRANDI S.A.S.",
+    "importe": "186091.92",
+    "cantidad": 504
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 479,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "PABLO DANIEL BUSTOS",
+    "importe": "172333.08",
+    "cantidad": 228
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 480,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "LUCIANA CARBALLO",
+    "importe": "171697.74",
+    "cantidad": 294
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 481,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "JUAN EDUARDO CUELLO",
+    "importe": "156502.26",
+    "cantidad": 216
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 482,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "IVANA VERONICA VAZQUEZ",
+    "importe": "150543.96",
+    "cantidad": 238
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 483,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "VICTOR GABRIEL ATENCIO",
+    "importe": "148935.75",
+    "cantidad": 246
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 484,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "Consumidor Final",
+    "importe": "135891.40",
+    "cantidad": 203
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 485,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "joel Luque",
+    "importe": "135565.61",
+    "cantidad": 280
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 486,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "PATRICIO GERMAN CHAVERO",
+    "importe": "129508.60",
+    "cantidad": 210
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 487,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MATIAS LEANDRO GAMBRA PINEDA",
+    "importe": "118012.74",
+    "cantidad": 138
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 488,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "FRANCO EMILIANO SALDAÑO",
+    "importe": "109046.70",
+    "cantidad": 266
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 489,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "Sabores en ruta",
+    "importe": "108633.48",
+    "cantidad": 155
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 490,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MAYRA ELIANA VARELA",
+    "importe": "104792.68",
+    "cantidad": 210
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 491,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MAYRA SOFIA QUINTEROS",
+    "importe": "95308.60",
+    "cantidad": 129
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 492,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MARCO PORPORATO",
+    "importe": "91029.27",
+    "cantidad": 171
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 493,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "Alejandro Sisterna",
+    "importe": "90635.29",
+    "cantidad": 117
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 494,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "Mariel Almada",
+    "importe": "82562.90",
+    "cantidad": 32
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 495,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "LUCAS ARIEL MAMONDEZ",
+    "importe": "82425.34",
+    "cantidad": 129
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 496,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MELINA ACOSTA",
+    "importe": "79384.62",
+    "cantidad": 126
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 497,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "AGUSTIN NAHUEL VALDES LOPEZ",
+    "importe": "66750.40",
+    "cantidad": 160
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 498,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "SXHARA S.A.S.",
+    "importe": "65375.40",
+    "cantidad": 180
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 499,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "GABRIEL NICOLAS MARTINEZ",
+    "importe": "62305.80",
+    "cantidad": 110
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 500,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "Jorge Lucini",
+    "importe": "53370.14",
+    "cantidad": 18
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 501,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MARIA LAURA RAVA MORENO",
+    "importe": "49158.37",
+    "cantidad": 90
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 502,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "LILIANA ANDREA CHABRA",
+    "importe": "44948.42",
+    "cantidad": 29
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 503,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MARIANO DAVID KARLEN",
+    "importe": "42190.20",
+    "cantidad": 60
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 504,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "RUTH IVANA FERROFINO",
+    "importe": "41495.02",
+    "cantidad": 60
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 505,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MAG S. R. L.",
+    "importe": "34880.00",
+    "cantidad": 50
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 506,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "ERIKA EDITH FUENTES",
+    "importe": "32676.92",
+    "cantidad": 42
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 507,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "IVAN EDUARDO LA ROCCA",
+    "importe": "27849.63",
+    "cantidad": 45
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 508,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "MATIAS JAVIER REYES",
+    "importe": "27423.63",
+    "cantidad": 39
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 509,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "LA COMANDA TEJEDA S.A.S",
+    "importe": "20575.56",
+    "cantidad": 8
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 510,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "CARLOS ALBERTO ARCE",
+    "importe": "16539.37",
+    "cantidad": 27
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 511,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "EUGENIA ILEANA BELTRAMINI",
+    "importe": "8438.04",
+    "cantidad": 12
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 512,
+  "fields": {
+    "mes": "2026-07",
+    "cliente": "ADRIANA GRACIELA DE LOURDES RICCIO",
+    "importe": "4126.70",
+    "cantidad": 12
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 513,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MARIA LAURA BUFE",
+    "importe": "4520862.83",
+    "cantidad": 9104
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 514,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MARCOS JAVIER SALINAS",
+    "importe": "4465700.05",
+    "cantidad": 11054
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 515,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "Walter Gonzalez",
+    "importe": "3570645.75",
+    "cantidad": 6405
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 516,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "JEREMIAS AGUSTIN MAZZOCCHI",
+    "importe": "2151833.70",
+    "cantidad": 2943
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 517,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "EDUARDO GONZALO CASTRO",
+    "importe": "1814929.41",
+    "cantidad": 1757
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 518,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MAURO CASTRO",
+    "importe": "1748409.05",
+    "cantidad": 2086
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 519,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "VALENTIN CUESTAS",
+    "importe": "1666795.04",
+    "cantidad": 2318
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 520,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "DIEGO EDUARDO SANCHEZ PRATS",
+    "importe": "1242542.99",
+    "cantidad": 2338
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 521,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "PICK",
+    "importe": "1115246.79",
+    "cantidad": 1157
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 522,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "DIEGO SEBASTIAN VARELA",
+    "importe": "882713.12",
+    "cantidad": 1402
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 523,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "DIEGO MARTIN ALLES GUARISCO",
+    "importe": "866639.80",
+    "cantidad": 1428
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 524,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MARCOS EXEQUIEL FEMMINELLA",
+    "importe": "839595.36",
+    "cantidad": 1173
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 525,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "VALENTINA BICECCI",
+    "importe": "705619.62",
+    "cantidad": 1052
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 526,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "LUNA ANABEL MAZZOCCHI",
+    "importe": "703473.88",
+    "cantidad": 956
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 527,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "ETEREO SAN JUAN S.A.S.",
+    "importe": "697987.18",
+    "cantidad": 252
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 528,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "LUCAS MALBRAN",
+    "importe": "622647.06",
+    "cantidad": 1085
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 529,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "TOMAS ALBERTO BRITO",
+    "importe": "522855.20",
+    "cantidad": 451
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 530,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "BRIAN OMAR FERNANDEZ",
+    "importe": "510098.01",
+    "cantidad": 624
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 531,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MARIA EMILIA ALESSANDRINI",
+    "importe": "492239.40",
+    "cantidad": 504
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 532,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "NOELIA SILVANA GOMEZ ALVARADO",
+    "importe": "480402.71",
+    "cantidad": 969
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 533,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "JAVIEE S.A.S.",
+    "importe": "445250.68",
+    "cantidad": 753
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 534,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "ESTEBAN GUILLERMO ABAM TAICHURE",
+    "importe": "427163.31",
+    "cantidad": 633
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 535,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MARIA CRISTINA FRONTERA",
+    "importe": "425913.38",
+    "cantidad": 826
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 536,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "JOSE EMANUEL SAINE",
+    "importe": "403191.59",
+    "cantidad": 827
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 537,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "PAOLA SOLEDAD ROJAS",
+    "importe": "356592.75",
+    "cantidad": 687
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 538,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "BUNNA S.A.S.",
+    "importe": "356127.62",
+    "cantidad": 413
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 539,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "FEDERICO AGUSTIN ZARATE",
+    "importe": "340912.22",
+    "cantidad": 633
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 540,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "FABIO MARCELO HUMACATA",
+    "importe": "327885.65",
+    "cantidad": 633
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 541,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "LUCIANA CARBALLO",
+    "importe": "326893.90",
+    "cantidad": 607
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 542,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "RESTOBEEF S.A.S.",
+    "importe": "319177.56",
+    "cantidad": 564
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 543,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "SERGIO EZEQUIEL VILAR",
+    "importe": "313484.16",
+    "cantidad": 700
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 544,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MALAGAUSTIN S.A.S.",
+    "importe": "303047.88",
+    "cantidad": 120
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 545,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "ALDANA ABIGAIL ROSAS",
+    "importe": "251200.00",
+    "cantidad": 256
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 546,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "DALMA BELEN SALERNO",
+    "importe": "245447.92",
+    "cantidad": 124
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 547,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "PAOLA VERONICA GUADALUPE",
+    "importe": "241629.00",
+    "cantidad": 150
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 548,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "IVANA VERONICA VAZQUEZ",
+    "importe": "225614.60",
+    "cantidad": 359
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 549,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MASAI S.A.S.",
+    "importe": "216663.47",
+    "cantidad": 228
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 550,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "Consumidor Final",
+    "importe": "209408.14",
+    "cantidad": 281
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 551,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "GARCIA PEREZ GRANDI S.A.S.",
+    "importe": "203814.96",
+    "cantidad": 552
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 552,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "CRISTIAN GERMAN SAILLEN",
+    "importe": "183460.72",
+    "cantidad": 190
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 553,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "VALERIA MAGALI GALVAN",
+    "importe": "180337.56",
+    "cantidad": 236
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 554,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "PABLO DANIEL BUSTOS",
+    "importe": "171258.00",
+    "cantidad": 240
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 555,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "VICTOR GABRIEL ATENCIO",
+    "importe": "163691.40",
+    "cantidad": 279
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 556,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "PABLO MATIAS SOBISCH",
+    "importe": "160241.94",
+    "cantidad": 558
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 557,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "LEANDRO ENRIQUE VERDINELLI",
+    "importe": "145406.01",
+    "cantidad": 375
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 558,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "CRISTINA MARICEL COLAZO",
+    "importe": "141252.84",
+    "cantidad": 204
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 559,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "LORENA DEL LUJAN LUQUE RODRIGUEZ",
+    "importe": "138859.73",
+    "cantidad": 56
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 560,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "DIEGO MONTEMARTINI",
+    "importe": "126530.32",
+    "cantidad": 196
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 561,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "SXHARA S.A.S.",
+    "importe": "122063.28",
+    "cantidad": 348
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 562,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MATIAS LEANDRO GAMBRA PINEDA",
+    "importe": "108874.25",
+    "cantidad": 147
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 563,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "FRANCO EMILIANO SALDAÑO",
+    "importe": "105322.70",
+    "cantidad": 266
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 564,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "LUCAS ARIEL MAMONDEZ",
+    "importe": "99485.07",
+    "cantidad": 153
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 565,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MELINA ACOSTA",
+    "importe": "98139.37",
+    "cantidad": 165
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 566,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MARCO PORPORATO",
+    "importe": "90008.19",
+    "cantidad": 177
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 567,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "Sabores en ruta",
+    "importe": "88637.10",
+    "cantidad": 136
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 568,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "CARLOS ALBERTO ARCE",
+    "importe": "83560.18",
+    "cantidad": 151
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 569,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MAYRA ELIANA VARELA",
+    "importe": "82963.06",
+    "cantidad": 160
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 570,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "joel Luque",
+    "importe": "78157.47",
+    "cantidad": 156
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 571,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "Alejandro Sisterna",
+    "importe": "75974.66",
+    "cantidad": 102
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 572,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "Mariel Almada",
+    "importe": "72242.53",
+    "cantidad": 28
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 573,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MAG S. R. L.",
+    "importe": "71520.00",
+    "cantidad": 67
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 574,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "AGUSTIN NAHUEL VALDES LOPEZ",
+    "importe": "66750.40",
+    "cantidad": 160
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 575,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MAYRA SOFIA QUINTEROS",
+    "importe": "62653.39",
+    "cantidad": 105
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 576,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "SONIA DEL VALLE ACUÑA",
+    "importe": "46854.24",
+    "cantidad": 102
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 577,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MARIANO DAVID KARLEN",
+    "importe": "42190.20",
+    "cantidad": 60
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 578,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "IVAN EDUARDO LA ROCCA",
+    "importe": "37466.10",
+    "cantidad": 60
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 579,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "NICOLAS JOSE COMAMALA",
+    "importe": "35861.67",
+    "cantidad": 51
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 580,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MARIA LAURA RAVA MORENO",
+    "importe": "35581.90",
+    "cantidad": 69
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 581,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "ADRIANA GRACIELA DE LOURDES RICCIO",
+    "importe": "34683.26",
+    "cantidad": 93
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 582,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "Jorge Lucini",
+    "importe": "30895.93",
+    "cantidad": 12
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 583,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "LA COMANDA TEJEDA S.A.S",
+    "importe": "30895.92",
+    "cantidad": 12
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 584,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "ERIKA EDITH FUENTES",
+    "importe": "29799.10",
+    "cantidad": 39
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 585,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "RUTH IVANA FERROFINO",
+    "importe": "26747.51",
+    "cantidad": 48
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 586,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "MATIAS JAVIER REYES",
+    "importe": "24217.20",
+    "cantidad": 36
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 587,
+  "fields": {
+    "mes": "2026-06",
+    "cliente": "SANDRA MARIA PAUTASSO",
+    "importe": "19482.36",
+    "cantidad": 24
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 588,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MARIA LAURA BUFE",
+    "importe": "3351344.66",
+    "cantidad": 6345
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 589,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "Walter Gonzalez",
+    "importe": "2986137.29",
+    "cantidad": 4942
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 590,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MARCOS JAVIER SALINAS",
+    "importe": "2174522.06",
+    "cantidad": 4706
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 591,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "JEREMIAS AGUSTIN MAZZOCCHI",
+    "importe": "2031639.68",
+    "cantidad": 2654
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 592,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "EDUARDO GONZALO CASTRO",
+    "importe": "1923226.24",
+    "cantidad": 1757
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 593,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "DIEGO EDUARDO SANCHEZ PRATS",
+    "importe": "1708514.03",
+    "cantidad": 2689
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 594,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "VALENTIN CUESTAS",
+    "importe": "1611419.04",
+    "cantidad": 2130
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 595,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MAURO CASTRO",
+    "importe": "1484344.80",
+    "cantidad": 1659
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 596,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "LUCAS MALBRAN",
+    "importe": "1379337.56",
+    "cantidad": 2041
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 597,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "DIEGO SEBASTIAN VARELA",
+    "importe": "1004054.30",
+    "cantidad": 1552
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 598,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "LUNA ANABEL MAZZOCCHI",
+    "importe": "972682.86",
+    "cantidad": 1311
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 599,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "PICK",
+    "importe": "940585.23",
+    "cantidad": 1041
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 600,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "DIEGO MARTIN ALLES GUARISCO",
+    "importe": "710104.38",
+    "cantidad": 1077
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 601,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "VALENTINA BICECCI",
+    "importe": "653933.28",
+    "cantidad": 1020
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 602,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MARCOS EXEQUIEL FEMMINELLA",
+    "importe": "646119.81",
+    "cantidad": 897
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 603,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "NOELIA SILVANA GOMEZ ALVARADO",
+    "importe": "596658.82",
+    "cantidad": 1225
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 604,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "ETEREO SAN JUAN S.A.S.",
+    "importe": "497397.16",
+    "cantidad": 184
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 605,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "JAVIEE S.A.S.",
+    "importe": "432863.35",
+    "cantidad": 693
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 606,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MARIA CRISTINA FRONTERA",
+    "importe": "396392.40",
+    "cantidad": 724
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 607,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "TOMAS ALBERTO BRITO",
+    "importe": "391817.19",
+    "cantidad": 597
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 608,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "FEDERICO AGUSTIN ZARATE",
+    "importe": "384372.85",
+    "cantidad": 748
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 609,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "BRIAN OMAR FERNANDEZ",
+    "importe": "377631.36",
+    "cantidad": 456
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 610,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "JOSE EMANUEL SAINE",
+    "importe": "372834.73",
+    "cantidad": 739
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 611,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "FABIO MARCELO HUMACATA",
+    "importe": "372220.66",
+    "cantidad": 589
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 612,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "SERGIO EZEQUIEL VILAR",
+    "importe": "367782.81",
+    "cantidad": 800
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 613,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "BUNNA S.A.S.",
+    "importe": "357901.52",
+    "cantidad": 408
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 614,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "JUAN EDUARDO CUELLO",
+    "importe": "357314.03",
+    "cantidad": 496
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 615,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "ALDANA ABIGAIL ROSAS",
+    "importe": "349318.55",
+    "cantidad": 458
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 616,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "ESTEBAN GUILLERMO ABAM TAICHURE",
+    "importe": "341929.02",
+    "cantidad": 439
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 617,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "DALMA BELEN SALERNO",
+    "importe": "341512.35",
+    "cantidad": 187
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 618,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MASAI S.A.S.",
+    "importe": "313238.02",
+    "cantidad": 315
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 619,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MALAGAUSTIN S.A.S.",
+    "importe": "311927.28",
+    "cantidad": 168
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 620,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "RESTOBEEF S.A.S.",
+    "importe": "302790.06",
+    "cantidad": 594
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 621,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "PAOLA SOLEDAD ROJAS",
+    "importe": "263386.92",
+    "cantidad": 480
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 622,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "LEANDRO ENRIQUE VERDINELLI",
+    "importe": "236954.97",
+    "cantidad": 549
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 623,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "GARCIA PEREZ GRANDI S.A.S.",
+    "importe": "234091.82",
+    "cantidad": 634
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 624,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "LORENA DEL LUJAN LUQUE RODRIGUEZ",
+    "importe": "221887.78",
+    "cantidad": 86
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 625,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "LUCIANA CARBALLO",
+    "importe": "188615.36",
+    "cantidad": 340
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 626,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "IVANA VERONICA VAZQUEZ",
+    "importe": "177954.74",
+    "cantidad": 278
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 627,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "CRISTIAN GERMAN SAILLEN",
+    "importe": "167301.38",
+    "cantidad": 195
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 628,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "CRISTINA MARICEL COLAZO",
+    "importe": "162593.33",
+    "cantidad": 233
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 629,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "PABLO DANIEL BUSTOS",
+    "importe": "143587.44",
+    "cantidad": 192
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 630,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "VICTOR GABRIEL ATENCIO",
+    "importe": "142908.60",
+    "cantidad": 237
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 631,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "DIEGO MONTEMARTINI",
+    "importe": "136019.91",
+    "cantidad": 206
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 632,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "LILIANA ANDREA CHABRA",
+    "importe": "126756.56",
+    "cantidad": 204
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 633,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "FRANCO EMILIANO SALDAÑO",
+    "importe": "114786.00",
+    "cantidad": 280
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 634,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "joel Luque",
+    "importe": "110389.14",
+    "cantidad": 228
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 635,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "SXHARA S.A.S.",
+    "importe": "99865.80",
+    "cantidad": 276
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 636,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MATIAS LEANDRO GAMBRA PINEDA",
+    "importe": "86822.66",
+    "cantidad": 116
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 637,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "Mariel Almada",
+    "importe": "82562.90",
+    "cantidad": 32
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 638,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MAYRA ELIANA VARELA",
+    "importe": "77042.62",
+    "cantidad": 146
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 639,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "YANINA DEL VALLE COLAZO",
+    "importe": "74834.46",
+    "cantidad": 105
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 640,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "VALERIA MAGALI GALVAN",
+    "importe": "73145.70",
+    "cantidad": 117
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 641,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "Alejandro Sisterna",
+    "importe": "69719.46",
+    "cantidad": 90
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 642,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "Sabores en ruta",
+    "importe": "67457.01",
+    "cantidad": 100
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 643,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "AGUSTIN NAHUEL VALDES LOPEZ",
+    "importe": "66750.40",
+    "cantidad": 160
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 644,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "NICOLAS JOSE COMAMALA",
+    "importe": "62041.83",
+    "cantidad": 87
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 645,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "PAOLA RITA ARAMAYO",
+    "importe": "61981.90",
+    "cantidad": 102
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 646,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "JULIAN ESTEBAN IGLESIAS ALONSO",
+    "importe": "60832.60",
+    "cantidad": 70
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 647,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "LUCAS ARIEL MAMONDEZ",
+    "importe": "58075.11",
+    "cantidad": 84
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 648,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MARIANO DAVID KARLEN",
+    "importe": "56215.47",
+    "cantidad": 81
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 649,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "Consumidor Final",
+    "importe": "53600.00",
+    "cantidad": 101
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 650,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MARCO PORPORATO",
+    "importe": "48678.90",
+    "cantidad": 90
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 651,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "PATRICIO GERMAN CHAVERO",
+    "importe": "47793.67",
+    "cantidad": 82
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 652,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "IVAN EDUARDO LA ROCCA",
+    "importe": "47483.91",
+    "cantidad": 81
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 653,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "SANDRA MARIA PAUTASSO",
+    "importe": "38964.72",
+    "cantidad": 48
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 654,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "EUGENIA ILEANA BELTRAMINI",
+    "importe": "38697.77",
+    "cantidad": 41
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 655,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "ERIKA EDITH FUENTES",
+    "importe": "37122.17",
+    "cantidad": 50
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 656,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "ADRIANA MARIA MORENO",
+    "importe": "27887.78",
+    "cantidad": 36
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 657,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "LA COMANDA TEJEDA S.A.S",
+    "importe": "10255.20",
+    "cantidad": 4
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 658,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MATIAS JAVIER REYES",
+    "importe": "8438.04",
+    "cantidad": 12
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 659,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "ADRIANA GRACIELA DE LOURDES RICCIO",
+    "importe": "8253.39",
+    "cantidad": 24
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 660,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "Ignacio Diaz",
+    "importe": "8014.48",
+    "cantidad": 12
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 661,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MELINA ACOSTA",
+    "importe": "0.00",
+    "cantidad": 0
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 662,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "MARIA LAURA RAVA MORENO",
+    "importe": "-7344.80",
+    "cantidad": -14
+  }
+},
+{
+  "model": "gestion_gerencial.ventaclientemapa",
+  "pk": 663,
+  "fields": {
+    "mes": "2026-08",
+    "cliente": "RUTH IVANA FERROFINO",
+    "importe": "-23381.00",
+    "cantidad": -36
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 224,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Lomo Campestre Grande",
+    "importe": "9180349.24",
+    "cantidad": 12051
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 225,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Lomo Campestre",
+    "importe": "3988812.12",
+    "cantidad": 6016
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 226,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Lomo Campestre Mini",
+    "importe": "3940747.82",
+    "cantidad": 11172
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 227,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Molde Integral",
+    "importe": "3920776.95",
+    "cantidad": 1584
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 228,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Lomo Clasico",
+    "importe": "3906605.09",
+    "cantidad": 6297
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 229,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan para Pebetes",
+    "importe": "1562264.97",
+    "cantidad": 4366
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 230,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Burger Buns Clasico Grande",
+    "importe": "1330875.47",
+    "cantidad": 2912
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 231,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Molde Blanco Campestre",
+    "importe": "1181333.22",
+    "cantidad": 488
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 232,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Campo Doble",
+    "importe": "1116672.79",
+    "cantidad": 743
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 233,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Burger Buns Clasico 100 grs",
+    "importe": "1082260.68",
+    "cantidad": 2412
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 234,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Lomo Clasico Grande",
+    "importe": "955610.25",
+    "cantidad": 1325
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 235,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Burger Buns con Queso 70 Gr",
+    "importe": "889012.77",
+    "cantidad": 1801
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 236,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Lomo Integral",
+    "importe": "869614.68",
+    "cantidad": 1275
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 237,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Burger Buns Clasico 70 grs",
+    "importe": "858746.22",
+    "cantidad": 2196
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 238,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Burger Buns con Semillas 100 grs",
+    "importe": "767609.87",
+    "cantidad": 1616
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 239,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Lomo Integral Mini",
+    "importe": "540652.32",
+    "cantidad": 1608
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 240,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Molde Blanco",
+    "importe": "534732.41",
+    "cantidad": 215
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 241,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Lomo con Queso Grande",
+    "importe": "499689.36",
+    "cantidad": 524
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 242,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Lomo con Queso",
+    "importe": "492283.30",
+    "cantidad": 513
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 243,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Lomo con Semillas",
+    "importe": "455523.32",
+    "cantidad": 666
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 244,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Lomo Clasico Mini",
+    "importe": "271395.32",
+    "cantidad": 846
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 245,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Campo Simple",
+    "importe": "233064.05",
+    "cantidad": 227
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 246,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Molde Campestre Grande",
+    "importe": "232330.29",
+    "cantidad": 63
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 247,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Burger Buns con Semillas 70 Gr",
+    "importe": "224937.56",
+    "cantidad": 540
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 248,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Burger Buns con Queso Grande",
+    "importe": "212631.25",
+    "cantidad": 352
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 249,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan de Lomo con Queso Mini",
+    "importe": "203077.42",
+    "cantidad": 408
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 250,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Burger Buns con Sesamo 70 Gr",
+    "importe": "200196.92",
+    "cantidad": 552
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 251,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Burger Buns con Queso 100 grs",
+    "importe": "197668.93",
+    "cantidad": 364
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 252,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Bagels",
+    "importe": "152009.55",
+    "cantidad": 165
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 253,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Tortuguita Integral",
+    "importe": "145259.52",
+    "cantidad": 192
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 254,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Pan para Panchos",
+    "importe": "110052.45",
+    "cantidad": 360
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 255,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Burger Buns con Sesamo 100 grs",
+    "importe": "33458.52",
+    "cantidad": 72
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 256,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Burger Buns con Sesamo Grande",
+    "importe": "19366.52",
+    "cantidad": 40
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 257,
+  "fields": {
+    "mes": "2026-07",
+    "producto": "Burger Buns con Semillas Grande",
+    "importe": "7746.56",
+    "cantidad": 16
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 258,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Lomo Campestre Grande",
+    "importe": "6912802.90",
+    "cantidad": 9309
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 259,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Molde Integral",
+    "importe": "4472408.96",
+    "cantidad": 1854
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 260,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Lomo Campestre",
+    "importe": "4095548.88",
+    "cantidad": 6274
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 261,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Lomo Campestre Mini",
+    "importe": "3878009.14",
+    "cantidad": 11373
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 262,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Lomo Clasico",
+    "importe": "3451806.42",
+    "cantidad": 5758
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 263,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan para Pebetes",
+    "importe": "1679654.23",
+    "cantidad": 4898
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 264,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Molde Blanco Campestre",
+    "importe": "1217124.29",
+    "cantidad": 511
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 265,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Campo Doble",
+    "importe": "1197605.97",
+    "cantidad": 804
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 266,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Burger Buns Clasico 100 grs",
+    "importe": "1125153.04",
+    "cantidad": 2556
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 267,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Burger Buns Clasico Grande",
+    "importe": "989918.10",
+    "cantidad": 2242
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 268,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Lomo Integral",
+    "importe": "981106.31",
+    "cantidad": 1473
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 269,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Burger Buns Clasico 70 grs",
+    "importe": "887250.98",
+    "cantidad": 2376
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 270,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Burger Buns con Queso 70 Gr",
+    "importe": "775141.11",
+    "cantidad": 1648
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 271,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Lomo Integral Mini",
+    "importe": "747703.90",
+    "cantidad": 2289
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 272,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Lomo con Queso",
+    "importe": "698829.23",
+    "cantidad": 753
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 273,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Burger Buns con Semillas 100 grs",
+    "importe": "682099.04",
+    "cantidad": 1496
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 274,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Lomo con Queso Grande",
+    "importe": "548072.27",
+    "cantidad": 593
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 275,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Lomo Clasico Grande",
+    "importe": "541267.32",
+    "cantidad": 771
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 276,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Lomo con Semillas",
+    "importe": "484485.22",
+    "cantidad": 725
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 277,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Molde Blanco",
+    "importe": "483550.81",
+    "cantidad": 200
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 278,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Burger Buns con Semillas 70 Gr",
+    "importe": "393597.74",
+    "cantidad": 1000
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 279,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Lomo Clasico Mini",
+    "importe": "347171.61",
+    "cantidad": 1086
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 280,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan para Panchos",
+    "importe": "309085.19",
+    "cantidad": 1086
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 281,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Campo Simple",
+    "importe": "288976.94",
+    "cantidad": 291
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 282,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Molde Campestre Grande",
+    "importe": "273748.39",
+    "cantidad": 76
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 283,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Lomo con Queso Mini",
+    "importe": "237719.85",
+    "cantidad": 486
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 284,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Tortuguita Integral",
+    "importe": "233288.64",
+    "cantidad": 324
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 285,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Burger Buns con Queso 100 grs",
+    "importe": "180597.47",
+    "cantidad": 348
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 286,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Burger Buns con Queso Grande",
+    "importe": "174775.84",
+    "cantidad": 284
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 287,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Burger Buns con Sesamo 70 Gr",
+    "importe": "159339.73",
+    "cantidad": 448
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 288,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Bagels",
+    "importe": "152009.55",
+    "cantidad": 165
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 289,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Burger Buns con Sesamo 100 grs",
+    "importe": "39113.00",
+    "cantidad": 84
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 290,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Pan de Lomo con Semillas Mini",
+    "importe": "16506.79",
+    "cantidad": 48
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 291,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Burger Buns con Sesamo Grande",
+    "importe": "9505.89",
+    "cantidad": 20
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 292,
+  "fields": {
+    "mes": "2026-06",
+    "producto": "Burger Buns con Semillas Grande",
+    "importe": "7746.56",
+    "cantidad": 16
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 293,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Campestre Grande",
+    "importe": "7723910.66",
+    "cantidad": 10128
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 294,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Campestre",
+    "importe": "4511057.86",
+    "cantidad": 6765
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 295,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Molde Integral",
+    "importe": "3944642.80",
+    "cantidad": 1597
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 296,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Campestre Mini",
+    "importe": "3104594.13",
+    "cantidad": 8752
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 297,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Clasico",
+    "importe": "2624716.31",
+    "cantidad": 4185
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 298,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Integral",
+    "importe": "1107550.54",
+    "cantidad": 1618
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 299,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns Clasico Grande",
+    "importe": "1073738.69",
+    "cantidad": 2340
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 300,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Molde Blanco Campestre",
+    "importe": "1053888.53",
+    "cantidad": 436
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 301,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan para Pebetes",
+    "importe": "846577.78",
+    "cantidad": 2226
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 302,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Clasico Grande",
+    "importe": "828007.70",
+    "cantidad": 1143
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 303,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Campo Doble",
+    "importe": "773692.65",
+    "cantidad": 517
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 304,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns Clasico 100 grs",
+    "importe": "750868.10",
+    "cantidad": 1676
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 305,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns Clasico 70 grs",
+    "importe": "706499.78",
+    "cantidad": 1808
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 306,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Queso 70 Gr",
+    "importe": "610719.55",
+    "cantidad": 1244
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 307,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Semillas 100 grs",
+    "importe": "590376.37",
+    "cantidad": 1244
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 308,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo con Queso Grande",
+    "importe": "510075.23",
+    "cantidad": 534
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 309,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Molde Blanco",
+    "importe": "491023.70",
+    "cantidad": 199
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 310,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Integral Mini",
+    "importe": "416556.50",
+    "cantidad": 1230
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 311,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo con Queso",
+    "importe": "406929.83",
+    "cantidad": 450
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 312,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo con Semillas",
+    "importe": "264138.08",
+    "cantidad": 381
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 313,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Clasico Mini",
+    "importe": "255315.44",
+    "cantidad": 786
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 314,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Tortuguita Integral",
+    "importe": "217889.28",
+    "cantidad": 288
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 315,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Semillas 70 Gr",
+    "importe": "204072.40",
+    "cantidad": 500
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 316,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Molde Campestre Grande",
+    "importe": "200376.47",
+    "cantidad": 56
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 317,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Campo Simple",
+    "importe": "185266.26",
+    "cantidad": 180
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 318,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Queso 100 grs",
+    "importe": "183334.17",
+    "cantidad": 348
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 319,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo con Queso Mini",
+    "importe": "177089.95",
+    "cantidad": 354
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 320,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Bagels",
+    "importe": "124371.45",
+    "cantidad": 135
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 321,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Sesamo 70 Gr",
+    "importe": "118075.66",
+    "cantidad": 328
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 322,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Queso Grande",
+    "importe": "116126.99",
+    "cantidad": 212
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 323,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Sesamo 100 grs",
+    "importe": "51629.82",
+    "cantidad": 124
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 324,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Sesamo Grande",
+    "importe": "17429.86",
+    "cantidad": 36
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 325,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Semillas Grande",
+    "importe": "11619.84",
+    "cantidad": 24
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 326,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan para Panchos",
+    "importe": "10751.13",
+    "cantidad": 36
+  }
+}
+]
