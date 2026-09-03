@@ -3,7 +3,7 @@
   "model": "gestion_gerencial.reglacategorizacionmapa",
   "pk": 1,
   "fields": {
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "*",
     "rubro": "materia_prima"
   }
@@ -192,7 +192,7 @@
   "model": "gestion_gerencial.reglacategorizacionmapa",
   "pk": 22,
   "fields": {
-    "proveedor": "LIMPIEZA  RINC”N",
+    "proveedor": "LIMPIEZA  RINC√ìN",
     "producto": "*",
     "rubro": "gastos_fijos"
   }
@@ -201,7 +201,7 @@
   "model": "gestion_gerencial.reglacategorizacionmapa",
   "pk": 23,
   "fields": {
-    "proveedor": "FERRETERÕA",
+    "proveedor": "FERRETER√çA",
     "producto": "*",
     "rubro": "gastos_fijos"
   }
@@ -255,7 +255,7 @@
   "model": "gestion_gerencial.reglacategorizacionmapa",
   "pk": 29,
   "fields": {
-    "proveedor": "LIBRERÕA",
+    "proveedor": "LIBRER√çA",
     "producto": "*",
     "rubro": "administracion"
   }
@@ -669,7 +669,7 @@
     "mes": "2026-07",
     "fecha": "2026-07-30",
     "documento": "B-00007-00000021",
-    "proveedor": "FerreterÌa",
+    "proveedor": "Ferreter√≠a",
     "producto": "Gastos Insumos",
     "descripcion": "Tornillos y 2 espatulas ",
     "importe": "27800.00",
@@ -1005,7 +1005,7 @@
     "mes": "2026-07",
     "fecha": "2026-07-23",
     "documento": "A-01331-00002889",
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "Bolsa Harina 000 x 25 kg",
     "descripcion": "",
     "importe": "1205200.00",
@@ -1021,7 +1021,7 @@
     "mes": "2026-07",
     "fecha": "2026-07-23",
     "documento": "A-01331-00002889",
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "Logistica",
     "descripcion": "",
     "importe": "94800.00",
@@ -1101,7 +1101,7 @@
     "mes": "2026-07",
     "fecha": "2026-07-22",
     "documento": "B-00007-00000018",
-    "proveedor": "Limpieza  RincÛn",
+    "proveedor": "Limpieza  Rinc√≥n",
     "producto": "Articulos Limpieza",
     "descripcion": "",
     "importe": "30350.00",
@@ -1533,7 +1533,7 @@
     "mes": "2026-07",
     "fecha": "2026-07-13",
     "documento": "A-01331-00002504",
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "Bolsa Harina 000 x 25 kg",
     "descripcion": "",
     "importe": "1100070.00",
@@ -1549,7 +1549,7 @@
     "mes": "2026-07",
     "fecha": "2026-07-13",
     "documento": "A-01331-00002504",
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "Logistica",
     "descripcion": "",
     "importe": "80580.00",
@@ -2157,7 +2157,7 @@
     "mes": "2026-06",
     "fecha": "2026-06-30",
     "documento": "A-01331-00002172",
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "Logistica",
     "descripcion": "",
     "importe": "80580.00",
@@ -2173,7 +2173,7 @@
     "mes": "2026-06",
     "fecha": "2026-06-30",
     "documento": "A-01331-00002172",
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "Bolsa Harina 000 x 25 kg",
     "descripcion": "",
     "importe": "1100920.00",
@@ -2349,7 +2349,7 @@
     "mes": "2026-06",
     "fecha": "2026-06-24",
     "documento": "B-00006-00000018",
-    "proveedor": "Limpieza  RincÛn",
+    "proveedor": "Limpieza  Rinc√≥n",
     "producto": "Articulos Limpieza",
     "descripcion": "",
     "importe": "14800.00",
@@ -2477,7 +2477,7 @@
     "mes": "2026-06",
     "fecha": "2026-06-21",
     "documento": "B-00006-00000018",
-    "proveedor": "LibrerÌa",
+    "proveedor": "Librer√≠a",
     "producto": "Hojas A5",
     "descripcion": "",
     "importe": "38393.85",
@@ -2509,7 +2509,7 @@
     "mes": "2026-06",
     "fecha": "2026-06-19",
     "documento": "B-00006-00000017",
-    "proveedor": "FerreterÌa",
+    "proveedor": "Ferreter√≠a",
     "producto": "Gastos Insumos",
     "descripcion": "Veneno para ratas ",
     "importe": "5000.00",
@@ -2680,44 +2680,12 @@
 },
 {
   "model": "gestion_gerencial.compramapa",
-  "pk": 401,
-  "fields": {
-    "mes": "2026-06",
-    "fecha": "2026-06-11",
-    "documento": "B-00006-00000234",
-    "proveedor": "Embotelladora del Centro SA",
-    "producto": "Agua Envasada",
-    "descripcion": "",
-    "importe": "41712.50",
-    "rubro": "gastos_fijos",
-    "xubio_transaccion_id": 75468288,
-    "xubio_item_id": 92810659
-  }
-},
-{
-  "model": "gestion_gerencial.compramapa",
-  "pk": 402,
-  "fields": {
-    "mes": "2026-06",
-    "fecha": "2026-06-11",
-    "documento": "B-00006-00000234",
-    "proveedor": "Embotelladora del Centro SA",
-    "producto": "Agua Envasada",
-    "descripcion": "",
-    "importe": "61373.80",
-    "rubro": "gastos_fijos",
-    "xubio_transaccion_id": 75468288,
-    "xubio_item_id": 92810660
-  }
-},
-{
-  "model": "gestion_gerencial.compramapa",
   "pk": 403,
   "fields": {
     "mes": "2026-06",
     "fecha": "2026-06-10",
     "documento": "A-01331-00001524",
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "Bolsa Harina 000 x 25 kg",
     "descripcion": "",
     "importe": "2749264.00",
@@ -2733,7 +2701,7 @@
     "mes": "2026-06",
     "fecha": "2026-06-10",
     "documento": "A-01331-00001524",
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "Logistica",
     "descripcion": "",
     "importe": "189600.00",
@@ -2829,7 +2797,7 @@
     "mes": "2026-06",
     "fecha": "2026-06-11",
     "documento": "B-00006-00000004",
-    "proveedor": "LibrerÌa",
+    "proveedor": "Librer√≠a",
     "producto": "supermercado-libreria",
     "descripcion": "Ganchos para la abrochadora y bolsa regalo rodri ",
     "importe": "10100.00",
@@ -3208,6 +3176,38 @@
 },
 {
   "model": "gestion_gerencial.compramapa",
+  "pk": 401,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-11",
+    "documento": "B-00006-00000234",
+    "proveedor": "Embotelladora del Centro SA",
+    "producto": "Agua Envasada",
+    "descripcion": "",
+    "importe": "41712.50",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75468288,
+    "xubio_item_id": 92810659
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 402,
+  "fields": {
+    "mes": "2026-06",
+    "fecha": "2026-06-11",
+    "documento": "B-00006-00000234",
+    "proveedor": "Embotelladora del Centro SA",
+    "producto": "Agua Envasada",
+    "descripcion": "",
+    "importe": "61373.80",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 75468288,
+    "xubio_item_id": 92810660
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
   "pk": 434,
   "fields": {
     "mes": "2026-08",
@@ -3245,7 +3245,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-26",
     "documento": "A-01331-00004126",
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "Bolsa Harina 000 x 25 kg",
     "descripcion": "",
     "importe": "1488240.00",
@@ -3261,7 +3261,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-26",
     "documento": "A-01331-00004126",
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "Logistica",
     "descripcion": "",
     "importe": "113760.00",
@@ -3284,22 +3284,6 @@
     "rubro": "administracion",
     "xubio_transaccion_id": 76594056,
     "xubio_item_id": 94344281
-  }
-},
-{
-  "model": "gestion_gerencial.compramapa",
-  "pk": 439,
-  "fields": {
-    "mes": "2026-08",
-    "fecha": "2026-08-26",
-    "documento": "B-00008-00000031",
-    "proveedor": "Gastos Administrativos",
-    "producto": "Carta Documento",
-    "descripcion": "",
-    "importe": "23900.00",
-    "rubro": "administracion",
-    "xubio_transaccion_id": 76596733,
-    "xubio_item_id": 94349598
   }
 },
 {
@@ -3373,7 +3357,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-26",
     "documento": "B-00008-00000026",
-    "proveedor": "LibrerÌa",
+    "proveedor": "Librer√≠a",
     "producto": "Gastos Varios ",
     "descripcion": "Separador y folios ",
     "importe": "4000.00",
@@ -3389,7 +3373,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-31",
     "documento": "B-00008-00000033",
-    "proveedor": "FerreterÌa",
+    "proveedor": "Ferreter√≠a",
     "producto": "Gastos Varios ",
     "descripcion": "Enchufe y presintos ",
     "importe": "7600.00",
@@ -3592,22 +3576,6 @@
 },
 {
   "model": "gestion_gerencial.compramapa",
-  "pk": 458,
-  "fields": {
-    "mes": "2026-08",
-    "fecha": "2026-08-21",
-    "documento": "B-00008-00000031",
-    "proveedor": "DANIEL ADOLFO PEREZ",
-    "producto": "DesinfecciÛn",
-    "descripcion": "",
-    "importe": "55000.00",
-    "rubro": "gastos_fijos",
-    "xubio_transaccion_id": 76625487,
-    "xubio_item_id": 94396572
-  }
-},
-{
-  "model": "gestion_gerencial.compramapa",
   "pk": 459,
   "fields": {
     "mes": "2026-08",
@@ -3620,22 +3588,6 @@
     "rubro": "materia_prima",
     "xubio_transaccion_id": 76595971,
     "xubio_item_id": 94348365
-  }
-},
-{
-  "model": "gestion_gerencial.compramapa",
-  "pk": 460,
-  "fields": {
-    "mes": "2026-08",
-    "fecha": "2026-08-21",
-    "documento": "C-00001-00000005",
-    "proveedor": "CARLOS ALBERTO BROQUA",
-    "producto": "Mantenimiento",
-    "descripcion": "",
-    "importe": "370000.00",
-    "rubro": "gastos_fijos",
-    "xubio_transaccion_id": 76512255,
-    "xubio_item_id": 94216835
   }
 },
 {
@@ -3757,7 +3709,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-20",
     "documento": "B-00008-00000022",
-    "proveedor": "FerreterÌa",
+    "proveedor": "Ferreter√≠a",
     "producto": "Gastos Insumos",
     "descripcion": "Hojas de Trincheta ",
     "importe": "1500.00",
@@ -3832,22 +3784,6 @@
 },
 {
   "model": "gestion_gerencial.compramapa",
-  "pk": 473,
-  "fields": {
-    "mes": "2026-08",
-    "fecha": "2026-08-14",
-    "documento": "A-00003-00000904",
-    "proveedor": "FRANCO NICOLAS MERLO",
-    "producto": "Asesoramiento Mentoria",
-    "descripcion": "Acta de notificacion ",
-    "importe": "100000.00",
-    "rubro": "administracion",
-    "xubio_transaccion_id": 76135846,
-    "xubio_item_id": 93686017
-  }
-},
-{
-  "model": "gestion_gerencial.compramapa",
   "pk": 474,
   "fields": {
     "mes": "2026-08",
@@ -3901,7 +3837,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-12",
     "documento": "B-00008-00000017",
-    "proveedor": "Limpieza  RincÛn",
+    "proveedor": "Limpieza  Rinc√≥n",
     "producto": "Articulos Limpieza",
     "descripcion": "",
     "importe": "37200.00",
@@ -3917,7 +3853,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-11",
     "documento": "B-00008-00000001",
-    "proveedor": "FerreterÌa",
+    "proveedor": "Ferreter√≠a",
     "producto": "Gastos Insumos",
     "descripcion": "Cinta Aisladora ",
     "importe": "1300.00",
@@ -3949,7 +3885,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-10",
     "documento": "A-01331-00003547",
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "Aceite caja x 4 bidones 5 ltrs",
     "descripcion": "",
     "importe": "143645.52",
@@ -3965,7 +3901,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-10",
     "documento": "A-01044-00108113",
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "Bolsa Harina 000 x 25 kg",
     "descripcion": "",
     "importe": "1960319.84",
@@ -3981,7 +3917,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-10",
     "documento": "A-01044-00108113",
-    "proveedor": "MOLINO CA—UELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
+    "proveedor": "MOLINO CA√ëUELAS SOCIEDAD ANONIMA COMERCIAL INDUSTRIAL  FINANCIERA INMOBILIARIA Y AGROPECUARIA",
     "producto": "Logistica",
     "descripcion": "",
     "importe": "151680.00",
@@ -4125,7 +4061,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-06",
     "documento": "B-00008-00000004",
-    "proveedor": "LibrerÌa",
+    "proveedor": "Librer√≠a",
     "producto": "supermercado-libreria",
     "descripcion": "",
     "importe": "8000.00",
@@ -4157,7 +4093,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-05",
     "documento": "B-00008-00000009",
-    "proveedor": "FerreterÌa",
+    "proveedor": "Ferreter√≠a",
     "producto": "Ferreteria",
     "descripcion": "Poximix ",
     "importe": "14000.00",
@@ -4180,6 +4116,54 @@
     "rubro": "materia_prima",
     "xubio_transaccion_id": 75682795,
     "xubio_item_id": 93087497
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 458,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-21",
+    "documento": "B-00008-00000031",
+    "proveedor": "DANIEL ADOLFO PEREZ",
+    "producto": "Desinfecci√≥n",
+    "descripcion": "",
+    "importe": "55000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 76625487,
+    "xubio_item_id": 94396572
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 473,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-14",
+    "documento": "A-00003-00000904",
+    "proveedor": "FRANCO NICOLAS MERLO",
+    "producto": "Asesoramiento Mentoria",
+    "descripcion": "Acta de notificacion ",
+    "importe": "100000.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 76135846,
+    "xubio_item_id": 93686017
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 439,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-26",
+    "documento": "B-00008-00000031",
+    "proveedor": "Gastos Administrativos",
+    "producto": "Carta Documento",
+    "descripcion": "",
+    "importe": "23900.00",
+    "rubro": "administracion",
+    "xubio_transaccion_id": 76596733,
+    "xubio_item_id": 94349598
   }
 },
 {
@@ -4317,7 +4301,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-03",
     "documento": "B-00008-00000002",
-    "proveedor": "FerreterÌa",
+    "proveedor": "Ferreter√≠a",
     "producto": "Gastos Insumos",
     "descripcion": "Espatulas ",
     "importe": "28500.00",
@@ -4333,7 +4317,7 @@
     "mes": "2026-08",
     "fecha": "2026-08-03",
     "documento": "B-00008-00000002",
-    "proveedor": "FerreterÌa",
+    "proveedor": "Ferreter√≠a",
     "producto": "Gastos Varios ",
     "descripcion": "Foco de la luz ",
     "importe": "1900.00",
@@ -4388,6 +4372,22 @@
     "rubro": "administracion",
     "xubio_transaccion_id": 75948947,
     "xubio_item_id": 93432351
+  }
+},
+{
+  "model": "gestion_gerencial.compramapa",
+  "pk": 460,
+  "fields": {
+    "mes": "2026-08",
+    "fecha": "2026-08-21",
+    "documento": "C-00001-00000005",
+    "proveedor": "CARLOS ALBERTO BROQUA",
+    "producto": "Mantenimiento",
+    "descripcion": "",
+    "importe": "370000.00",
+    "rubro": "gastos_fijos",
+    "xubio_transaccion_id": 76512255,
+    "xubio_item_id": 94216835
   }
 },
 {
@@ -4944,7 +4944,7 @@
   "pk": 488,
   "fields": {
     "mes": "2026-07",
-    "cliente": "FRANCO EMILIANO SALDA—O",
+    "cliente": "FRANCO EMILIANO SALDA√ëO",
     "importe": "109046.70",
     "cantidad": 266
   }
@@ -5694,7 +5694,7 @@
   "pk": 563,
   "fields": {
     "mes": "2026-06",
-    "cliente": "FRANCO EMILIANO SALDA—O",
+    "cliente": "FRANCO EMILIANO SALDA√ëO",
     "importe": "105322.70",
     "cantidad": 266
   }
@@ -5824,7 +5824,7 @@
   "pk": 576,
   "fields": {
     "mes": "2026-06",
-    "cliente": "SONIA DEL VALLE ACU—A",
+    "cliente": "SONIA DEL VALLE ACU√ëA",
     "importe": "46854.24",
     "cantidad": 102
   }
@@ -6394,7 +6394,7 @@
   "pk": 633,
   "fields": {
     "mes": "2026-08",
-    "cliente": "FRANCO EMILIANO SALDA—O",
+    "cliente": "FRANCO EMILIANO SALDA√ëO",
     "importe": "114786.00",
     "cantidad": 280
   }
@@ -7041,6 +7041,346 @@
 },
 {
   "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 293,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Campestre Grande",
+    "importe": "7723910.66",
+    "cantidad": 10128
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 294,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Campestre",
+    "importe": "4511057.86",
+    "cantidad": 6765
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 295,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Molde Integral",
+    "importe": "3944642.80",
+    "cantidad": 1597
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 296,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Campestre Mini",
+    "importe": "3104594.13",
+    "cantidad": 8752
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 297,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Clasico",
+    "importe": "2624716.31",
+    "cantidad": 4185
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 298,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Integral",
+    "importe": "1107550.54",
+    "cantidad": 1618
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 299,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns Clasico Grande",
+    "importe": "1073738.69",
+    "cantidad": 2340
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 300,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Molde Blanco Campestre",
+    "importe": "1053888.53",
+    "cantidad": 436
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 301,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan para Pebetes",
+    "importe": "846577.78",
+    "cantidad": 2226
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 302,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Clasico Grande",
+    "importe": "828007.70",
+    "cantidad": 1143
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 303,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Campo Doble",
+    "importe": "773692.65",
+    "cantidad": 517
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 304,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns Clasico 100 grs",
+    "importe": "750868.10",
+    "cantidad": 1676
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 305,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns Clasico 70 grs",
+    "importe": "706499.78",
+    "cantidad": 1808
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 306,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Queso 70 Gr",
+    "importe": "610719.55",
+    "cantidad": 1244
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 307,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Semillas 100 grs",
+    "importe": "590376.37",
+    "cantidad": 1244
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 308,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo con Queso Grande",
+    "importe": "510075.23",
+    "cantidad": 534
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 309,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Molde Blanco",
+    "importe": "491023.70",
+    "cantidad": 199
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 310,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Integral Mini",
+    "importe": "416556.50",
+    "cantidad": 1230
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 311,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo con Queso",
+    "importe": "406929.83",
+    "cantidad": 450
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 312,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo con Semillas",
+    "importe": "264138.08",
+    "cantidad": 381
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 313,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo Clasico Mini",
+    "importe": "255315.44",
+    "cantidad": 786
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 314,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Tortuguita Integral",
+    "importe": "217889.28",
+    "cantidad": 288
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 315,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Semillas 70 Gr",
+    "importe": "204072.40",
+    "cantidad": 500
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 316,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Molde Campestre Grande",
+    "importe": "200376.47",
+    "cantidad": 56
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 317,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Campo Simple",
+    "importe": "185266.26",
+    "cantidad": 180
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 318,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Queso 100 grs",
+    "importe": "183334.17",
+    "cantidad": 348
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 319,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan de Lomo con Queso Mini",
+    "importe": "177089.95",
+    "cantidad": 354
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 320,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Bagels",
+    "importe": "124371.45",
+    "cantidad": 135
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 321,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Sesamo 70 Gr",
+    "importe": "118075.66",
+    "cantidad": 328
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 322,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Queso Grande",
+    "importe": "116126.99",
+    "cantidad": 212
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 323,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Sesamo 100 grs",
+    "importe": "51629.82",
+    "cantidad": 124
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 324,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Sesamo Grande",
+    "importe": "17429.86",
+    "cantidad": 36
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 325,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Burger Buns con Semillas Grande",
+    "importe": "11619.84",
+    "cantidad": 24
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
+  "pk": 326,
+  "fields": {
+    "mes": "2026-08",
+    "producto": "Pan para Panchos",
+    "importe": "10751.13",
+    "cantidad": 36
+  }
+},
+{
+  "model": "gestion_gerencial.ventaproductomapa",
   "pk": 258,
   "fields": {
     "mes": "2026-06",
@@ -7387,346 +7727,6 @@
     "producto": "Burger Buns con Semillas Grande",
     "importe": "7746.56",
     "cantidad": 16
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 293,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Lomo Campestre Grande",
-    "importe": "7723910.66",
-    "cantidad": 10128
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 294,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Lomo Campestre",
-    "importe": "4511057.86",
-    "cantidad": 6765
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 295,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Molde Integral",
-    "importe": "3944642.80",
-    "cantidad": 1597
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 296,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Lomo Campestre Mini",
-    "importe": "3104594.13",
-    "cantidad": 8752
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 297,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Lomo Clasico",
-    "importe": "2624716.31",
-    "cantidad": 4185
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 298,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Lomo Integral",
-    "importe": "1107550.54",
-    "cantidad": 1618
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 299,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Burger Buns Clasico Grande",
-    "importe": "1073738.69",
-    "cantidad": 2340
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 300,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Molde Blanco Campestre",
-    "importe": "1053888.53",
-    "cantidad": 436
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 301,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan para Pebetes",
-    "importe": "846577.78",
-    "cantidad": 2226
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 302,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Lomo Clasico Grande",
-    "importe": "828007.70",
-    "cantidad": 1143
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 303,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Campo Doble",
-    "importe": "773692.65",
-    "cantidad": 517
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 304,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Burger Buns Clasico 100 grs",
-    "importe": "750868.10",
-    "cantidad": 1676
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 305,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Burger Buns Clasico 70 grs",
-    "importe": "706499.78",
-    "cantidad": 1808
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 306,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Burger Buns con Queso 70 Gr",
-    "importe": "610719.55",
-    "cantidad": 1244
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 307,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Burger Buns con Semillas 100 grs",
-    "importe": "590376.37",
-    "cantidad": 1244
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 308,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Lomo con Queso Grande",
-    "importe": "510075.23",
-    "cantidad": 534
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 309,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Molde Blanco",
-    "importe": "491023.70",
-    "cantidad": 199
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 310,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Lomo Integral Mini",
-    "importe": "416556.50",
-    "cantidad": 1230
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 311,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Lomo con Queso",
-    "importe": "406929.83",
-    "cantidad": 450
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 312,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Lomo con Semillas",
-    "importe": "264138.08",
-    "cantidad": 381
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 313,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Lomo Clasico Mini",
-    "importe": "255315.44",
-    "cantidad": 786
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 314,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Tortuguita Integral",
-    "importe": "217889.28",
-    "cantidad": 288
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 315,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Burger Buns con Semillas 70 Gr",
-    "importe": "204072.40",
-    "cantidad": 500
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 316,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Molde Campestre Grande",
-    "importe": "200376.47",
-    "cantidad": 56
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 317,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Campo Simple",
-    "importe": "185266.26",
-    "cantidad": 180
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 318,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Burger Buns con Queso 100 grs",
-    "importe": "183334.17",
-    "cantidad": 348
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 319,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan de Lomo con Queso Mini",
-    "importe": "177089.95",
-    "cantidad": 354
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 320,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Bagels",
-    "importe": "124371.45",
-    "cantidad": 135
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 321,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Burger Buns con Sesamo 70 Gr",
-    "importe": "118075.66",
-    "cantidad": 328
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 322,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Burger Buns con Queso Grande",
-    "importe": "116126.99",
-    "cantidad": 212
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 323,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Burger Buns con Sesamo 100 grs",
-    "importe": "51629.82",
-    "cantidad": 124
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 324,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Burger Buns con Sesamo Grande",
-    "importe": "17429.86",
-    "cantidad": 36
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 325,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Burger Buns con Semillas Grande",
-    "importe": "11619.84",
-    "cantidad": 24
-  }
-},
-{
-  "model": "gestion_gerencial.ventaproductomapa",
-  "pk": 326,
-  "fields": {
-    "mes": "2026-08",
-    "producto": "Pan para Panchos",
-    "importe": "10751.13",
-    "cantidad": 36
   }
 }
 ]
