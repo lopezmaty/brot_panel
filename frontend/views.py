@@ -85,9 +85,14 @@ def establecer_password_view(request, uid, token):
 @login_required(login_url='login')
 def clientes_view(request):
     if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
-        clientes = Cliente.objects.all().order_by('razon_social')
+        clientes = Cliente.objects.select_related('tipo_cliente', 'lista_precios').all().order_by('razon_social')
         tipos_cliente = TipoCliente.objects.all()
-        return render(request, 'clientes.html', {'clientes': clientes, 'tipos_cliente': tipos_cliente})
+        listas_precios = ListaPrecios.objects.all().order_by('nombre')
+        return render(request, 'clientes.html', {
+            'clientes': clientes,
+            'tipos_cliente': tipos_cliente,
+            'listas_precios': listas_precios,
+        })
     else:
         return redirect('dashboard')
 

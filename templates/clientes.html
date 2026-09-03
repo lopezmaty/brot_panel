@@ -18,6 +18,19 @@
         <option value="{{ tipo.nombre }}">{{ tipo.nombre }}</option>
       {% endfor %}
     </select>
+    <select id="filtroPuntoVenta" class="filtro-select">
+      <option value="todos">Todos los puntos de venta</option>
+      <option value="214112">Factura (Web Service)</option>
+      <option value="154275">Proforma</option>
+      <option value="sin_asignar">Sin asignar</option>
+    </select>
+    <select id="filtroListaPrecios" class="filtro-select">
+      <option value="todos">Todas las listas de precios</option>
+      {% for lista in listas_precios %}
+        <option value="{{ lista.nombre }}">{{ lista.nombre }}</option>
+      {% endfor %}
+      <option value="sin_asignar">Sin asignar</option>
+    </select>
     <a href="{% url 'cliente_nuevo' %}" class="btn-primary">
   <i class="ti ti-plus"></i> Crear cliente
 </a>
@@ -29,15 +42,35 @@
         <th>Razón social</th>
         <th>Nombre comercial</th>
         <th>Tipo de cliente</th>
+        <th>Punto de venta</th>
+        <th>Lista de precios</th>
         <th></th>
       </tr>
     </thead>
     <tbody>
             {% for c in clientes %}
-        <tr data-tipo-cliente="{{ c.tipo_cliente.nombre }}">
+        <tr data-tipo-cliente="{{ c.tipo_cliente.nombre }}"
+            data-punto-venta="{% if c.xubio_punto_venta_id == 214112 %}214112{% elif c.xubio_punto_venta_id == 154275 %}154275{% else %}sin_asignar{% endif %}"
+            data-lista-precios="{% if c.lista_precios %}{{ c.lista_precios.nombre }}{% else %}sin_asignar{% endif %}">
         <td><a href="{% url 'cliente_editar' c.id %}" style="color: var(--text-heading); font-weight: 600; text-decoration: none;">{{ c.razon_social }}</a></td>
         <td>{{ c.nombre_comercio }}</td>
         <td>{{ c.tipo_cliente.nombre }}</td>
+        <td>
+          {% if c.xubio_punto_venta_id == 214112 %}
+            Factura (Web Service)
+          {% elif c.xubio_punto_venta_id == 154275 %}
+            Proforma
+          {% else %}
+            <span style="color: var(--text-secondary);">Sin asignar</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if c.lista_precios %}
+            {{ c.lista_precios.nombre }}
+          {% else %}
+            <span style="color: var(--text-secondary);">Sin asignar</span>
+          {% endif %}
+        </td>
         <td>
             <button class="btn-delete" data-cliente-id="{{ c.id }}">
             <i class="ti ti-trash"></i>
