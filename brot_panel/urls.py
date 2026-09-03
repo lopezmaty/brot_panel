@@ -22,6 +22,8 @@ from frontend.views import catalogo_view, perfil_catalogo_view
 from sistema_pedidos.views import confirmar_pedido_catalogo
 from django.conf import settings
 from django.conf.urls.static import static
+from frontend.views import catalogo_view, perfil_catalogo_view
+from gestion_gerencial.views import mapa_economico_view
 
 
 urlpatterns = [
@@ -36,6 +38,9 @@ urlpatterns = [
     path('catalogo/<str:token>/perfil/', perfil_catalogo_view, name='perfil_catalogo'),
     path('catalogo/<str:token>/confirmar/', confirmar_pedido_catalogo, name='confirmar_pedido_catalogo'),
     path('catalogo/<str:token>/', catalogo_view, name='catalogo'),
+    path('api/gestion_gerencial/', include('gestion_gerencial.urls')),
+    path('gestion-gerencial/mapa-economico/', mapa_economico_view, name='mapa_economico'),
+    
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

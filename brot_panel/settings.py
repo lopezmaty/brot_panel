@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'lista_precios',
     'sistema_pedidos',
     'frontend',
+    'gestion_gerencial',
 ]
 
 MIDDLEWARE = [

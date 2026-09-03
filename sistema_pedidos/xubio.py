@@ -37,6 +37,19 @@ NOMBRE_COMPROBANTE = {
     6: 'Recibo',
 }
 
+PRODUCTOS_EXCLUIDOS_VENTAS = {
+    'ENVIO 1',
+    'ENVIO 2',
+    'ENVIO ESPECIAL',
+    'ENVIO MERCADO',
+    'ENVIO SIN CARGO',
+    'PACKAGING',
+    'PANES VARIOS',
+    'SALDO AL INICIO',
+    'PRODUCTO AL 21%',
+    'SERVICIO AL 21%',
+}
+
 
 def obtener_token():
     response = requests.post(
@@ -216,3 +229,234 @@ def obtener_precios_lista(xubio_lista_precio_id):
     response.raise_for_status()
     data = response.json()
     return data.get('listaPrecioItem', [])
+
+
+def _paginar_comprobantes(endpoint, fecha_desde, fecha_hasta, headers):
+    """
+    Trae comprobantes de un endpoint que pagina por lastTransactionID, ignorando
+    el filtro de fechaDesde/fechaHasta del servidor (bug conocido de Xubio en modo
+    paginado). Filtra por fecha del lado del cliente y corta en cuanto encuentra
+    un comprobante más viejo que fecha_desde, ya que vienen ordenados del más
+    nuevo al más viejo.
+    """
+    comprobantes = []
+    last_id = None
+    limit = 500
+
+    while True:
+        headers_pagina = dict(headers)
+        headers_pagina['minimalVersion'] = 'true'
+        headers_pagina['limit'] = str(limit)
+        if last_id:
+            headers_pagina['lastTransactionID'] = str(last_id)
+
+        response = requests.get(
+            endpoint,
+            params={'fechaDesde': fecha_desde, 'fechaHasta': fecha_hasta},
+            headers=headers_pagina,
+        )
+        response.raise_for_status()
+        pagina = response.json()
+        if not pagina:
+            break
+
+        llego_al_final = False
+        for c in pagina:
+            fecha_c = c.get('fecha')
+            if not fecha_c:
+                continue
+            if fecha_c < fecha_desde:
+                llego_al_final = True
+                break
+            if fecha_c >= fecha_hasta:
+                continue
+            comprobantes.append(c)
+
+        if llego_al_final:
+            break
+        if len(pagina) < limit:
+            break
+
+        nuevo_last_id = pagina[-1].get('transaccionid')
+        if not nuevo_last_id or nuevo_last_id == last_id:
+            break
+        last_id = nuevo_last_id
+        if len(comprobantes) > 20000:
+            break
+
+    return comprobantes
+
+
+def obtener_compras_mes(fecha_desde, fecha_hasta):
+    """
+    fecha_desde, fecha_hasta: strings 'YYYY-MM-DD'.
+    Devuelve TODAS las líneas del rango, con el shape que espera Mapa Económico.
+    Trata las Notas de Crédito de proveedor (tipo 3) como negativas, ya que son
+    devoluciones que restan del total comprado.
+    """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    token = obtener_token()
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Accept': 'application/json',
+    }
+
+    comprobantes = _paginar_comprobantes(f'{XUBIO_BASE}/comprobanteCompraBean', fecha_desde, fecha_hasta, headers)
+
+    def traer_detalle(transaccion_id):
+        try:
+            r = requests.get(
+                f'{XUBIO_BASE}/comprobanteCompraBean/{transaccion_id}',
+                headers=headers,
+                timeout=10,
+            )
+            if r.status_code == 200:
+                return r.json()
+        except Exception:
+            pass
+        return None
+
+    ids = [c.get('transaccionid') for c in comprobantes if c.get('transaccionid')]
+    lineas = []
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = {executor.submit(traer_detalle, tid): tid for tid in ids}
+        for future in as_completed(futures):
+            detalle = future.result()
+            if not detalle:
+                continue
+            proveedor = (detalle.get('proveedor') or {}).get('nombre', '')
+            fecha = detalle.get('fecha')
+            documento = detalle.get('numeroDocumento', '')
+            transaccion_id = detalle.get('transaccionid')
+
+            # tipo 3 = Nota de Crédito de proveedor (devolución, resta)
+            signo = -1 if detalle.get('tipo') == 3 else 1
+
+            for item in detalle.get('transaccionProductoItems', []):
+                producto = (item.get('producto') or {}).get('nombre', '')
+                lineas.append({
+                    'transaccion_id': transaccion_id,
+                    'item_id': item.get('transaccionCVItemId'),
+                    'fecha': fecha,
+                    'documento': documento,
+                    'proveedor': proveedor,
+                    'producto': producto,
+                    'descripcion': item.get('descripcion', ''),
+                    'importe': (item.get('importe', 0) or 0) * signo,
+                })
+
+    return lineas
+
+
+def obtener_ventas_mes(fecha_desde, fecha_hasta):
+    """
+    fecha_desde, fecha_hasta: strings 'YYYY-MM-DD'.
+    Trae TODAS las ventas del rango, agrupadas por cliente y por producto.
+    Excluye ítems que no son producto real (envíos, packaging, líneas de IVA genéricas, etc.)
+    y trata las Notas de Crédito (tipo 3) como negativas, ya que son devoluciones.
+    Devuelve un dict con las métricas que usa el Mapa Económico.
+    """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    token = obtener_token()
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Accept': 'application/json',
+    }
+
+    comprobantes = _paginar_comprobantes(f'{XUBIO_BASE}/comprobanteVentaBean', fecha_desde, fecha_hasta, headers)
+
+    def traer_detalle(transaccion_id):
+        try:
+            r = requests.get(
+                f'{XUBIO_BASE}/comprobanteVentaBean/{transaccion_id}',
+                headers=headers,
+                timeout=10,
+            )
+            if r.status_code == 200:
+                return r.json()
+        except Exception:
+            pass
+        return None
+
+    ids = [c.get('transaccionid') for c in comprobantes if c.get('transaccionid')]
+
+    clientes_agg = {}
+    productos_agg = {}
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = {executor.submit(traer_detalle, tid): tid for tid in ids}
+        for future in as_completed(futures):
+            detalle = future.result()
+            if not detalle:
+                continue
+
+            cliente_nombre = (detalle.get('cliente') or {}).get('nombre', '') or 'Sin nombre'
+            items = detalle.get('transaccionProductoItems', [])
+
+            # tipo 3 = Nota de Crédito (devolución, resta) / cualquier otro tipo suma normal
+            signo = -1 if detalle.get('tipo') == 3 else 1
+
+            importe_comprobante = 0
+            cantidad_comprobante = 0
+
+            for item in items:
+                producto_nombre = (item.get('producto') or {}).get('nombre', '') or 'Sin producto'
+                if producto_nombre.strip().upper() in PRODUCTOS_EXCLUIDOS_VENTAS:
+                    continue
+
+                importe_item = float(item.get('importe') or 0) * signo
+                cantidad_item = float(item.get('cantidad') or 0) * signo
+
+                importe_comprobante += importe_item
+                cantidad_comprobante += cantidad_item
+
+                if producto_nombre not in productos_agg:
+                    productos_agg[producto_nombre] = {'importe': 0, 'cantidad': 0}
+                productos_agg[producto_nombre]['importe'] += importe_item
+                productos_agg[producto_nombre]['cantidad'] += cantidad_item
+
+            if cliente_nombre not in clientes_agg:
+                clientes_agg[cliente_nombre] = {'importe': 0, 'cantidad': 0}
+            clientes_agg[cliente_nombre]['importe'] += importe_comprobante
+            clientes_agg[cliente_nombre]['cantidad'] += cantidad_comprobante
+
+    ventas_netas = sum(c['importe'] for c in clientes_agg.values())
+    unidades = sum(c['cantidad'] for c in clientes_agg.values())
+    clientes_activos = len([c for c in clientes_agg.values() if c['importe'] > 0])
+
+    clientes_ordenados = sorted(clientes_agg.items(), key=lambda x: x[1]['importe'], reverse=True)
+    acumulado = 0
+    clientes_80 = 0
+    for nombre, datos in clientes_ordenados:
+        acumulado += datos['importe']
+        clientes_80 += 1
+        if ventas_netas > 0 and acumulado >= ventas_netas * 0.8:
+            break
+
+    productos_ordenados = sorted(productos_agg.items(), key=lambda x: x[1]['importe'], reverse=True)
+    acumulado_p = 0
+    productos_80 = 0
+    for nombre, datos in productos_ordenados:
+        acumulado_p += datos['importe']
+        productos_80 += 1
+        if ventas_netas > 0 and acumulado_p >= ventas_netas * 0.8:
+            break
+
+    return {
+        'ventas_netas': ventas_netas,
+        'unidades': unidades,
+        'clientes_activos': clientes_activos,
+        'clientes_80': clientes_80,
+        'productos_80': productos_80,
+        'clientes': [
+            {'cliente': nombre, 'importe': datos['importe'], 'cantidad': datos['cantidad']}
+            for nombre, datos in clientes_ordenados
+        ],
+        'productos': [
+            {'producto': nombre, 'importe': datos['importe'], 'cantidad': datos['cantidad']}
+            for nombre, datos in productos_ordenados
+        ],
+    }
