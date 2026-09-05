@@ -11,4 +11,5 @@ urlpatterns = [
     path('ventas-detalle/', views.ventas_detalle_mes, name='ventas_detalle_mes'),
     path('dashboard-mes/', views.dashboard_mes, name='dashboard_mes_mapa'),
     path('historico/', views.historico, name='historico_mapa'),
+    path('costeo/importar-precios/', views.importar_precios_costeo, name='importar_precios_costeo'),
 ]

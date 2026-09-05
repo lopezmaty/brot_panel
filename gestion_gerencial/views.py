@@ -376,3 +376,59 @@ def mapa_economico_view(request):
         'rubros_json': rubros,
         'fuera_operativa_json': models.FUERA_OPERATIVA_MAPA,
     })
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def importar_precios_costeo(request):
+    from sistema_pedidos.xubio import obtener_precios_lista
+    from .models import ProductoCosteo, XUBIO_LISTA_GASTRONOMICO_ID, XUBIO_LISTA_DISTRIBUIDOR_ID, HistorialPrecioCosteo
+
+    # Construir índice xubio_id → producto
+    productos = {
+        p.xubio_producto_id: p
+        for p in ProductoCosteo.objects.filter(xubio_producto_id__isnull=False)
+    }
+
+    items_gastronomico = obtener_precios_lista(XUBIO_LISTA_GASTRONOMICO_ID)
+    items_distribuidor = obtener_precios_lista(XUBIO_LISTA_DISTRIBUIDOR_ID)
+
+    actualizados = []
+
+    for item in items_gastronomico:
+        xubio_id = item['producto']['id']
+        precio_nuevo = item.get('precio') or 0
+        if not precio_nuevo or xubio_id not in productos:
+            continue
+        prod = productos[xubio_id]
+        precio_anterior = prod.precio_con_iva
+        if precio_anterior != precio_nuevo:
+            HistorialPrecioCosteo.objects.create(
+                tipo='gastronomico',
+                item=prod.nombre,
+                valor_anterior=precio_anterior,
+                valor_nuevo=precio_nuevo,
+            )
+        prod.precio_con_iva = precio_nuevo
+        prod.precio_actual = round(precio_nuevo / (1 + 0.105), 2)
+        prod.save(update_fields=['precio_con_iva', 'precio_actual'])
+        actualizados.append({'producto': prod.nombre, 'tipo': 'gastronomico', 'precio': precio_nuevo})
+
+    for item in items_distribuidor:
+        xubio_id = item['producto']['id']
+        precio_nuevo = item.get('precio') or 0
+        if not precio_nuevo or xubio_id not in productos:
+            continue
+        prod = productos[xubio_id]
+        precio_anterior = prod.precio_distribuidor or 0
+        if precio_anterior != precio_nuevo:
+            HistorialPrecioCosteo.objects.create(
+                tipo='distribuidor',
+                item=prod.nombre,
+                valor_anterior=precio_anterior,
+                valor_nuevo=precio_nuevo,
+            )
+        prod.precio_distribuidor = precio_nuevo
+        prod.save(update_fields=['precio_distribuidor'])
+        actualizados.append({'producto': prod.nombre, 'tipo': 'distribuidor', 'precio': precio_nuevo})
+
+    return Response({'actualizados': len(actualizados), 'detalle': actualizados})
