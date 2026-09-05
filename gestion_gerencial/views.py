@@ -432,3 +432,210 @@ def importar_precios_costeo(request):
         actualizados.append({'producto': prod.nombre, 'tipo': 'distribuidor', 'precio': precio_nuevo})
 
     return Response({'actualizados': len(actualizados), 'detalle': actualizados})
+
+
+# ============================================================
+# COSTEO Y PRECIOS — vistas de API
+# ============================================================
+
+from .services_costeo import calcular_todo
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def costeo_calculos(request):
+    """Devuelve matriz, ranking y lista de precios calculados en Python."""
+    resultado = calcular_todo()
+    # Convertir Decimal a float para JSON
+    import decimal
+
+    def decimal_a_float(obj):
+        if isinstance(obj, dict):
+            return {k: decimal_a_float(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [decimal_a_float(i) for i in obj]
+        if isinstance(obj, decimal.Decimal):
+            return float(obj)
+        return obj
+
+    return Response(decimal_a_float(resultado))
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def costeo_productos(request):
+    from .models import ProductoCosteo
+    productos = ProductoCosteo.objects.prefetch_related('receta__insumo', 'mano_obra').all()
+    data = []
+    for p in productos:
+        mo = getattr(p, 'mano_obra', None)
+        data.append({
+            'id': p.id,
+            'codigo': p.codigo,
+            'nombre': p.nombre,
+            'familia': p.familia,
+            'peso': float(p.peso) if p.peso else None,
+            'precio_actual': float(p.precio_actual),
+            'precio_con_iva': float(p.precio_con_iva),
+            'precio_distribuidor': float(p.precio_distribuidor) if p.precio_distribuidor else None,
+            'unidades_mes': p.unidades_mes,
+            'unidades_lote': p.unidades_lote,
+            'margen_objetivo': float(p.margen_objetivo) if p.margen_objetivo else None,
+            'descuento_objetivo': float(p.descuento_objetivo) if p.descuento_objetivo else None,
+            'receta': [{
+                'insumo_nombre': linea.insumo.nombre,
+                'categoria': linea.categoria,
+                'unidad': linea.unidad,
+                'cantidad': float(linea.cantidad),
+                'merma': float(linea.merma),
+            } for linea in p.receta.select_related('insumo').all()],
+            'mano_obra': {
+                'proceso': mo.proceso,
+                'personas': float(mo.personas),
+                'tiempo_min_lote': float(mo.tiempo_min_lote),
+            } if mo else None,
+        })
+    return Response(data)
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def costeo_productos_bulk_update(request):
+    from .models import ProductoCosteo
+    cambios = request.data.get('cambios', [])
+    campos_permitidos = {'unidades_mes', 'unidades_lote'}
+    for cambio in cambios:
+        field = cambio.get('field')
+        if field not in campos_permitidos:
+            continue
+        ProductoCosteo.objects.filter(id=cambio['id']).update(**{field: cambio['value']})
+    return Response({'ok': True})
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def costeo_insumos(request):
+    from .models import InsumoCosteo
+    insumos = InsumoCosteo.objects.all()
+    data = [{
+        'id': i.id,
+        'nombre': i.nombre,
+        'unidad': i.unidad,
+        'precio': float(i.precio),
+        'comentario': i.comentario,
+    } for i in insumos]
+    return Response(data)
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def costeo_insumos_bulk_update(request):
+    from .models import InsumoCosteo, HistorialPrecioCosteo
+    cambios = request.data.get('cambios', [])
+    for cambio in cambios:
+        try:
+            insumo = InsumoCosteo.objects.get(id=cambio['id'])
+            nuevo = float(cambio['precio'])
+            if float(insumo.precio) != nuevo:
+                HistorialPrecioCosteo.objects.create(
+                    tipo='insumo',
+                    item=insumo.nombre,
+                    valor_anterior=insumo.precio,
+                    valor_nuevo=nuevo,
+                )
+            insumo.precio = nuevo
+            insumo.save(update_fields=['precio'])
+        except InsumoCosteo.DoesNotExist:
+            pass
+    return Response({'ok': True})
+
+
+@api_view(['GET', 'PATCH'])
+@permission_classes([EsAdmin])
+def costeo_config(request):
+    from .models import ConfiguracionCosteo
+    config, _ = ConfiguracionCosteo.objects.get_or_create(id=1)
+    if request.method == 'GET':
+        campos = [
+            'sueldos_productivos', 'horas_disponibles', 'margen_minimo',
+            'energia', 'mantenimiento', 'limpieza', 'sueldos_indirectos',
+            'resto', 'aguinaldos', 'alquiler', 'muni', 'iva', 'ganancias', 'contador',
+        ]
+        return Response({campo: float(getattr(config, campo)) for campo in campos})
+    # PATCH
+    campos_permitidos = {
+        'sueldos_productivos', 'horas_disponibles', 'margen_minimo',
+        'energia', 'mantenimiento', 'limpieza', 'sueldos_indirectos',
+        'resto', 'aguinaldos', 'alquiler', 'muni', 'iva', 'ganancias', 'contador',
+    }
+    for campo, valor in request.data.items():
+        if campo in campos_permitidos:
+            setattr(config, campo, valor)
+    config.save()
+    return Response({'ok': True})
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def costeo_equipos(request):
+    from .models import EquipoCosteo
+    equipos = EquipoCosteo.objects.all()
+    data = [{
+        'id': e.id,
+        'nombre': e.nombre,
+        'valor_reposicion': float(e.valor_reposicion),
+        'vida_util_anios': e.vida_util_anios,
+    } for e in equipos]
+    return Response(data)
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def costeo_equipos_bulk_update(request):
+    from .models import EquipoCosteo
+    cambios = request.data.get('cambios', [])
+    campos_permitidos = {'valor_reposicion', 'vida_util_anios'}
+    for cambio in cambios:
+        field = cambio.get('field')
+        if field not in campos_permitidos:
+            continue
+        EquipoCosteo.objects.filter(id=cambio['id']).update(**{field: cambio['value']})
+    return Response({'ok': True})
+
+def costeo_precios_view(request):
+    if not hasattr(request.user, 'perfil') or request.user.perfil.rol != 'admin':
+        return redirect('dashboard')
+    return render(request, 'costeo_precios.html')
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def costeo_historial(request):
+    from .models import HistorialPrecioCosteo
+    historial = HistorialPrecioCosteo.objects.all()[:200]
+    data = [{
+        'id': h.id,
+        'fecha': h.fecha.isoformat(),
+        'tipo': h.tipo,
+        'item': h.item,
+        'valor_anterior': float(h.valor_anterior),
+        'valor_nuevo': float(h.valor_nuevo),
+    } for h in historial]
+    return Response(data)
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def costeo_mano_obra_bulk_update(request):
+    from .models import ManoObraCosteo, ProductoCosteo
+    cambios = request.data.get('cambios', [])
+    for cambio in cambios:
+        try:
+            prod = ProductoCosteo.objects.get(codigo=cambio['codigo'])
+            mo, _ = ManoObraCosteo.objects.get_or_create(producto=prod)
+            mo.proceso = cambio.get('proceso', '')
+            mo.personas = cambio.get('personas', 1)
+            mo.tiempo_min_lote = cambio.get('tiempo_min_lote', 0)
+            mo.save()
+        except ProductoCosteo.DoesNotExist:
+            pass
+    return Response({'ok': True})

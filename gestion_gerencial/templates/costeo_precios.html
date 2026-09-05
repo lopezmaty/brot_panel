@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ─── Layout: quitar centrado y max-width del content base ─── */
+.content {
+  align-items: stretch !important;
+  padding: 24px 32px 64px !important;
+}
+.content > * { max-width: none !important; }
+
+/* ─── Variables del HTML original ─── */
+:root {
+  --navy:#132644;--sky:#3AAFE4;--orange:#F07030;--pale:#E6F4FB;
+  --white:#FFFFFF;--gray50:#F7F9FC;--gray100:#EEF2F8;--gray200:#D8E2EF;
+  --gray400:#8A9BB8;--gray600:#4A5D7A;--gray800:#1E2D45;
+  --success:#16A34A;--error:#DC2626;--amber:#E8A33D;--azulinfo:#2563EB;
+  --border:#CBD8EE;--radius:12px;--radius-lg:20px;
+  --shadow:0 4px 24px rgba(15,35,64,.08),0 1px 4px rgba(15,35,64,.05);
+  --shadow-lg:0 12px 48px rgba(15,35,64,.14),0 2px 8px rgba(15,35,64,.06);
+  --verde-soft:#E8F6EC;--amber-soft:#FDF3E3;--rojo-soft:#FDEDED;--azul-soft:#EAF2FF;
+  --mono:ui-monospace,SFMono-Regular,'Cascadia Mono','Roboto Mono',Consolas,monospace;
+}
+
+/* ─── Contenedor principal ─── */
+#co-content {
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;
+  color:var(--gray800);
+  width:100%;
+  min-width:0;
+}
+
+/* ─── Tipografía ─── */
+#co-content h1{font-family:'DM Serif Display',serif;font-size:1.6rem;margin:0 0 6px;color:var(--navy);font-weight:400}
+#co-content h2{font-family:'DM Serif Display',serif;font-size:1.15rem;margin:0 0 14px;color:var(--navy);font-weight:400}
+.lede{color:var(--gray600);font-size:.85rem;line-height:1.65;max-width:720px;margin-bottom:20px}
+.hint{color:var(--gray400);font-size:.76rem}
+
+/* ─── Panel card ─── */
+.co-panel{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:28px 32px;margin-bottom:20px}
+.co-panel-title{font-weight:700;font-size:.8rem;color:var(--navy);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--gray100)}
+
+/* ─── Inputs (resetear los del base.css dentro de co-content) ─── */
+#co-content select,
+#co-content input[type=text],
+#co-content input[type=number],
+#co-content textarea {
+  border:1.5px solid var(--border) !important;
+  border-radius:var(--radius) !important;
+  padding:7px 11px !important;
+  font-family:inherit !important;
+  font-size:.85rem !important;
+  color:var(--gray800) !important;
+  background:var(--white) !important;
+  outline:none !important;
+  box-shadow:none !important;
+  width:auto !important;
+  transition:border-color .15s,box-shadow .15s;
+}
+#co-content select:focus,
+#co-content input:focus,
+#co-content textarea:focus {
+  border-color:var(--sky) !important;
+  box-shadow:0 0 0 3px rgba(58,175,228,.15) !important;
+}
+
+/* ─── Money input wrap ─── */
+.money-input-wrap{display:inline-flex;align-items:center;gap:3px;white-space:nowrap;border:1.5px solid var(--border);border-radius:var(--radius);padding:0 8px 0 0;background:var(--white);transition:border-color .15s,box-shadow .15s}
+.money-input-wrap:focus-within{border-color:var(--sky);box-shadow:0 0 0 3px rgba(58,175,228,.15)}
+.money-input-wrap .cur{color:var(--gray400);font-size:.8rem;padding-left:9px;font-family:var(--mono)}
+.money-input-wrap input{border:none!important;box-shadow:none!important;text-align:right;font-family:var(--mono)!important;padding:7px 0!important;min-width:90px;width:auto!important;border-radius:0!important}
+.money-input-wrap input:focus{border:none!important;box-shadow:none!important}
+
+/* ─── Pct input wrap ─── */
+.pct-input-wrap{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.pct-input-wrap input{width:72px!important;min-width:72px!important;padding:5px 4px!important;text-align:right}
+
+/* ─── Botones ─── */
+#co-content .btn{padding:9px 18px;border-radius:var(--radius);font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:8px;transition:all .15s}
+#co-content .btn-primary{background:var(--orange);color:var(--white)}
+#co-content .btn-primary:hover{background:#d45f20;transform:translateY(-1px);box-shadow:0 4px 16px rgba(240,112,48,.3)}
+#co-content .btn-secondary{background:var(--gray100);color:var(--gray600);border:1.5px solid var(--border)}
+#co-content .btn-secondary:hover{background:var(--gray200)}
+#co-content .btn-sm{padding:6px 12px;font-size:.76rem;border-radius:8px}
+#co-content .btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ─── Tablas: resetear base.css y aplicar estilos del HTML original ─── */
+#co-content table{width:100%;border-collapse:collapse;font-size:.82rem}
+
+/* Resetear thead del base.css */
+#co-content thead{background:var(--navy)}
+#co-content thead th{
+  text-align:left;
+  padding:9px 10px;
+  color:rgba(255,255,255,.65);
+  font-size:.66rem;
+  text-transform:uppercase;
+  letter-spacing:.7px;
+  border-bottom:none;
+  font-weight:700;
+  white-space:nowrap;
+}
+#co-content thead th.num{text-align:right}
+#co-content thead th.center{text-align:center}
+
+/* Resetear tbody td del base.css */
+#co-content tbody td{
+  padding:8px 10px;
+  border-bottom:1px solid var(--gray100);
+  vertical-align:middle;
+  font-size:.82rem;
+  color:var(--gray800);
+}
+#co-content tr:last-child td{border-bottom:none}
+#co-content tbody tr:hover{background:var(--gray50)}
+.num{font-family:var(--mono);text-align:right;white-space:nowrap}
+
+/* td con inputs */
+#co-content td input,#co-content td select{width:auto;min-width:60px;padding:5px 7px!important;font-size:.82rem}
+#co-content td input.num-in{text-align:right;font-family:var(--mono)}
+/* Alinear td con money/pct wraps */
+#co-content td.num,#co-content td:has(.money-input-wrap),#co-content td:has(.pct-input-wrap){text-align:right}
+
+.tbl-wrap{overflow-x:auto}
+
+/* ─── Tabla sticky (matriz, ranking, lista precios) ─── */
+.tbl-sticky th,.tbl-sticky td{white-space:nowrap}
+.tbl-sticky .col-prod{max-width:260px;min-width:260px;width:260px;white-space:normal}
+/* Sticky: la columna producto se adhiere a la izquierda.
+   El thead tiene fondo navy, así que usamos navy para el th sticky también */
+.tbl-sticky th.col-prod{
+  position:sticky;left:0;
+  background:var(--navy);  /* mismo que thead */
+  z-index:3;
+  box-shadow:2px 0 4px rgba(15,35,64,.15);
+}
+.tbl-sticky td.col-prod{
+  position:sticky;left:0;
+  background:var(--white);
+  z-index:2;
+  box-shadow:2px 0 4px rgba(15,35,64,.05);
+}
+.tbl-sticky tbody tr:hover td.col-prod{background:var(--gray50)}
+.tbl-sticky tr.row-rojo td.col-prod{background:var(--rojo-soft)}
+.tbl-sticky tr.row-amarillo td.col-prod{background:var(--amber-soft)}
+.prod-nombre{display:block;white-space:normal;line-height:1.35}
+
+/* ─── Filas coloreadas ─── */
+tr.row-rojo{background:var(--rojo-soft)}
+tr.row-amarillo{background:var(--amber-soft)}
+tr.row-rojo:hover,tr.row-amarillo:hover{filter:brightness(.98)}
+
+/* ─── Badges ─── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap}
+.badge.verde{background:var(--verde-soft);color:var(--success)}
+.badge.amarillo{background:var(--amber-soft);color:#B9791F}
+.badge.rojo{background:var(--rojo-soft);color:var(--error)}
+.badge.azul{background:var(--azul-soft);color:var(--azulinfo)}
+.badge.gris{background:var(--gray100);color:var(--gray400)}
+
+/* ─── Alerts ─── */
+.alert{display:flex;align-items:center;gap:10px;padding:13px 18px;border-radius:var(--radius);font-size:.83rem;margin-bottom:18px;line-height:1.5}
+.alert.warn{background:#FFF7ED;color:#9A3412;border-left:3px solid var(--orange)}
+.alert.ok{background:var(--verde-soft);color:#166534;border-left:3px solid var(--success)}
+.alert.info{background:var(--pale);color:var(--navy);border-left:3px solid var(--sky)}
+.alert button.link{color:inherit;text-decoration:underline;background:none;border:none;cursor:pointer;font-weight:700;font-size:.83rem;padding:0;font-family:inherit}
+
+/* ─── Cards ─── */
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:14px;margin-bottom:6px}
+.card{background:var(--gray50);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px}
+.card .label{font-size:.66rem;color:var(--gray400);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;font-weight:700}
+.card .value{font-family:var(--mono);font-size:1.2rem;font-weight:700;color:var(--navy)}
+.card .sub{font-size:.74rem;color:var(--gray600);margin-top:5px}
+.card.acento{border-left:3px solid var(--orange)}
+
+/* ─── Form grid ─── */
+.co-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:18px}
+.field label{display:block;font-size:.74rem;font-weight:600;color:var(--gray600);margin-bottom:6px;letter-spacing:.2px}
+.field input,.field select,.field textarea{width:100%!important}
+
+/* ─── Filters ─── */
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+
+/* ─── Barras (resumen top5) ─── */
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:9px}
+.bar-label{width:170px;font-size:.78rem;color:var(--gray600);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;height:16px;background:var(--gray100);border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;transition:width .3s}
+.bar-val{width:110px;text-align:right;font-family:var(--mono);font-size:.78rem;color:var(--gray600);flex-shrink:0}
+
+/* ─── Chips ─── */
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:.74rem;font-weight:600;background:var(--gray100);color:var(--gray600);cursor:pointer;border:1px solid transparent;transition:background .15s,color .15s}
+.chip.active{background:var(--navy);color:#fff}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+
+/* ─── Icon buttons ─── */
+.icon-btn{background:none;border:none;cursor:pointer;color:var(--gray400);font-size:.95rem;padding:3px 6px;border-radius:6px}
+.icon-btn:hover{background:var(--rojo-soft);color:var(--error)}
+
+/* ─── Empty state ─── */
+.empty-state{text-align:center;padding:44px 20px;color:var(--gray400)}
+.empty-state .big{font-size:.9rem;color:var(--gray600);margin-bottom:6px}
+
+/* ─── Footer de tabla ─── */
+footer.tabfoot{margin-top:16px;font-size:.75rem;color:var(--gray400)}
+
+/* ─── Nav sidebar de costeo ─── */
+.co-sidebar-title{color:var(--gray400);font-size:.68rem;text-transform:uppercase;letter-spacing:1.4px;padding:16px 20px 8px;font-weight:600}
+.co-nav-btn{display:flex;align-items:center;gap:10px;width:100%;background:transparent;border:none;color:var(--gray400);text-align:left;padding:11px 20px;cursor:pointer;font-family:inherit;font-size:.83rem;font-weight:500;position:relative;transition:background .15s,color .15s}
+.co-nav-btn:hover{background:rgba(255,255,255,.05);color:#fff}
+.co-nav-btn.active{background:rgba(58,175,228,.15);color:#fff}
+.co-nav-btn.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--orange)}
+.co-nav-badge{margin-left:auto;background:var(--error);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;display:none}
+
+/* ─── Toast ─── */
+#co-toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:12px 18px;border-radius:var(--radius);font-size:.82rem;box-shadow:var(--shadow-lg);z-index:9999;opacity:0;transform:translateY(10px);transition:opacity .2s,transform .2s;pointer-events:none}
+#co-toast.show{opacity:1;transform:translateY(0)}
+
+@keyframes co-spin{to{transform:rotate(360deg)}}
+</style>
+{% endblock %}
+
+{% block sidebar %}
+<div class="co-sidebar-title">Costeo y Precios</div>
+<button class="co-nav-btn active" data-tab="resumen"><span>📊</span>Resumen</button>
+<button class="co-nav-btn" data-tab="productos"><span>🍞</span>Productos</button>
+<button class="co-nav-btn" data-tab="insumos"><span>🧂</span>Precios insumos</button>
+<button class="co-nav-btn" data-tab="recetas"><span>🧾</span>Costeo MP</button>
+<button class="co-nav-btn" data-tab="manoobra"><span>👷</span>Mano de obra</button>
+<button class="co-nav-btn" data-tab="indirectos"><span>⚡</span>Indirectos</button>
+<button class="co-nav-btn" data-tab="matriz"><span>💰</span>Costo y precio<span class="co-nav-badge" id="badge-matriz">0</span></button>
+<button class="co-nav-btn" data-tab="ranking"><span>🎯</span>Prioridades</button>
+<button class="co-nav-btn" data-tab="listaprecios"><span>📋</span>Listas de precios</button>
+<button class="co-nav-btn" data-tab="historico"><span>📈</span>Histórico</button>
+{% endblock %}
+
+{% block content %}
+<div id="co-toast"></div>
+<div id="co-content">
+  <div class="co-panel"><p class="lede">Cargando datos…</p></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/costeo_precios.js' %}"></script>
+{% endblock %}
