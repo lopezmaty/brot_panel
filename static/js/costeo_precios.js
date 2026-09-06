@@ -261,7 +261,7 @@ async function cargarDatos(){
       precioDistribuidor: p.precio_distribuidor, unidadesMes: p.unidades_mes,
       unidadesLote: p.unidades_lote,
     }));
-    STATE.insumos = insumos.map(i=>({ nombre:i.nombre, unidad:i.unidad, precio:i.precio, comentario:i.comentario }));
+    STATE.insumos = insumos.map(i=>({ id:i.id, nombre:i.nombre, unidad:i.unidad, precio:i.precio, comentario:i.comentario }));
     STATE.recetas = {};
     productos.forEach(p=>{
       STATE.recetas[p.codigo] = (p.receta||[]).map(l=>({
@@ -322,7 +322,7 @@ async function guardarProductos(){
 }
 
 async function guardarInsumos(){
-  const cambios = STATE.insumos.map(i=>({ nombre:i.nombre, precio:i.precio }));
+  const cambios = STATE.insumos.filter(i=>i.id).map(i=>({ id:i.id, nombre:i.nombre, precio:i.precio }));
   await apiFetch('insumos/bulk-update/', {method:'POST', body:JSON.stringify({cambios})});
 }
 
