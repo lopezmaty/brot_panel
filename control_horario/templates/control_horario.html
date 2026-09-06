@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ── Variables (misma paleta que el resto del panel) ── */
+:root{
+  --good:var(--success,#16A34A);--good-bg:#E8F6EC;
+  --error-bg:#FDEDED;--warn:#B9791F;--warn-bg:#FDF3E3;
+  --font-mono:ui-monospace,SFMono-Regular,'Cascadia Mono','Roboto Mono',Consolas,monospace;
+}
+
+/* ── Sidebar nav ── */
+.ch-sidebar-title{color:var(--gray400);font-size:.68rem;text-transform:uppercase;letter-spacing:1.4px;padding:16px 20px 8px;font-weight:600}
+.ch-nav-btn{display:flex;align-items:center;gap:10px;width:100%;background:transparent;border:none;color:var(--gray400);text-align:left;padding:11px 20px;cursor:pointer;font-family:inherit;font-size:.83rem;font-weight:500;position:relative;transition:background .15s,color .15s}
+.ch-nav-btn:hover{background:rgba(255,255,255,.05);color:#fff}
+.ch-nav-btn.active{background:rgba(58,175,228,.15);color:#fff}
+.ch-nav-btn.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--orange,#F07030)}
+.ch-sidebar-foot{margin-top:auto;font-size:11px;color:var(--gray600);padding:16px 20px 0;line-height:1.6}
+
+/* ── Contenedor ── */
+.ch-wrap{font-family:'DM Sans',sans-serif;color:var(--gray800);font-size:14px}
+.ch-wrap h1{font-family:'DM Serif Display',serif;font-size:1.5rem;margin:0 0 6px;color:var(--navy);font-weight:400}
+.ch-wrap h2{font-family:'DM Serif Display',serif;font-size:1.15rem;margin:0 0 14px;color:var(--navy);font-weight:400}
+.ch-lede{color:var(--gray600);font-size:.86rem;line-height:1.65;max-width:760px;margin-bottom:20px}
+.ch-hint{color:var(--gray400);font-size:.76rem}
+
+/* ── Panel cards ── */
+.ch-panel{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(15,35,64,.08),0 1px 4px rgba(15,35,64,.05);padding:26px 30px;margin-bottom:18px}
+
+/* ── Tabs ── */
+.ch-tab{display:none}
+.ch-tab.active{display:block}
+
+/* ── Botones ── */
+.ch-btn{padding:9px 18px;border-radius:10px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:8px;transition:all .15s}
+.ch-btn-primary{background:var(--orange,#F07030);color:#fff}
+.ch-btn-primary:hover{background:#d45f20}
+.ch-btn-secondary{background:var(--gray100);color:var(--gray600)}
+.ch-btn-secondary:hover{background:var(--gray200)}
+.ch-btn-danger{background:#FDEDED;color:#991B1B;border:1px solid #FCA5A5}
+.ch-btn-danger:hover{background:#FEE2E2}
+.ch-btn-sm{padding:6px 12px;font-size:.76rem;border-radius:8px}
+.ch-btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ── Inputs ── */
+.ch-wrap select,.ch-wrap input[type=text],.ch-wrap input[type=number],.ch-wrap input[type=date],.ch-wrap input[type=month],.ch-wrap textarea{
+  border:1.5px solid var(--eborder,#CBD8EE);border-radius:10px;padding:8px 12px;font-family:inherit;font-size:.85rem;color:var(--gray800);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
+.ch-wrap select:focus,.ch-wrap input:focus,.ch-wrap textarea:focus{border-color:var(--sky,#3AAFE4);box-shadow:0 0 0 3px rgba(58,175,228,.15)}
+.ch-wrap textarea{width:100%;min-height:120px;font-family:var(--font-mono);font-size:12.5px;resize:vertical;background:var(--gray50)}
+label.ch-label{display:block;font-size:.76rem;font-weight:600;color:var(--gray600);margin-bottom:6px;letter-spacing:.2px}
+
+/* ── Dropzone ── */
+.ch-dropzone{border:2px dashed var(--eborder,#CBD8EE);border-radius:12px;padding:28px 20px;text-align:center;color:var(--gray600);cursor:pointer;background:var(--gray50);transition:border-color .15s,background .15s;margin-bottom:14px}
+.ch-dropzone:hover,.ch-dropzone.drag{border-color:var(--sky,#3AAFE4);background:#E6F4FB}
+.ch-dropzone .big{font-size:.92rem;color:var(--navy);font-weight:600;margin-bottom:5px}
+.ch-dropzone input{display:none}
+
+/* ── Filtros ── */
+.ch-filters{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--gray100)}
+.ch-row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+
+/* ── Tablas ── */
+.ch-wrap table{width:100%;border-collapse:collapse;font-size:.83rem}
+.ch-wrap thead th{text-align:left;padding:9px 10px;color:var(--gray400);font-size:.68rem;text-transform:uppercase;letter-spacing:.7px;border-bottom:1.5px solid var(--eborder,#CBD8EE);font-weight:700;white-space:nowrap}
+.ch-wrap tbody td{padding:9px 10px;border-bottom:1px solid var(--gray100);vertical-align:middle;font-family:var(--font-mono);white-space:nowrap}
+.ch-wrap tbody td.nombre-cell{font-family:'DM Sans',sans-serif;font-weight:500;white-space:normal}
+.ch-wrap tbody tr:hover{background:var(--gray50)}
+.ch-tbl-wrap{overflow-x:auto;border:1px solid var(--eborder,#CBD8EE);border-radius:10px}
+.ch-tbl-wrap thead th{position:sticky;top:0;background:#fff;z-index:1}
+
+/* ── Badges ── */
+.ch-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap}
+.ch-badge.verde{background:#E8F6EC;color:#16A34A}
+.ch-badge.amarillo{background:#FDF3E3;color:#B9791F}
+.ch-badge.rojo{background:#FDEDED;color:#DC2626}
+.ch-badge.gris{background:var(--gray100);color:var(--gray400)}
+
+/* ── KPI cards ── */
+.ch-grid-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px}
+.ch-card{background:var(--gray50);border:1px solid var(--eborder,#CBD8EE);border-radius:10px;padding:16px 18px}
+.ch-card .label{font-size:.68rem;color:var(--gray400);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;font-weight:700}
+.ch-card .value{font-family:var(--font-mono);font-size:1.2rem;font-weight:700;color:var(--navy)}
+.ch-card .sub{font-size:.72rem;color:var(--gray600);margin-top:4px}
+
+/* ── Dias dropdown ── */
+.ch-dias-dropdown{font-family:'DM Sans',sans-serif}
+.ch-dias-dropdown summary{cursor:pointer;font-size:12px;padding:5px 10px;border:1px solid var(--eborder,#CBD8EE);border-radius:8px;background:var(--gray50);list-style:none;user-select:none;color:var(--gray600);font-weight:600}
+.ch-dias-dropdown summary::-webkit-details-marker{display:none}
+.ch-dias-dropdown[open] summary{border-color:var(--sky,#3AAFE4);color:var(--navy);background:#E6F4FB}
+.ch-dias-panel{display:flex;flex-direction:column;gap:3px;padding:8px;margin-top:4px;background:#fff;border:1px solid var(--eborder,#CBD8EE);border-radius:8px;min-width:150px;box-shadow:0 4px 24px rgba(15,35,64,.08)}
+.ch-dias-panel label{display:flex;align-items:center;gap:6px;white-space:nowrap;cursor:pointer;font-size:12.5px;font-weight:400;color:var(--gray800)}
+
+/* ── Alertas ── */
+.ch-alert-card{border:1.5px solid #FCA5A5;border-left-width:5px;background:#FDEDED;border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.ch-alert-card.info{border-color:var(--sky,#3AAFE4);border-left-color:var(--sky,#3AAFE4);background:#E6F4FB;color:var(--navy)}
+.ch-alert-card.ok{border-color:#86EFAC;border-left-color:#16A34A;background:#E8F6EC}
+
+/* ── Liquidaciones ── */
+.ch-liq-form{background:var(--gray50);border:1px solid var(--eborder,#CBD8EE);border-radius:10px;padding:16px 18px;margin-top:10px}
+.ch-liq-item{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--gray100)}
+.ch-liq-item:last-child{border-bottom:none}
+.ch-liq-item .monto{font-family:var(--font-mono);font-weight:700;color:var(--navy)}
+
+/* ── Empty state ── */
+.ch-empty{text-align:center;padding:56px 20px;color:var(--gray400)}
+.ch-empty .big{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--navy);margin-bottom:8px}
+
+/* ── Empleados importar ── */
+.ch-emp-ajuste{background:var(--gray50);border:1px solid var(--eborder,#CBD8EE);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.ch-emp-ajuste .emp-nombre{font-weight:600;color:var(--navy);font-size:.9rem;margin-bottom:10px}
+.ch-emp-ajuste .ajuste-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-bottom:8px}
+.ch-obs-input{width:100%;border:1.5px solid var(--eborder,#CBD8EE);border-radius:8px;padding:7px 10px;font-family:inherit;font-size:.82rem;background:#fff;resize:vertical;min-height:44px}
+
+/* ── Admin-only badge ── */
+.ch-admin-badge{display:inline-block;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 7px;border-radius:4px;background:#EAF2FF;color:#2563EB;margin-left:6px;vertical-align:middle}
+</style>
+{% endblock %}
+
+{% block sidebar %}
+<div class="ch-sidebar-title">Control Horario</div>
+<nav id="ch-nav">
+  <button class="ch-nav-btn active" data-tab="importar"><span>📥</span>Importar</button>
+  <button class="ch-nav-btn" data-tab="detalle"><span>🗓️</span>Detalle diario</button>
+  <button class="ch-nav-btn" data-tab="resumen"><span>📊</span>Resumen mensual</button>
+  <button class="ch-nav-btn" data-tab="evolucion"><span>📈</span>Evolución</button>
+  {% if es_admin %}
+  <button class="ch-nav-btn" data-tab="config"><span>⚙️</span>Configuración <span class="ch-admin-badge">Admin</span></button>
+  {% endif %}
+</nav>
+<div class="ch-sidebar-foot" id="chDataSummary">Sin datos cargados</div>
+{% endblock %}
+
+{% block content %}
+<div class="ch-wrap">
+{% csrf_token %}
+
+<!-- ══════════════════════════════════════════
+     IMPORTAR
+══════════════════════════════════════════ -->
+<div class="ch-tab active" id="ch-tab-importar">
+  <div class="ch-panel">
+    <h1>Importar fichadas</h1>
+    <p class="ch-lede">Seleccioná el mes, subí el archivo del reloj biométrico (formato CSV/TXT del reloj) y configurá feriados, faltas y vacaciones por empleado. Los registros ya cargados no se duplican. No se puede importar un mes cerrado.</p>
+
+    <div class="ch-row" style="margin-bottom:18px">
+      <div>
+        <label class="ch-label">Mes a importar</label>
+        <input type="month" id="chMesImportar">
+      </div>
+    </div>
+
+    <div class="ch-dropzone" id="chFileDrop">
+      <input type="file" id="chFileInput" accept=".csv,.txt,.tsv">
+      <div class="big">Hacé clic para elegir un archivo</div>
+      <div class="ch-hint">o soltalo acá (.csv / .txt)</div>
+    </div>
+
+    <label class="ch-label">Pegar datos (opcional)</label>
+    <textarea id="chPasteArea" placeholder="No;Mchn;EnNo;Nombre;Mode;IOMd;FechaHora&#10;1;1;27;garcia juan antonio;268435456;2305;2026-07-01 08:02:14"></textarea>
+
+    <div class="ch-row" style="margin-top:14px">
+      <button class="ch-btn ch-btn-secondary" id="chBtnPreview">👁 Ver empleados del archivo</button>
+      <button class="ch-btn ch-btn-secondary" id="chBtnClearArea">Limpiar</button>
+    </div>
+
+    <div id="chPreviewEmpleados" style="margin-top:18px"></div>
+
+    <div class="ch-row" style="margin-top:18px">
+      <button class="ch-btn ch-btn-primary" id="chBtnImportar" disabled>⤓ Importar datos</button>
+    </div>
+    <div id="chImportReport" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DETALLE DIARIO
+══════════════════════════════════════════ -->
+<div class="ch-tab" id="ch-tab-detalle">
+  <div class="ch-panel">
+    <h1>Detalle diario</h1>
+    <p class="ch-lede">Horas calculadas por empleado y día. 4 marcas = OK con descanso. 2 marcas = se descuenta el descanso automáticamente. Otra cantidad = error de fichada (se carga el mínimo diario).</p>
+    <div class="ch-filters">
+      <div>
+        <label class="ch-label">Mes</label>
+        <select id="chFiltroMesDetalle"></select>
+      </div>
+      <div>
+        <label class="ch-label">Empleado</label>
+        <select id="chFiltroEmpDetalle"><option value="">Todos</option></select>
+      </div>
+      <div style="margin-left:auto">
+        <button class="ch-btn ch-btn-secondary ch-btn-sm" id="chBtnExportDetalle">Exportar CSV</button>
+      </div>
+    </div>
+    <div id="chDetalleContainer"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     RESUMEN MENSUAL
+══════════════════════════════════════════ -->
+<div class="ch-tab" id="ch-tab-resumen">
+  <div class="ch-panel">
+    <h1>Resumen mensual</h1>
+    <p class="ch-lede">Total de horas a liquidar por empleado. "Faltas justificadas" suma esas horas; "Feriados no trabajados" y "Vacaciones" las restan a lo esperado — en los tres casos para que no generen diferencia. En Vacaciones se carga cuántos lunes, martes, etc. tomó ese mes.</p>
+    <div class="ch-filters">
+      <div>
+        <label class="ch-label">Mes a calcular</label>
+        <select id="chFiltroMesResumen"></select>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:10px">
+        <button class="ch-btn ch-btn-secondary ch-btn-sm" id="chBtnExportResumen">Exportar CSV</button>
+      </div>
+    </div>
+    <div id="chResumenContainer"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     EVOLUCIÓN
+══════════════════════════════════════════ -->
+<div class="ch-tab" id="ch-tab-evolucion">
+  <div class="ch-panel">
+    <h1>Evolución de horas</h1>
+    <p class="ch-lede">Diferencia acumulada mes a mes por empleado. Cuando pagás horas extra usá "Liquidar" para saldar el acumulado. Los meses cerrados no se recalculan.</p>
+    <div class="ch-filters">
+      <div>
+        <label class="ch-label">Empleado</label>
+        <select id="chFiltroEmpEvolucion"><option value="">Todos</option></select>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:10px">
+        <button class="ch-btn ch-btn-secondary ch-btn-sm" id="chBtnCerrarMes">🔒 Cerrar mes</button>
+        {% if es_admin %}
+        <button class="ch-btn ch-btn-secondary ch-btn-sm" id="chBtnAbrirMes">🔓 Abrir mes <span class="ch-admin-badge">Admin</span></button>
+        {% endif %}
+      </div>
+    </div>
+    <div id="chEvolucionContainer"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CONFIGURACIÓN (solo admin)
+══════════════════════════════════════════ -->
+{% if es_admin %}
+<div class="ch-tab" id="ch-tab-config">
+  <div class="ch-panel">
+    <h1>Configuración <span class="ch-admin-badge">Solo admin</span></h1>
+    <p class="ch-lede">Configurá el perfil de cada empleado. Los cambios afectan el cálculo de todos los meses no cerrados. Para los meses ya cerrados se usó el dato que había en ese momento.</p>
+    <div id="chConfigContainer"></div>
+    <div style="margin-top:18px">
+      <button class="ch-btn ch-btn-primary" id="chBtnGuardarConfig">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+</div><!-- .ch-wrap -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const ES_ADMIN = {{ es_admin|lower }};
+const CH_CSRF_READY = true;
+</script>
+<script src="{% static 'js/control_horario.js' %}"></script>
+{% endblock %}

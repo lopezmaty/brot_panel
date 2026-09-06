@@ -56,6 +56,15 @@
           <span class="topnav-dropdown-disabled">Cashflow</span>
         </div>
       </div>
+
+      <div class="topnav-dropdown">
+        <span class="topnav-cat-label">Recursos humanos <i class="ti ti-chevron-down"></i></span>
+        <div class="topnav-dropdown-menu">
+          {% if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab' %}
+          <a href="{% url 'control_horario' %}">Control Horario</a>
+          {% endif %}
+        </div>
+      </div>
     </div>
 
     <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">

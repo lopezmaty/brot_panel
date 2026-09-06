@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'sistema_pedidos',
     'frontend',
     'gestion_gerencial',
+    'control_horario',
 ]
 
 MIDDLEWARE = [

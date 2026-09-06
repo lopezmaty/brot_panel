@@ -24,6 +24,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from frontend.views import catalogo_view, perfil_catalogo_view
 from gestion_gerencial.views import mapa_economico_view, costeo_precios_view, estado_resultados_view
+from control_horario.views import control_horario_view
 
 
 urlpatterns = [
@@ -42,6 +43,8 @@ urlpatterns = [
     path('gestion-gerencial/mapa-economico/', mapa_economico_view, name='mapa_economico'),
     path('gestion-gerencial/costeo-precios/', costeo_precios_view, name='costeo_precios'),
     path('gestion-gerencial/estado-resultados/', estado_resultados_view, name='estado_resultados'),
+    path('api/control_horario/', include('control_horario.urls')),
+    path('administracion/control-horario/', control_horario_view, name='control_horario'),
 
 ]
 

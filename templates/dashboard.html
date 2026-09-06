@@ -98,4 +98,18 @@
   </div>
 </section>
 
+<section class="qc-category">
+  <h2 class="qc-category-title">Recursos humanos</h2>
+  <div class="quick-access-grid">
+    {% if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab' %}
+    <a href="{% url 'control_horario' %}" class="quick-card">
+      <div class="qc-badge"><i class="ti ti-clock-hour-4"></i></div>
+      <h3 class="qc-title">Control Horario</h3>
+      <p class="qc-desc">Importá fichadas del reloj biométrico y calculá horas del equipo.</p>
+      <span class="qc-btn">Ir al horario <i class="ti ti-arrow-right"></i></span>
+    </a>
+    {% endif %}
+  </div>
+</section>
+
 {% endblock %}
