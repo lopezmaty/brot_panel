@@ -23,7 +23,7 @@ from sistema_pedidos.views import confirmar_pedido_catalogo
 from django.conf import settings
 from django.conf.urls.static import static
 from frontend.views import catalogo_view, perfil_catalogo_view
-from gestion_gerencial.views import mapa_economico_view, costeo_precios_view
+from gestion_gerencial.views import mapa_economico_view, costeo_precios_view, estado_resultados_view
 
 
 urlpatterns = [
@@ -41,7 +41,8 @@ urlpatterns = [
     path('api/gestion_gerencial/', include('gestion_gerencial.urls')),
     path('gestion-gerencial/mapa-economico/', mapa_economico_view, name='mapa_economico'),
     path('gestion-gerencial/costeo-precios/', costeo_precios_view, name='costeo_precios'),
-    
+    path('gestion-gerencial/estado-resultados/', estado_resultados_view, name='estado_resultados'),
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

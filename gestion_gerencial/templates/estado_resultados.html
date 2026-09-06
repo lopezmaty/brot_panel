@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#132644;--sky:#3AAFE4;--orange:#F07030;--pale:#E6F4FB;
+  --gray50:#F7F9FC;--gray100:#EEF2F8;--gray200:#D8E2EF;--gray400:#8A9BB8;
+  --gray600:#4A5D7A;--gray800:#1E2D45;--success:#16A34A;--error:#DC2626;--amber:#E8A33D;
+  --eborder:#CBD8EE;--verde-soft:#E8F6EC;--amber-soft:#FDF3E3;--rojo-soft:#FDEDED;
+  --mono:ui-monospace,SFMono-Regular,'Cascadia Mono','Roboto Mono',Consolas,monospace;
+}
+.eerr-wrap{font-family:'DM Sans',sans-serif;color:var(--gray800);font-size:14px}
+.eerr-wrap h1,.eerr-wrap h2{font-family:'DM Serif Display',serif;color:var(--navy);font-weight:400}
+.eerr-wrap h1{font-size:1.5rem;margin:0 0 6px}
+.eerr-wrap h2{font-size:1.15rem;margin:0 0 14px}
+
+.eerr-toolbar{display:flex;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.eerr-toolbar label{font-size:.74rem;color:var(--gray600);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-right:8px}
+.eerr-wrap select,
+.eerr-wrap input[type=month],
+.eerr-wrap input[type=number],
+.eerr-wrap input[type=text],
+.eerr-wrap textarea{
+  border:1.5px solid var(--eborder);
+  border-radius:10px;
+  padding:8px 12px;
+  font-family:inherit;
+  font-size:.85rem;
+  color:var(--gray800);
+  background:#fff;
+  outline:none;
+  box-shadow:none;
+}
+.eerr-wrap select:focus,
+.eerr-wrap input:focus,
+.eerr-wrap textarea:focus{
+  border-color:var(--sky);
+  box-shadow:0 0 0 3px rgba(58,175,228,.15);
+}
+
+.eerr-sidebar-title{color:var(--gray400);font-size:.68rem;text-transform:uppercase;letter-spacing:1.4px;padding:16px 20px 8px;font-weight:600}
+.eerr-nav-btn{display:flex;align-items:center;gap:10px;width:100%;background:transparent;border:none;color:var(--gray400);text-align:left;padding:11px 20px;cursor:pointer;font-family:inherit;font-size:.83rem;font-weight:500;position:relative}
+.eerr-nav-btn:hover{background:rgba(255,255,255,.05);color:#fff}
+.eerr-nav-btn.active{background:rgba(58,175,228,.15);color:#fff}
+.eerr-nav-btn.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--orange)}
+.eerr-nav-badge{margin-left:auto;background:var(--error);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px}
+
+.eerr-panel{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(15,35,64,.08),0 1px 4px rgba(15,35,64,.05);padding:26px 30px;margin-bottom:18px}
+.eerr-lede{color:var(--gray600);font-size:.86rem;line-height:1.65;max-width:680px;margin-bottom:20px}
+.eerr-hint{color:var(--gray400);font-size:.76rem}
+
+.eerr-wrap table{width:100%;border-collapse:collapse;font-size:.83rem}
+.eerr-wrap th{text-align:left;padding:9px 10px;color:var(--gray400);font-size:.68rem;text-transform:uppercase;letter-spacing:.7px;border-bottom:1.5px solid var(--eborder);font-weight:700}
+.eerr-wrap th.eerr-num{text-align:right}
+.eerr-wrap td{padding:10px 10px;border-bottom:1px solid var(--gray100);vertical-align:middle}
+.eerr-wrap tr:last-child td{border-bottom:none}
+.eerr-wrap tbody tr:hover{background:var(--gray50)}
+.eerr-num{font-family:var(--mono);text-align:right;white-space:nowrap}
+.eerr-row-total{font-weight:700;background:var(--gray50)}
+.eerr-row-total td{border-top:2px solid var(--eborder)}
+
+.eerr-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700}
+.eerr-badge.verde{background:var(--verde-soft);color:var(--success)}
+.eerr-badge.amarillo{background:var(--amber-soft);color:#B9791F}
+.eerr-badge.rojo{background:var(--rojo-soft);color:var(--error)}
+.eerr-badge.gris{background:var(--gray100);color:var(--gray400)}
+
+.eerr-alert{display:flex;align-items:center;gap:10px;padding:13px 18px;border-radius:10px;font-size:.83rem;margin-bottom:18px;line-height:1.5}
+.eerr-alert.warn{background:#FFF7ED;color:#9A3412;border-left:3px solid var(--orange)}
+.eerr-alert.ok{background:var(--verde-soft);color:#166534;border-left:3px solid var(--success)}
+.eerr-alert.info{background:var(--pale);color:var(--navy);border-left:3px solid var(--sky)}
+.eerr-alert button.link{color:inherit;text-decoration:underline;background:none;border:none;cursor:pointer;font-weight:700;font-size:.83rem;padding:0;font-family:inherit}
+
+.eerr-grid-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:14px;margin-bottom:6px}
+.eerr-card{background:var(--gray50);border:1px solid var(--eborder);border-radius:10px;padding:16px 18px}
+.eerr-card .label{font-size:.68rem;color:var(--gray400);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;font-weight:700}
+.eerr-card .value{font-family:var(--mono);font-size:1.25rem;font-weight:700;color:var(--navy)}
+.eerr-card .sub{font-size:.74rem;color:var(--gray600);margin-top:5px}
+
+.eerr-filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+
+select.eerr-cuenta-select{width:100%;min-width:240px}
+.eerr-row-uncat{background:#FFF7ED}
+.eerr-row-excluida{opacity:.55}
+
+.eerr-tab{display:none}
+.eerr-tab.active{display:block}
+
+.eerr-empty-state{text-align:center;padding:40px 20px;color:var(--gray400)}
+.eerr-empty-state .big{font-size:.9rem;color:var(--gray600);margin-bottom:6px}
+
+.eerr-tabfoot{margin-top:16px;font-size:.75rem;color:var(--gray400)}
+
+.eerr-btn{padding:9px 18px;border-radius:10px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:8px}
+.eerr-btn-primary{background:var(--orange);color:#fff}
+.eerr-btn-primary:hover{background:#d45f20}
+.eerr-btn-secondary{background:var(--gray100);color:var(--gray600)}
+.eerr-btn-secondary:hover{background:var(--gray200)}
+.eerr-btn-sm{padding:6px 12px;font-size:.76rem;border-radius:8px}
+.eerr-btn:disabled{opacity:.45;cursor:not-allowed}
+
+.eerr-bar-row{display:flex;align-items:center;gap:12px;margin-bottom:9px}
+.eerr-bar-label{width:150px;font-size:.78rem;color:var(--gray600);flex-shrink:0}
+.eerr-bar-track{flex:1;height:16px;background:var(--gray100);border-radius:5px;overflow:hidden}
+.eerr-bar-fill{height:100%}
+.eerr-bar-val{width:100px;text-align:right;font-family:var(--mono);font-size:.78rem;color:var(--gray600);flex-shrink:0}
+
+.eerr-wrap{max-width:1800px}
+</style>
+{% endblock %}
+
+{% block sidebar %}
+<div class="eerr-sidebar-title">Estado de Resultados</div>
+<nav id="nav-eerr">
+  <button class="eerr-nav-btn active" data-tab="resumen"><span>📊</span>Resumen del mes</button>
+  <button class="eerr-nav-btn" data-tab="compras"><span>🧾</span>Compras<span class="eerr-nav-badge" id="badge-compras" style="display:none">0</span></button>
+  <button class="eerr-nav-btn" data-tab="ventas"><span>💰</span>Ventas del mes</button>
+  <button class="eerr-nav-btn" data-tab="mapeo"><span>🔗</span>Productos sin costeo<span class="eerr-nav-badge" id="badge-mapeo" style="display:none">0</span></button>
+  <button class="eerr-nav-btn" data-tab="plan-cuentas"><span>📋</span>Plan de cuentas</button>
+  <button class="eerr-nav-btn" data-tab="historico"><span>📈</span>Histórico acumulado</button>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="eerr-wrap">
+
+{% csrf_token %}
+
+<span class="page-eyebrow">Gestión gerencial</span>
+<h1 class="page-title">Estado de Resultados</h1>
+
+<div class="eerr-toolbar">
+  <div><label>Mes de trabajo</label><input type="month" id="mesActivoEERR"></div>
+  <button class="eerr-btn eerr-btn-primary" id="btnTraerXubioEERR">⤓ Traer de Xubio (ventas y compras)</button>
+  <span class="eerr-hint" id="importandoEERR" style="display:none;">Importando, puede tardar uno o dos minutos...</span>
+</div>
+<div id="importarResultadoEERR"></div>
+
+<!-- RESUMEN -->
+<div class="eerr-tab active" id="tab-eerr-resumen">
+  <div id="resumenEERRContenido"></div>
+</div>
+
+<!-- COMPRAS -->
+<div class="eerr-tab" id="tab-eerr-compras">
+  <div class="eerr-panel">
+    <h1>Compras del mes</h1>
+    <p class="eerr-lede">Asigná la cuenta contable de cada compra. Si dejás tildado "Recordar", la próxima vez que aparezca ese proveedor/producto se va a categorizar solo. Las compras de "Compra MP/Insumos" se muestran pero no suman al Estado de Resultados — el CMV se calcula desde Costeo y Precios.</p>
+    <div class="eerr-filters">
+      <label style="display:flex;align-items:center;gap:6px;font-weight:500;color:var(--gray600);font-size:.82rem;">
+        <input type="checkbox" id="soloSinCategorizarEERR" checked> Mostrar solo sin categorizar
+      </label>
+      <select id="filtroCuentaEERR" style="min-width:240px;">
+        <option value="">Todas las cuentas</option>
+      </select>
+      <button class="eerr-btn eerr-btn-secondary eerr-btn-sm" id="btnRefrescarComprasEERR">🔄 Refrescar</button>
+    </div>
+    <div id="tablaComprasEERRWrap"></div>
+  </div>
+</div>
+
+<!-- VENTAS -->
+<div class="eerr-tab" id="tab-eerr-ventas">
+  <div class="eerr-panel">
+    <h1>Ventas del mes</h1>
+    <p class="eerr-lede">Ventas diarias por producto, agrupadas por día. Los productos marcados "sin costeo asociado" no tienen un ProductoCosteo vinculado todavía — no entran en el cálculo del CMV hasta que los asignes en la pestaña "Productos sin costeo".</p>
+    <div id="tablaVentasEERRWrap"></div>
+  </div>
+</div>
+
+<!-- MAPEO PRODUCTO XUBIO -> COSTEO -->
+<div class="eerr-tab" id="tab-eerr-mapeo">
+  <div class="eerr-panel">
+    <h1>Productos sin costeo asociado</h1>
+    <p class="eerr-lede">Vinculá cada producto de Xubio con su ProductoCosteo correspondiente (por ejemplo, "Burger Bun 70g" y "Burger Bun 100g" con la variedad "chica" de Costeo). Una vez asignado, se recuerda para siempre.</p>
+    <div id="tablaMapeoEERRWrap"></div>
+  </div>
+  <div class="eerr-panel">
+    <h2>Mapeos ya asignados</h2>
+    <div id="tablaMapeosExistentesEERRWrap"></div>
+  </div>
+</div>
+
+<!-- PLAN DE CUENTAS (referencia) -->
+<div class="eerr-tab" id="tab-eerr-plan-cuentas">
+  <div class="eerr-panel">
+    <h1>Plan de cuentas</h1>
+    <p class="eerr-lede">Catálogo de referencia. Cada cuenta define a qué línea del Estado de Resultados suma, si entra en el cálculo, y con qué signo.</p>
+    <div id="tablaPlanCuentasEERRWrap"></div>
+  </div>
+</div>
+
+<!-- HISTORICO -->
+<div class="eerr-tab" id="tab-eerr-historico">
+  <div class="eerr-panel">
+    <h1>Histórico acumulado</h1>
+    <p class="eerr-lede">Evolución mes a mes de ventas, CMV, márgenes y resultado operativo.</p>
+    <div id="historicoEERRContenido"></div>
+  </div>
+</div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/estado_resultados.js' %}"></script>
+{% endblock %}

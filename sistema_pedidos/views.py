@@ -29,7 +29,7 @@ class PedidoViewset(viewsets.ModelViewSet):
         return [(EsAdmin | EsColab)()]
 
     def update(self, request, *args, **kwargs):
-        from django.core.mail import send_mail
+        from users.utils import enviar_email_resend
         pedido = self.get_object()
         estado_anterior = pedido.estado
 
@@ -72,13 +72,7 @@ class PedidoViewset(viewsets.ModelViewSet):
             mensaje = mensajes.get(estado_nuevo)
             asunto = asuntos.get(estado_nuevo)
             if mensaje:
-                send_mail(
-                    subject=asunto,
-                    message=mensaje,
-                    from_email=None,
-                    recipient_list=[pedido.cliente.mail],
-                    fail_silently=True,
-                )
+                enviar_email_resend(pedido.cliente.mail, asunto, mensaje)
 
         return response
 
@@ -298,4 +292,3 @@ def stock_productos(request):
                 }
             )
         return Response({'ok': True})
-

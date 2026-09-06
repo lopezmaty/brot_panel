@@ -639,3 +639,428 @@ def costeo_mano_obra_bulk_update(request):
         except ProductoCosteo.DoesNotExist:
             pass
     return Response({'ok': True})
+
+# ============================================================
+# ESTADO DE RESULTADOS (EERR) — vistas de API
+# ============================================================
+
+from decimal import Decimal
+from .services_costeo import calc_mp_unitario, calc_amortizacion_mensual, _d
+
+
+def resolver_cuenta_eerr(proveedor, producto):
+    proveedor_norm = normalizar(proveedor)
+    producto_norm = normalizar(producto)
+
+    regla = models.ReglaAsignacionCuentaEERR.objects.filter(
+        proveedor__iexact=proveedor_norm, producto__iexact=producto_norm
+    ).select_related('cuenta').first()
+    if regla:
+        return regla.cuenta
+
+    regla = models.ReglaAsignacionCuentaEERR.objects.filter(
+        proveedor__iexact=proveedor_norm, producto='*'
+    ).select_related('cuenta').first()
+    if regla:
+        return regla.cuenta
+
+    return None
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def importar_compras_eerr(request):
+    mes = request.data.get('mes')
+    if not mes:
+        return Response({'error': 'Falta el mes (formato YYYY-MM).'}, status=400)
+
+    try:
+        fecha_desde, fecha_hasta = _rango_fechas(mes)
+    except (ValueError, AttributeError):
+        return Response({'error': 'Formato de mes inválido, usá YYYY-MM.'}, status=400)
+
+    try:
+        lineas = obtener_compras_mes(fecha_desde, fecha_hasta)
+    except Exception as e:
+        return Response({'error': f'Error consultando Xubio: {e}'}, status=500)
+
+    importadas = 0
+    sin_categorizar = 0
+
+    for linea in lineas:
+        cuenta = resolver_cuenta_eerr(linea['proveedor'], linea['producto'])
+        if cuenta is None:
+            sin_categorizar += 1
+
+        models.CompraEERR.objects.update_or_create(
+            mes=mes,
+            xubio_transaccion_id=linea['transaccion_id'],
+            xubio_item_id=linea['item_id'],
+            defaults={
+                'fecha': linea['fecha'] or None,
+                'documento': linea['documento'] or '',
+                'proveedor': linea['proveedor'],
+                'producto': linea['producto'],
+                'descripcion': linea['descripcion'] or '',
+                'importe': linea['importe'] or 0,
+                'cuenta': cuenta,
+            }
+        )
+        importadas += 1
+
+    return Response({
+        'importadas': importadas,
+        'sin_categorizar': sin_categorizar,
+    })
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def importar_ventas_eerr(request):
+    from sistema_pedidos.xubio import obtener_ventas_diarias_producto
+
+    mes = request.data.get('mes')
+    if not mes:
+        return Response({'error': 'Falta el mes (formato YYYY-MM).'}, status=400)
+
+    try:
+        fecha_desde, fecha_hasta = _rango_fechas(mes)
+    except (ValueError, AttributeError):
+        return Response({'error': 'Formato de mes inválido, usá YYYY-MM.'}, status=400)
+
+    try:
+        lineas = obtener_ventas_diarias_producto(fecha_desde, fecha_hasta)
+    except Exception as e:
+        return Response({'error': f'Error consultando Xubio: {e}'}, status=500)
+
+    models.VentaProductoEERR.objects.filter(mes=mes).delete()
+    models.VentaProductoEERR.objects.bulk_create([
+        models.VentaProductoEERR(
+            mes=mes,
+            fecha=l['fecha'],
+            xubio_producto_id=l['xubio_producto_id'],
+            producto=l['producto'],
+            cantidad=l['cantidad'],
+            importe=l['importe'],
+        ) for l in lineas
+    ])
+
+    ids_con_mapeo = set(models.XubioProductoCosteoMapeo.objects.values_list('xubio_producto_id', flat=True))
+    sin_mapeo = len([l for l in lineas if l['xubio_producto_id'] not in ids_con_mapeo])
+
+    return Response({
+        'importadas': len(lineas),
+        'sin_mapeo_costeo': sin_mapeo,
+    })
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def listar_compras_eerr(request):
+    mes = request.GET.get('mes')
+    if not mes:
+        return Response({'error': 'Falta el mes.'}, status=400)
+
+    solo_sin_categorizar = request.GET.get('solo_sin_categorizar') == '1'
+    cuenta_id = request.GET.get('cuenta_id')
+
+    compras = models.CompraEERR.objects.filter(mes=mes).select_related('cuenta').order_by('proveedor', 'producto')
+    if solo_sin_categorizar:
+        compras = compras.filter(cuenta__isnull=True)
+    elif cuenta_id:
+        compras = compras.filter(cuenta_id=cuenta_id)
+
+    data = [
+        {
+            'id': c.id,
+            'proveedor': c.proveedor,
+            'producto': c.producto,
+            'descripcion': c.descripcion,
+            'importe': str(c.importe),
+            'cuenta_id': c.cuenta_id,
+            'cuenta': c.cuenta.cuenta if c.cuenta else None,
+            'incluir_eerr': c.cuenta.incluir_eerr if c.cuenta else None,
+            'fecha': c.fecha.isoformat() if c.fecha else None,
+            'documento': c.documento,
+        }
+        for c in compras
+    ]
+    return Response(data)
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def asignar_cuenta_compra_eerr(request):
+    compra_id = request.data.get('compra_id')
+    cuenta_id = request.data.get('cuenta_id')
+    recordar = request.data.get('recordar', False)
+    alcance = request.data.get('alcance', 'producto')
+
+    if not compra_id or not cuenta_id:
+        return Response({'error': 'Faltan datos.'}, status=400)
+
+    try:
+        compra = models.CompraEERR.objects.get(id=compra_id)
+    except models.CompraEERR.DoesNotExist:
+        return Response({'error': 'Compra no encontrada.'}, status=404)
+
+    try:
+        cuenta = models.PlanCuentaEERR.objects.get(id=cuenta_id)
+    except models.PlanCuentaEERR.DoesNotExist:
+        return Response({'error': 'Cuenta no encontrada.'}, status=404)
+
+    compra.cuenta = cuenta
+    compra.save(update_fields=['cuenta'])
+
+    if recordar:
+        producto_regla = '*' if alcance == 'proveedor' else compra.producto
+        models.ReglaAsignacionCuentaEERR.objects.update_or_create(
+            proveedor=compra.proveedor,
+            producto=producto_regla,
+            defaults={'cuenta': cuenta},
+        )
+
+    return Response({'ok': True})
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def plan_cuentas_eerr(request):
+    cuentas = models.PlanCuentaEERR.objects.all()
+    data = [
+        {
+            'id': c.id,
+            'cuenta': c.cuenta,
+            'tipo': c.tipo,
+            'linea_eerr': c.linea_eerr,
+            'rubro': c.rubro,
+            'incluir_eerr': c.incluir_eerr,
+            'signo': c.signo,
+        }
+        for c in cuentas
+    ]
+    return Response(data)
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def ventas_eerr_mes(request):
+    mes = request.GET.get('mes')
+    if not mes:
+        return Response({'error': 'Falta el mes.'}, status=400)
+
+    ventas = models.VentaProductoEERR.objects.filter(mes=mes).order_by('fecha', 'producto')
+    mapeos = {
+        m.xubio_producto_id: m.producto_costeo
+        for m in models.XubioProductoCosteoMapeo.objects.select_related('producto_costeo')
+    }
+    cache_mp_unitario = {}
+
+    data = []
+    for v in ventas:
+        producto_costeo = mapeos.get(v.xubio_producto_id)
+        costo_unitario = None
+        cmv_linea = None
+        if producto_costeo:
+            if producto_costeo.id not in cache_mp_unitario:
+                cache_mp_unitario[producto_costeo.id] = calc_mp_unitario(producto_costeo)
+            costo_unitario = cache_mp_unitario[producto_costeo.id]
+            cmv_linea = _d(v.cantidad) * costo_unitario
+
+        data.append({
+            'id': v.id,
+            'fecha': v.fecha.isoformat(),
+            'xubio_producto_id': v.xubio_producto_id,
+            'producto': v.producto,
+            'cantidad': v.cantidad,
+            'importe': str(v.importe),
+            'producto_costeo': producto_costeo.nombre if producto_costeo else None,
+            'sin_costeo_asociado': producto_costeo is None,
+            'costo_unitario_mp': float(costo_unitario) if costo_unitario is not None else None,
+            'cmv_linea': float(cmv_linea) if cmv_linea is not None else None,
+        })
+    return Response(data)
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def mapeos_producto_costeo(request):
+    from .models import ProductoCosteo
+
+    mapeos = models.XubioProductoCosteoMapeo.objects.select_related('producto_costeo').all()
+    data = [
+        {
+            'id': m.id,
+            'xubio_producto_id': m.xubio_producto_id,
+            'xubio_producto_nombre': m.xubio_producto_nombre,
+            'producto_costeo_id': m.producto_costeo_id,
+            'producto_costeo_nombre': m.producto_costeo.nombre,
+        }
+        for m in mapeos
+    ]
+
+    ids_mapeados = {m.xubio_producto_id for m in mapeos}
+    sin_mapear = list(
+        models.VentaProductoEERR.objects
+        .exclude(xubio_producto_id__in=ids_mapeados)
+        .exclude(xubio_producto_id__isnull=True)
+        .values('xubio_producto_id', 'producto')
+        .distinct()
+    )
+
+    productos_costeo = list(ProductoCosteo.objects.values('id', 'nombre', 'codigo').order_by('nombre'))
+
+    return Response({
+        'mapeos': data,
+        'sin_mapear': sin_mapear,
+        'productos_costeo': productos_costeo,
+    })
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def asignar_mapeo_producto_costeo(request):
+    from .models import ProductoCosteo
+
+    xubio_producto_id = request.data.get('xubio_producto_id')
+    xubio_producto_nombre = request.data.get('xubio_producto_nombre', '')
+    producto_costeo_id = request.data.get('producto_costeo_id')
+
+    if not xubio_producto_id or not producto_costeo_id:
+        return Response({'error': 'Faltan datos.'}, status=400)
+
+    try:
+        producto_costeo = ProductoCosteo.objects.get(id=producto_costeo_id)
+    except ProductoCosteo.DoesNotExist:
+        return Response({'error': 'Producto de costeo no encontrado.'}, status=404)
+
+    models.XubioProductoCosteoMapeo.objects.update_or_create(
+        xubio_producto_id=xubio_producto_id,
+        defaults={
+            'xubio_producto_nombre': xubio_producto_nombre,
+            'producto_costeo': producto_costeo,
+        },
+    )
+    return Response({'ok': True})
+
+
+def _linea_eerr_totales(mes):
+    """Suma CompraEERR.importe * cuenta.signo agrupado por linea_eerr,
+    solo de cuentas con incluir_eerr=True."""
+    totales = {codigo: Decimal('0') for codigo, _ in models.LINEA_EERR_CHOICES}
+    compras = models.CompraEERR.objects.filter(
+        mes=mes, cuenta__isnull=False, cuenta__incluir_eerr=True
+    ).select_related('cuenta')
+    for c in compras:
+        totales[c.cuenta.linea_eerr] += _d(c.importe) * c.cuenta.signo
+    return totales
+
+
+def _calcular_eerr_valores(mes):
+    """Calcula el EERR completo de un mes. Devuelve un dict (no un Response)
+    para poder reusarlo tanto en calcular_eerr_mes como en historico_eerr."""
+    from .models import EquipoCosteo
+
+    # --- Ventas netas y CMV (desde VentaProductoEERR + calc_mp_unitario de Costeo) ---
+    ventas = models.VentaProductoEERR.objects.filter(mes=mes)
+    mapeos = {
+        m.xubio_producto_id: m.producto_costeo
+        for m in models.XubioProductoCosteoMapeo.objects.select_related('producto_costeo')
+    }
+
+    ventas_netas = Decimal('0')
+    cmv = Decimal('0')
+    ventas_sin_costeo = 0
+    cache_mp_unitario = {}
+
+    for v in ventas:
+        ventas_netas += _d(v.importe)
+        producto_costeo = mapeos.get(v.xubio_producto_id)
+        if not producto_costeo:
+            ventas_sin_costeo += 1
+            continue
+        if producto_costeo.id not in cache_mp_unitario:
+            cache_mp_unitario[producto_costeo.id] = calc_mp_unitario(producto_costeo)
+        cmv += _d(v.cantidad) * cache_mp_unitario[producto_costeo.id]
+
+    margen_bruto = ventas_netas - cmv
+
+    # --- Gastos por línea EERR (desde compras categorizadas) ---
+    totales = _linea_eerr_totales(mes)
+
+    gastos_variables = totales['gastos_variables']
+    margen_contribucion = margen_bruto - gastos_variables
+
+    mano_obra_directa = totales['mano_obra_directa']
+    indirectos_productivos = totales['indirectos_productivos']
+
+    # Amortizaciones: en vivo desde Costeo (no se cargan como compra)
+    amortizaciones = calc_amortizacion_mensual(EquipoCosteo.objects.all())
+
+    gastos_administracion = totales['gastos_administracion']
+    gastos_financieros = totales['gastos_financieros']
+    impuestos = totales['impuestos']
+    otros_resultados = totales['otros_resultados']
+
+    # Misma fórmula que el Excel: "Otros resultados" SUMA, no resta.
+    resultado_operativo = (
+        margen_contribucion
+        - mano_obra_directa
+        - indirectos_productivos
+        - amortizaciones
+        - gastos_administracion
+        - gastos_financieros
+        - impuestos
+        + otros_resultados
+    )
+
+    def pct(valor):
+        return float(valor / ventas_netas) if ventas_netas else 0
+
+    return {
+        'mes': mes,
+        'ventas_netas': float(ventas_netas),
+        'cmv': float(cmv),
+        'margen_bruto': float(margen_bruto),
+        'margen_bruto_pct': pct(margen_bruto),
+        'gastos_variables': float(gastos_variables),
+        'margen_contribucion': float(margen_contribucion),
+        'margen_contribucion_pct': pct(margen_contribucion),
+        'mano_obra_directa': float(mano_obra_directa),
+        'indirectos_productivos': float(indirectos_productivos),
+        'amortizaciones': float(amortizaciones),
+        'gastos_administracion': float(gastos_administracion),
+        'gastos_financieros': float(gastos_financieros),
+        'impuestos': float(impuestos),
+        'otros_resultados': float(otros_resultados),
+        'resultado_operativo': float(resultado_operativo),
+        'resultado_operativo_pct': pct(resultado_operativo),
+        'ventas_sin_costeo_asociado': ventas_sin_costeo,
+    }
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def calcular_eerr_mes(request):
+    mes = request.GET.get('mes')
+    if not mes:
+        return Response({'error': 'Falta el mes.'}, status=400)
+    return Response(_calcular_eerr_valores(mes))
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def historico_eerr(request):
+    meses_compras = set(models.CompraEERR.objects.values_list('mes', flat=True).distinct())
+    meses_ventas = set(models.VentaProductoEERR.objects.values_list('mes', flat=True).distinct())
+    meses = sorted(meses_compras | meses_ventas)
+
+    filas = [_calcular_eerr_valores(mes) for mes in meses]
+    return Response(filas)
+
+
+@login_required(login_url='login')
+def estado_resultados_view(request):
+    if request.user.perfil.rol != 'admin':
+        return redirect('dashboard')
+    return render(request, 'estado_resultados.html')

@@ -460,3 +460,83 @@ def obtener_ventas_mes(fecha_desde, fecha_hasta):
             for nombre, datos in productos_ordenados
         ],
     }
+
+
+def obtener_ventas_diarias_producto(fecha_desde, fecha_hasta):
+    """
+    fecha_desde, fecha_hasta: strings 'YYYY-MM-DD'.
+    Para Estado de Resultados: trae las ventas del rango agrupadas por
+    día + producto (NO por cliente — esa info no se usa acá). Excluye los
+    mismos ítems no-producto que obtener_ventas_mes y aplica el mismo
+    signo negativo a Notas de Crédito (tipo 3).
+    Devuelve una lista de líneas, una por combinación fecha+producto:
+    [{'fecha': 'YYYY-MM-DD', 'xubio_producto_id': int|None, 'producto': str,
+      'cantidad': float, 'importe': float}, ...]
+    """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    token = obtener_token()
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Accept': 'application/json',
+    }
+
+    comprobantes = _paginar_comprobantes(f'{XUBIO_BASE}/comprobanteVentaBean', fecha_desde, fecha_hasta, headers)
+
+    def traer_detalle(transaccion_id):
+        try:
+            r = requests.get(
+                f'{XUBIO_BASE}/comprobanteVentaBean/{transaccion_id}',
+                headers=headers,
+                timeout=10,
+            )
+            if r.status_code == 200:
+                return r.json()
+        except Exception:
+            pass
+        return None
+
+    ids = [c.get('transaccionid') for c in comprobantes if c.get('transaccionid')]
+
+    # clave = (fecha, xubio_producto_id o nombre si no viene id)
+    diario_agg = {}
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = {executor.submit(traer_detalle, tid): tid for tid in ids}
+        for future in as_completed(futures):
+            detalle = future.result()
+            if not detalle:
+                continue
+
+            fecha = detalle.get('fecha')
+            items = detalle.get('transaccionProductoItems', [])
+
+            # tipo 3 = Nota de Crédito (devolución, resta) / cualquier otro tipo suma normal
+            signo = -1 if detalle.get('tipo') == 3 else 1
+
+            for item in items:
+                producto_obj = item.get('producto') or {}
+                producto_nombre = producto_obj.get('nombre', '') or 'Sin producto'
+                if producto_nombre.strip().upper() in PRODUCTOS_EXCLUIDOS_VENTAS:
+                    continue
+
+                xubio_producto_id = producto_obj.get('id') or producto_obj.get('productoid')
+                importe_item = float(item.get('importe') or 0) * signo
+                cantidad_item = float(item.get('cantidad') or 0) * signo
+
+                clave = (fecha, xubio_producto_id, producto_nombre)
+                if clave not in diario_agg:
+                    diario_agg[clave] = {'importe': 0, 'cantidad': 0}
+                diario_agg[clave]['importe'] += importe_item
+                diario_agg[clave]['cantidad'] += cantidad_item
+
+    return [
+        {
+            'fecha': fecha,
+            'xubio_producto_id': xubio_producto_id,
+            'producto': producto_nombre,
+            'cantidad': datos['cantidad'],
+            'importe': datos['importe'],
+        }
+        for (fecha, xubio_producto_id, producto_nombre), datos in sorted(diario_agg.items())
+    ]

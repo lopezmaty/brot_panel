@@ -22,4 +22,16 @@ urlpatterns = [
     path('costeo/equipos/bulk-update/', views.costeo_equipos_bulk_update, name='costeo_equipos_bulk_update'),
     path('costeo/historial/', views.costeo_historial, name='costeo_historial'),
     path('costeo/mano-obra/bulk-update/', views.costeo_mano_obra_bulk_update, name='costeo_mano_obra_bulk_update'),
+
+    # --- Estado de Resultados (EERR) ---
+    path('eerr/importar-compras/', views.importar_compras_eerr, name='importar_compras_eerr'),
+    path('eerr/importar-ventas/', views.importar_ventas_eerr, name='importar_ventas_eerr'),
+    path('eerr/compras/', views.listar_compras_eerr, name='listar_compras_eerr'),
+    path('eerr/asignar-cuenta-compra/', views.asignar_cuenta_compra_eerr, name='asignar_cuenta_compra_eerr'),
+    path('eerr/plan-cuentas/', views.plan_cuentas_eerr, name='plan_cuentas_eerr'),
+    path('eerr/ventas/', views.ventas_eerr_mes, name='ventas_eerr_mes'),
+    path('eerr/mapeos-producto-costeo/', views.mapeos_producto_costeo, name='mapeos_producto_costeo'),
+    path('eerr/asignar-mapeo-producto-costeo/', views.asignar_mapeo_producto_costeo, name='asignar_mapeo_producto_costeo'),
+    path('eerr/calcular/', views.calcular_eerr_mes, name='calcular_eerr_mes'),
+    path('eerr/historico/', views.historico_eerr, name='historico_eerr'),
 ]
