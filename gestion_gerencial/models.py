@@ -51,6 +51,7 @@ class CompraMapa(models.Model):
     importe = models.DecimalField(max_digits=12, decimal_places=2)
     rubro = models.CharField(max_length=30, choices=RUBRO_CHOICES, default=SIN_CATEGORIZAR)
     xubio_transaccion_id = models.BigIntegerField(null=True, blank=True)
+    xubio_item_id = models.BigIntegerField(null=True, blank=True)
 
     class Meta:
         indexes = [models.Index(fields=['mes'])]
@@ -91,25 +92,6 @@ class VentaProductoMapa(models.Model):
     class Meta:
         indexes = [models.Index(fields=['mes'])]
 
-class CompraMapa(models.Model):
-    mes = models.CharField(max_length=7)  # 'YYYY-MM'
-    fecha = models.DateField(null=True, blank=True)
-    documento = models.CharField(max_length=50, blank=True, default='')
-    proveedor = models.CharField(max_length=200)
-    producto = models.CharField(max_length=200, blank=True, default='')
-    descripcion = models.CharField(max_length=300, blank=True, default='')
-    importe = models.DecimalField(max_digits=12, decimal_places=2)
-    rubro = models.CharField(max_length=30, choices=RUBRO_CHOICES, default=SIN_CATEGORIZAR)
-    xubio_transaccion_id = models.BigIntegerField(null=True, blank=True)
-    xubio_item_id = models.BigIntegerField(null=True, blank=True)
-
-    class Meta:
-        indexes = [models.Index(fields=['mes'])]
-
-    def __str__(self):
-        return f'{self.proveedor} - {self.importe} ({self.mes})'
-
-# Create your models here.
 
 IVA_RATE_COSTEO = 0.105
 
@@ -229,3 +211,94 @@ class SnapshotCosteo(models.Model):
 
     def __str__(self):
         return f'Cierre {self.mes}' if self.mes else f'Snapshot {self.fecha:%d/%m/%Y}'
+
+
+# ============================================================
+# MÓDULO 3 — ESTADO DE RESULTADOS (EERR)
+# ============================================================
+
+LINEA_EERR_CHOICES = [
+    ('ingresos_netos', 'Ingresos netos'),
+    ('cmv_stock', 'CMV / Stock'),
+    ('cmv', 'CMV'),
+    ('mano_obra_directa', 'Mano de obra directa'),
+    ('gastos_variables', 'Gastos variables'),
+    ('indirectos_productivos', 'Indirectos productivos'),
+    ('amortizaciones', 'Amortizaciones'),
+    ('gastos_administracion', 'Gastos administración'),
+    ('impuestos', 'Impuestos'),
+    ('gastos_financieros', 'Gastos financieros'),
+    ('otros_resultados', 'Otros resultados'),
+    ('no_eerr', 'No EERR'),
+]
+
+
+class PlanCuentaEERR(models.Model):
+    cuenta = models.CharField(max_length=100, unique=True)
+    tipo = models.CharField(max_length=10, choices=[('ingreso', 'Ingreso'), ('egreso', 'Egreso')])
+    linea_eerr = models.CharField(max_length=30, choices=LINEA_EERR_CHOICES)
+    rubro = models.CharField(max_length=100, blank=True, default='')
+    incluir_eerr = models.BooleanField(default=True)
+    signo = models.SmallIntegerField(default=1)
+    descripcion = models.CharField(max_length=300, blank=True, default='')
+
+    class Meta:
+        ordering = ['id']
+
+    def __str__(self):
+        return self.cuenta
+
+
+class ReglaAsignacionCuentaEERR(models.Model):
+    proveedor = models.CharField(max_length=200)
+    producto = models.CharField(max_length=200, blank=True, default='*')
+    cuenta = models.ForeignKey(PlanCuentaEERR, on_delete=models.PROTECT)
+
+    class Meta:
+        unique_together = ('proveedor', 'producto')
+
+    def __str__(self):
+        return f'{self.proveedor} / {self.producto} → {self.cuenta}'
+
+
+class CompraEERR(models.Model):
+    mes = models.CharField(max_length=7)
+    fecha = models.DateField(null=True, blank=True)
+    documento = models.CharField(max_length=50, blank=True, default='')
+    proveedor = models.CharField(max_length=200)
+    producto = models.CharField(max_length=200, blank=True, default='')
+    descripcion = models.CharField(max_length=300, blank=True, default='')
+    importe = models.DecimalField(max_digits=12, decimal_places=2)
+    cuenta = models.ForeignKey(PlanCuentaEERR, on_delete=models.PROTECT, null=True, blank=True)
+    xubio_transaccion_id = models.BigIntegerField(null=True, blank=True)
+    xubio_item_id = models.BigIntegerField(null=True, blank=True)
+
+    class Meta:
+        indexes = [models.Index(fields=['mes'])]
+
+    def __str__(self):
+        return f'{self.proveedor} - {self.importe} ({self.mes})'
+
+
+class VentaProductoEERR(models.Model):
+    mes = models.CharField(max_length=7)
+    fecha = models.DateField()
+    xubio_producto_id = models.IntegerField(null=True, blank=True)
+    producto = models.CharField(max_length=200)
+    cantidad = models.IntegerField(default=0)
+    importe = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    class Meta:
+        indexes = [models.Index(fields=['mes']), models.Index(fields=['fecha'])]
+
+    def __str__(self):
+        return f'{self.fecha} - {self.producto} ({self.cantidad})'
+
+
+class XubioProductoCosteoMapeo(models.Model):
+    xubio_producto_id = models.IntegerField(unique=True)
+    xubio_producto_nombre = models.CharField(max_length=200, blank=True, default='')
+    producto_costeo = models.ForeignKey(ProductoCosteo, on_delete=models.CASCADE, related_name='mapeos_xubio')
+
+    def __str__(self):
+        return f'{self.xubio_producto_nombre} → {self.producto_costeo.nombre}'
