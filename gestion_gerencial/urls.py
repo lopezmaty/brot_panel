@@ -34,4 +34,7 @@ urlpatterns = [
     path('eerr/asignar-mapeo-producto-costeo/', views.asignar_mapeo_producto_costeo, name='asignar_mapeo_producto_costeo'),
     path('eerr/calcular/', views.calcular_eerr_mes, name='calcular_eerr_mes'),
     path('eerr/historico/', views.historico_eerr, name='historico_eerr'),
+    path('costeo/cerrar-mes/', views.cerrar_mes_costeo, name='cerrar_mes_costeo'),
+    path('costeo/cierres/', views.listar_cierres_costeo, name='listar_cierres_costeo'),
+    path('costeo/cierre/', views.obtener_cierre_costeo, name='obtener_cierre_costeo'),
 ]

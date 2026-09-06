@@ -645,7 +645,93 @@ def costeo_mano_obra_bulk_update(request):
 # ============================================================
 
 from decimal import Decimal
-from .services_costeo import calc_mp_unitario, calc_amortizacion_mensual, _d
+from .services_costeo import calc_mp_unitario, calc_amortizacion_mensual, calcular_todo, _d
+import decimal as _decimal_module
+
+
+def _decimales_a_float(obj):
+    if isinstance(obj, dict):
+        return {k: _decimales_a_float(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_decimales_a_float(i) for i in obj]
+    if isinstance(obj, _decimal_module.Decimal):
+        return float(obj)
+    return obj
+
+
+def _snapshot_costos_mes():
+    """Congela, con los datos de Costeo tal como están AHORA: el costo unitario
+    de materia prima de cada producto (para el CMV de EERR), la amortización
+    mensual, y la matriz/ranking/lista de precios completos (para poder ver
+    después 'cómo estaba' ese mes)."""
+    from .models import ProductoCosteo, EquipoCosteo
+
+    productos = ProductoCosteo.objects.all()
+    costo_mp_unitario = {str(p.id): float(calc_mp_unitario(p)) for p in productos}
+    amortizacion_mensual = float(calc_amortizacion_mensual(EquipoCosteo.objects.all()))
+    calculado = _decimales_a_float(calcular_todo())
+
+    return {
+        'costo_mp_unitario': costo_mp_unitario,
+        'amortizacion_mensual': amortizacion_mensual,
+        'calculado_todo': calculado,
+    }
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def cerrar_mes_costeo(request):
+    mes = request.data.get('mes')
+    if not mes:
+        return Response({'error': 'Falta el mes (formato YYYY-MM).'}, status=400)
+
+    datos = _snapshot_costos_mes()
+    filas = datos['calculado_todo']['matriz']['filas']
+    resumen = {
+        'total_productos': len(filas),
+        'margen_promedio': (sum(f['margen_pct'] for f in filas) / len(filas)) if filas else 0,
+        'productos_en_rojo': len([f for f in filas if f['estado_class'] == 'rojo']),
+        'amortizacion_mensual': datos['amortizacion_mensual'],
+    }
+
+    cierre, creado = models.SnapshotCosteo.objects.update_or_create(
+        mes=mes,
+        defaults={'nota': f'Cierre de {mes}', 'resumen': resumen, 'snapshot': datos},
+    )
+    return Response({'ok': True, 'mes': mes, 'creado': creado, 'resumen': resumen})
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def listar_cierres_costeo(request):
+    cierres = models.SnapshotCosteo.objects.filter(mes__isnull=False).order_by('-mes')
+    data = [{
+        'mes': c.mes,
+        'fecha': c.fecha.isoformat(),
+        'resumen': c.resumen,
+    } for c in cierres]
+    return Response(data)
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def obtener_cierre_costeo(request):
+    mes = request.GET.get('mes')
+    if not mes:
+        return Response({'error': 'Falta el mes.'}, status=400)
+    try:
+        cierre = models.SnapshotCosteo.objects.get(mes=mes)
+    except models.SnapshotCosteo.DoesNotExist:
+        return Response({'error': 'Ese mes no está cerrado.'}, status=404)
+
+    calculado = cierre.snapshot.get('calculado_todo', {})
+    return Response({
+        'mes': cierre.mes,
+        'fecha': cierre.fecha.isoformat(),
+        'resumen': cierre.resumen,
+        'matriz': calculado.get('matriz', {}),
+        'lista_precios': calculado.get('lista_precios', []),
+    })
 
 
 def resolver_cuenta_eerr(proveedor, producto):
@@ -854,18 +940,24 @@ def ventas_eerr_mes(request):
         m.xubio_producto_id: m.producto_costeo
         for m in models.XubioProductoCosteoMapeo.objects.select_related('producto_costeo')
     }
-    cache_mp_unitario = {}
+
+    cierre = (
+        models.SnapshotCosteo.objects
+        .filter(mes__isnull=False, mes__lte=mes)
+        .order_by('-mes')
+        .first()
+    )
+    costo_mp_unitario_por_id = cierre.snapshot.get('costo_mp_unitario', {}) if cierre else None
 
     data = []
     for v in ventas:
         producto_costeo = mapeos.get(v.xubio_producto_id)
         costo_unitario = None
         cmv_linea = None
-        if producto_costeo:
-            if producto_costeo.id not in cache_mp_unitario:
-                cache_mp_unitario[producto_costeo.id] = calc_mp_unitario(producto_costeo)
-            costo_unitario = cache_mp_unitario[producto_costeo.id]
-            cmv_linea = _d(v.cantidad) * costo_unitario
+        if producto_costeo and costo_mp_unitario_por_id is not None:
+            costo_unitario = costo_mp_unitario_por_id.get(str(producto_costeo.id))
+            if costo_unitario is not None:
+                cmv_linea = float(v.cantidad) * costo_unitario
 
         data.append({
             'id': v.id,
@@ -876,8 +968,9 @@ def ventas_eerr_mes(request):
             'importe': str(v.importe),
             'producto_costeo': producto_costeo.nombre if producto_costeo else None,
             'sin_costeo_asociado': producto_costeo is None,
-            'costo_unitario_mp': float(costo_unitario) if costo_unitario is not None else None,
-            'cmv_linea': float(cmv_linea) if cmv_linea is not None else None,
+            'costeo_cerrado': cierre is not None,
+            'costo_unitario_mp': costo_unitario,
+            'cmv_linea': cmv_linea,
         })
     return Response(data)
 
@@ -957,11 +1050,23 @@ def _linea_eerr_totales(mes):
 
 
 def _calcular_eerr_valores(mes):
-    """Calcula el EERR completo de un mes. Devuelve un dict (no un Response)
-    para poder reusarlo tanto en calcular_eerr_mes como en historico_eerr."""
-    from .models import EquipoCosteo
+    """Calcula el EERR completo de un mes usando el cierre de Costeo más reciente
+    disponible hasta ese mes (mes__lte). Si no hay ningún cierre en absoluto,
+    devuelve costeo_cerrado=False. Esto permite que junio/julio/agosto usen el
+    cierre de agosto mientras no haya cierres anteriores propios."""
+    cierre = (
+        models.SnapshotCosteo.objects
+        .filter(mes__isnull=False, mes__lte=mes)
+        .order_by('-mes')
+        .first()
+    )
+    if not cierre:
+        return {'mes': mes, 'costeo_cerrado': False}
 
-    # --- Ventas netas y CMV (desde VentaProductoEERR + calc_mp_unitario de Costeo) ---
+    costo_mp_unitario_por_id = cierre.snapshot.get('costo_mp_unitario', {})
+    amortizaciones = Decimal(str(cierre.snapshot.get('amortizacion_mensual', 0)))
+
+    # --- Ventas netas y CMV (desde VentaProductoEERR + costo congelado del cierre) ---
     ventas = models.VentaProductoEERR.objects.filter(mes=mes)
     mapeos = {
         m.xubio_producto_id: m.producto_costeo
@@ -971,17 +1076,15 @@ def _calcular_eerr_valores(mes):
     ventas_netas = Decimal('0')
     cmv = Decimal('0')
     ventas_sin_costeo = 0
-    cache_mp_unitario = {}
 
     for v in ventas:
         ventas_netas += _d(v.importe)
         producto_costeo = mapeos.get(v.xubio_producto_id)
-        if not producto_costeo:
+        costo_unit = costo_mp_unitario_por_id.get(str(producto_costeo.id)) if producto_costeo else None
+        if costo_unit is None:
             ventas_sin_costeo += 1
             continue
-        if producto_costeo.id not in cache_mp_unitario:
-            cache_mp_unitario[producto_costeo.id] = calc_mp_unitario(producto_costeo)
-        cmv += _d(v.cantidad) * cache_mp_unitario[producto_costeo.id]
+        cmv += _d(v.cantidad) * Decimal(str(costo_unit))
 
     margen_bruto = ventas_netas - cmv
 
@@ -993,9 +1096,6 @@ def _calcular_eerr_valores(mes):
 
     mano_obra_directa = totales['mano_obra_directa']
     indirectos_productivos = totales['indirectos_productivos']
-
-    # Amortizaciones: en vivo desde Costeo (no se cargan como compra)
-    amortizaciones = calc_amortizacion_mensual(EquipoCosteo.objects.all())
 
     gastos_administracion = totales['gastos_administracion']
     gastos_financieros = totales['gastos_financieros']
@@ -1019,6 +1119,7 @@ def _calcular_eerr_valores(mes):
 
     return {
         'mes': mes,
+        'costeo_cerrado': True,
         'ventas_netas': float(ventas_netas),
         'cmv': float(cmv),
         'margen_bruto': float(margen_bruto),
@@ -1045,7 +1146,15 @@ def calcular_eerr_mes(request):
     mes = request.GET.get('mes')
     if not mes:
         return Response({'error': 'Falta el mes.'}, status=400)
-    return Response(_calcular_eerr_valores(mes))
+
+    resultado = _calcular_eerr_valores(mes)
+    if not resultado.get('costeo_cerrado'):
+        return Response({
+            'mes': mes,
+            'costeo_cerrado': False,
+            'error': f'El mes {mes} todavía no está cerrado en Centro de Costos. Cerralo ahí (pestaña Histórico → Meses cerrados) antes de calcular el Estado de Resultados.',
+        }, status=409)
+    return Response(resultado)
 
 
 @api_view(['GET'])

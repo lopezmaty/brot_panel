@@ -15,9 +15,10 @@ function labelMes(mes) {
   const nombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
   return nombres[+m - 1] + ' ' + y;
 }
-function mesActual() {
+function mesAnterior() {
   const hoy = new Date();
-  return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}`;
+  const anterior = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+  return `${anterior.getFullYear()}-${String(anterior.getMonth() + 1).padStart(2, '0')}`;
 }
 
 /* Objetivos de referencia (pestaña "01 Parametros" del Excel original).
@@ -37,7 +38,7 @@ function semaforoVsObjetivo(valor, objetivo) {
    NAVEGACION
 ========================================================= */
 const inputMesEERR = document.getElementById('mesActivoEERR');
-inputMesEERR.value = mesActual();
+inputMesEERR.value = mesAnterior();
 
 document.querySelectorAll('.eerr-nav-btn').forEach(function (boton) {
   boton.addEventListener('click', function () {
@@ -145,6 +146,10 @@ async function renderResumenEERR() {
       headers: { 'X-CSRFToken': getCookie('csrftoken') },
     });
     d = await response.json();
+    if (d.costeo_cerrado === false) {
+      cont.innerHTML = `<div class="eerr-panel"><div class="eerr-alert warn">El mes <b>${labelMes(mes)}</b> todavía no está cerrado en Centro de Costos. Cerralo ahí (pestaña Histórico → Meses cerrados) para poder calcular el Estado de Resultados de este mes.</div></div>`;
+      return;
+    }
     if (!response.ok) {
       cont.innerHTML = `<div class="eerr-panel"><div class="eerr-alert warn">${d.error || 'Error al cargar.'}</div></div>`;
       return;
@@ -353,7 +358,12 @@ async function cargarVentasEERR() {
       return;
     }
 
-    let html = '<table><thead><tr><th>Fecha</th><th>Producto</th><th class="eerr-num">Cantidad</th><th class="eerr-num">Importe</th><th>Costeo asociado</th><th class="eerr-num">Costo unit. (CMV)</th><th class="eerr-num">CMV línea</th></tr></thead><tbody>';
+    let avisoNoCerrado = '';
+    if (ventas.length && ventas[0].costeo_cerrado === false) {
+      avisoNoCerrado = `<div class="eerr-alert warn">Este mes no está cerrado en Centro de Costos — las columnas de costo van a aparecer vacías hasta que lo cierres.</div>`;
+    }
+
+    let html = avisoNoCerrado + '<table><thead><tr><th>Fecha</th><th>Producto</th><th class="eerr-num">Cantidad</th><th class="eerr-num">Importe</th><th>Costeo asociado</th><th class="eerr-num">Costo unit. (CMV)</th><th class="eerr-num">CMV línea</th></tr></thead><tbody>';
     ventas.forEach(v => {
       html += `<tr class="${v.sin_costeo_asociado ? 'eerr-row-uncat' : ''}">
         <td>${v.fecha}</td>
@@ -516,20 +526,26 @@ async function renderHistoricoEERR() {
   let html = `<table><thead><tr><th>Mes</th><th class="eerr-num">Ventas netas</th><th class="eerr-num">CMV</th><th class="eerr-num">Margen bruto</th><th class="eerr-num">Margen %</th><th class="eerr-num">Resultado operativo</th><th class="eerr-num">Result. %</th></tr></thead><tbody>`;
   let accVentas = 0, accCmv = 0, accResultado = 0;
   filas.forEach(f => {
+    if (f.costeo_cerrado === false) {
+      html += `<tr><td>${labelMes(f.mes)}</td><td class="eerr-num" colspan="6" style="text-align:left;color:var(--gray400)">Mes no cerrado en Centro de Costos</td></tr>`;
+      return;
+    }
     accVentas += f.ventas_netas;
     accCmv += f.cmv;
     accResultado += f.resultado_operativo;
     const nivelMargen = semaforoVsObjetivo(f.margen_bruto_pct, OBJETIVO_MARGEN_BRUTO);
     const nivelResultado = semaforoVsObjetivo(f.resultado_operativo_pct, OBJETIVO_RESULTADO_OPERATIVO);
     html += `<tr><td>${labelMes(f.mes)}</td>
-      <td class="eerr-num">${f.ventas_netas ? money(f.ventas_netas) : '—'}</td>
+      <td class="eerr-num">${money(f.ventas_netas)}</td>
       <td class="eerr-num">${money(f.cmv)}</td>
       <td class="eerr-num">${money(f.margen_bruto)}</td>
-      <td class="eerr-num">${f.ventas_netas ? `<span class="eerr-badge ${nivelMargen}">${pct(f.margen_bruto_pct)}</span>` : '—'}</td>
+      <td class="eerr-num"><span class="eerr-badge ${nivelMargen}">${pct(f.margen_bruto_pct)}</span></td>
       <td class="eerr-num">${money(f.resultado_operativo)}</td>
-      <td class="eerr-num">${f.ventas_netas ? `<span class="eerr-badge ${nivelResultado}">${pct(f.resultado_operativo_pct)}</span>` : '—'}</td></tr>`;
+      <td class="eerr-num"><span class="eerr-badge ${nivelResultado}">${pct(f.resultado_operativo_pct)}</span></td></tr>`;
   });
   html += `</tbody></table>`;
+
+  const filasConDatos = filas.filter(f => f.costeo_cerrado !== false);
 
   html += `<h2 style="margin-top:26px">Acumulado</h2><div class="eerr-grid-cards">
     <div class="eerr-card"><div class="label">Ventas acumuladas</div><div class="value">${money(accVentas)}</div></div>
@@ -538,12 +554,12 @@ async function renderHistoricoEERR() {
   </div>`;
 
   html += `<h2 style="margin-top:26px">Evolución del resultado operativo</h2>`;
-  const maxV = Math.max(...filas.map(f => Math.abs(f.resultado_operativo_pct || 0)), 0.15);
-  html += filas.map(f => {
-    const w = f.ventas_netas ? Math.min(100, Math.abs(f.resultado_operativo_pct) / maxV * 100) : 0;
-    const nivel = f.ventas_netas ? semaforoVsObjetivo(f.resultado_operativo_pct, OBJETIVO_RESULTADO_OPERATIVO) : null;
+  const maxV = Math.max(...filasConDatos.map(f => Math.abs(f.resultado_operativo_pct || 0)), 0.15);
+  html += filasConDatos.map(f => {
+    const w = Math.min(100, Math.abs(f.resultado_operativo_pct) / maxV * 100);
+    const nivel = semaforoVsObjetivo(f.resultado_operativo_pct, OBJETIVO_RESULTADO_OPERATIVO);
     const color = nivel === 'verde' ? 'var(--success)' : nivel === 'amarillo' ? 'var(--amber)' : nivel === 'rojo' ? 'var(--error)' : 'var(--gray200)';
-    return `<div class="eerr-bar-row"><div class="eerr-bar-label">${labelMes(f.mes)}</div><div class="eerr-bar-track"><div class="eerr-bar-fill" style="width:${w}%;background:${color}"></div></div><div class="eerr-bar-val">${f.ventas_netas ? pct(f.resultado_operativo_pct) : '—'}</div></div>`;
+    return `<div class="eerr-bar-row"><div class="eerr-bar-label">${labelMes(f.mes)}</div><div class="eerr-bar-track"><div class="eerr-bar-fill" style="width:${w}%;background:${color}"></div></div><div class="eerr-bar-val">${pct(f.resultado_operativo_pct)}</div></div>`;
   }).join('');
 
   cont.innerHTML = html;
