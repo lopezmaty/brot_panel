@@ -263,13 +263,13 @@ async function renderDetalle(){
     if(emp) url+='empleado='+encodeURIComponent(emp);
     const rows = await chFetch(url);
     if(!rows.length){ cont.innerHTML = emptyState('No hay fichadas para este filtro.'); return; }
-    let html = '<div class="ch-tbl-wrap"><table><thead><tr><th>Empleado</th><th>Fecha</th><th>Marca 1</th><th>Marca 2</th><th>Marca 3</th><th>Marca 4</th><th>Horas (bruto)</th><th>Estado</th><th>A liquidar</th></tr></thead><tbody>';
+    let html = '<div class="ch-tbl-wrap"><table><thead><tr><th>Empleado</th><th>Fecha</th><th style="text-align:right">Marca 1</th><th style="text-align:right">Marca 2</th><th style="text-align:right">Marca 3</th><th style="text-align:right">Marca 4</th><th style="text-align:right">Horas (bruto)</th><th>Estado</th><th style="text-align:right">A liquidar</th></tr></thead><tbody>';
     rows.forEach(r=>{
       html+='<tr><td class="nombre-cell">'+esc(r.nombre)+'</td><td>'+fmtFechaCorta(r.fecha)+'</td>'
-        +'<td>'+(r.h1||'—')+'</td><td>'+(r.h2||'—')+'</td><td>'+(r.h3||'—')+'</td><td>'+(r.h4||'—')+'</td>'
-        +'<td>'+(r.horas!==null?fmtDec(r.horas)+' h':'—')+'</td>'
+        +'<td style="text-align:right">'+(r.h1||'—')+'</td><td style="text-align:right">'+(r.h2||'—')+'</td><td style="text-align:right">'+(r.h3||'—')+'</td><td style="text-align:right">'+(r.h4||'—')+'</td>'
+        +'<td style="text-align:right">'+(r.horas!==null?fmtDec(r.horas)+' h':'—')+'</td>'
         +'<td>'+sello(r.estado)+'</td>'
-        +'<td style="font-weight:700">'+fmtDec(r.a_liquidar)+' h</td></tr>';
+        +'<td style="text-align:right;font-weight:700">'+fmtDec(r.a_liquidar)+' h</td></tr>';
     });
     html+='</tbody></table></div>';
     cont.innerHTML = html;
@@ -449,8 +449,13 @@ async function renderEvolucion(){
       const liqs = data.liquidaciones[emp.nombre]||[];
       const totalLiq = liqs.reduce((s,l)=>s+Number(l.monto),0);
       const saldo = totalBruto - totalLiq;
-      const saldoColor = saldo<-0.01?'var(--error)':(saldo>0.01?'var(--good)':'var(--gray600)');
-      let totalCell = '<td style="font-weight:700;color:'+saldoColor+'">'+fmtHorasEtq(saldo)+'</td>';
+      const saldoColor = saldo<-0.01?'var(--error)':(saldo>0.01?'var(--good)':'#5B655E');
+      const etiqueta = saldo<-0.01?'Debe recuperar':(saldo>0.01?'Horas extra':'Al día');
+      let liqExtra = '';
+      if(Math.abs(totalLiq)>0.01){
+        liqExtra = '<div style="font-size:9.5px;color:var(--gray400);margin-top:2px">Bruto '+fmtHorasEtq(totalBruto)+' · Liquidado '+fmtDec(totalLiq)+' h</div>';
+      }
+      let totalCell = '<td><div style="font-weight:700;color:'+saldoColor+'">'+fmtHorasEtq(saldo)+'</div><div style="font-size:10px;text-transform:uppercase;letter-spacing:0.3px;color:'+saldoColor+'">'+etiqueta+'</div>'+liqExtra+'</td>';
       return '<tr><td class="nombre-cell">'+esc(emp.nombre_display)+'</td>'+cells+totalCell+'</tr>';
     }).join('');
 

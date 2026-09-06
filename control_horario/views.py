@@ -386,45 +386,57 @@ def _normalizar_nombre(nombre):
 
 
 def _parse_fichadas(texto, mes_esperado):
-    """Parsea el formato del reloj biométrico.
-    Columnas esperadas: No;Mchn;EnNo;Nombre;Mode;IOMd;FechaHora
+    """Parsea el formato del reloj biométrico UDISKLOG (TAB-delimitado).
+    Columnas UDISKLOG: No, Mchn, EnNo, Name, Mode, IOMd, DateTime
+    También acepta CSV con ; o , y el formato anterior del HTML.
     Devuelve lista de (nombre, datetime UTC)."""
     resultado = []
-    lineas = [l.strip() for l in texto.replace('\r\n', '\n').split('\n') if l.strip()]
+    lineas = [l.rstrip('\r') for l in texto.replace('\r\n', '\n').split('\n')]
+    lineas = [l for l in lineas if l.strip()]
     if not lineas:
         return resultado
 
-    # Detectar delimitador
-    primera_datos = None
+    # Detectar delimitador desde las primeras líneas de datos
+    delimitador = '\t'  # default para UDISKLOG
     for l in lineas:
-        if l and not l.startswith('#') and not l.lower().startswith('no;'):
-            primera_datos = l
+        stripped = l.strip()
+        if stripped and not stripped.startswith('UDISKLOG') and not stripped.startswith('No\t'):
+            if ';' in stripped and '\t' not in stripped:
+                delimitador = ';'
+            elif ',' in stripped and '\t' not in stripped:
+                delimitador = ','
             break
 
-    delimitador = ';'
-    if primera_datos:
-        if '\t' in primera_datos and ';' not in primera_datos:
-            delimitador = '\t'
-        elif ',' in primera_datos and ';' not in primera_datos:
-            delimitador = ','
-
-    # Buscar índices de columnas Nombre y FechaHora
-    col_nombre = 3   # posición por defecto
+    # Índices por defecto para UDISKLOG: No(0) Mchn(1) EnNo(2) Name(3) Mode(4) IOMd(5) DateTime(6)
+    col_nombre = 3
     col_fecha = 6
 
     for linea in lineas:
-        parts = linea.split(delimitador)
+        parts = [p.strip() for p in linea.split(delimitador)]
         if len(parts) < 2:
             continue
-        # Skip header
-        if parts[0].strip().lower() in ('no', '#'):
-            # try to find column indices
+
+        primera = parts[0].lower().strip()
+
+        # Saltar líneas de cabecera/metadata
+        if 'udisklog' in primera or primera in ('no', '#', ''):
+            # UDISKLOG: el header tiene columnas vacías intercaladas que no aparecen
+            # en las filas de datos. Solo actualizamos índices si el header NO tiene
+            # columnas vacías (formato CSV estándar sin huecos).
             header_low = [p.strip().lower() for p in parts]
-            for i, h in enumerate(header_low):
-                if h in ('nombre', 'name'):
-                    col_nombre = i
-                if 'fecha' in h or 'time' in h or 'date' in h:
-                    col_fecha = i
+            non_empty = [h for h in header_low if h]
+            if '' not in header_low:
+                # CSV sin huecos: detectar índices normalmente
+                for i, h in enumerate(header_low):
+                    if h in ('nombre', 'name'):
+                        col_nombre = i
+                    if h in ('datetime', 'fechahora', 'fecha') or ('date' in h and 'time' in h):
+                        col_fecha = i
+            # Si hay huecos (UDISKLOG), dejamos los defaults 3 y 6 que son correctos
+            continue
+
+        # Saltar líneas que no son registros numéricos
+        if not primera.replace('0', '').isdigit() and not primera.isdigit():
             continue
 
         if len(parts) <= max(col_nombre, col_fecha):
@@ -436,15 +448,28 @@ def _parse_fichadas(texto, mes_esperado):
         if not nombre or not fecha_str:
             continue
 
-        # Parsear fecha (formato: 2026-06-01 08:02:14)
-        try:
-            ts = datetime.strptime(fecha_str, '%Y-%m-%d %H:%M:%S')
-            ts_utc = ts.replace(tzinfo=dt_tz.utc)
-            mes_marca = ts.strftime('%Y-%m')
-            if mes_marca == mes_esperado:
-                resultado.append((nombre, ts_utc))
-        except ValueError:
+        # Intentar múltiples formatos de fecha
+        # Normalizar espacios múltiples (UDISKLOG usa doble espacio entre fecha y hora)
+        fecha_norm = ' '.join(fecha_str.split())
+        ts = None
+        for fmt in (
+            '%Y/%m/%d %H:%M:%S',   # UDISKLOG: 2026/08/03 05:42:54
+            '%Y-%m-%d %H:%M:%S',   # estándar
+            '%d/%m/%Y %H:%M:%S',   # dd/mm/yyyy
+        ):
+            try:
+                ts = datetime.strptime(fecha_norm, fmt)
+                break
+            except ValueError:
+                continue
+
+        if ts is None:
             continue
+
+        ts_utc = ts.replace(tzinfo=dt_tz.utc)
+        mes_marca = ts_utc.strftime('%Y-%m')
+        if mes_marca == mes_esperado:
+            resultado.append((nombre, ts_utc))
 
     return resultado
 
