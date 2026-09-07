@@ -25,7 +25,6 @@ let LOADING = false;
 let TAB_ACTIVA = 'resumen';
 let RECETA_PRODUCTO_ACTIVO = null;
 let FILTRO_PRIORIDAD = 'todas';
-let CIERRES_COSTEO = [];
 
 // ============================================================
 // UTILS
@@ -247,13 +246,12 @@ async function cargarDatos(){
   const wrap = document.getElementById('co-content');
   if(wrap) wrap.style.opacity = '0.5';
   try {
-    const [productos, insumos, config, equipos, historial, cierres] = await Promise.all([
+    const [productos, insumos, config, equipos, historial] = await Promise.all([
       apiFetch('productos/'),
       apiFetch('insumos/'),
       apiFetch('config/'),
       apiFetch('equipos/'),
       apiFetch('historial/'),
-      apiFetch('cierres/'),
     ]);
 
     // Armar STATE igual al HTML original
@@ -298,7 +296,6 @@ async function cargarDatos(){
       id: h.id, fecha: h.fecha, tipo: h.tipo, item: h.item,
       valorAnterior: h.valor_anterior, valorNuevo: h.valor_nuevo,
     }));
-    CIERRES_COSTEO = cierres || [];
 
     render();
     actualizarBadges();
@@ -730,6 +727,7 @@ function renderRecetas(){
       </div>
       <div class="filters" style="margin-top:14px">
         <button class="btn btn-secondary btn-sm" id="btnAddIngrediente">+ Agregar ingrediente</button>
+        <button class="btn btn-primary btn-sm" id="btn-guardar-receta">💾 Guardar receta</button>
       </div>
     `;
     resumenHtml = `
@@ -782,6 +780,19 @@ function wireRecetas(){
     const primero = STATE.insumos[0];
     receta.push({insumo:primero?primero.nombre:'',categoria:'Insumo',unidad:primero?primero.unidad:'kg',cantidad:0,merma:0.03});
     render();
+  });
+  const btnGuardarReceta = document.getElementById('btn-guardar-receta');
+  if(btnGuardarReceta) btnGuardarReceta.addEventListener('click', async()=>{
+    btnGuardarReceta.disabled=true; btnGuardarReceta.textContent='Guardando…';
+    try {
+      await apiFetch('recetas/guardar/', {
+        method:'POST',
+        body: JSON.stringify({ codigo: RECETA_PRODUCTO_ACTIVO, lineas: receta }),
+      });
+      showToast('Receta guardada.');
+      await cargarDatos();
+    } catch(e){ showToast('Error: '+e.message); }
+    finally { btnGuardarReceta.disabled=false; btnGuardarReceta.textContent='💾 Guardar receta'; }
   });
 }
 
@@ -1158,6 +1169,9 @@ function renderListaPrecios(){
           <tbody id="listaPreciosBody">${rows}</tbody>
         </table>
       </div>
+      <div class="filters" style="margin-top:16px">
+        <button class="btn btn-primary btn-sm" id="btn-guardar-descuentos">💾 Guardar descuentos objetivo</button>
+      </div>
       <footer class="tabfoot">🎯 = fija el descuento objetivo de ese producto en su descuento actual.</footer>
     </div>
   `;
@@ -1178,6 +1192,15 @@ function wireListaPrecios(){
     STATE.descuentoObjetivo[codigo] = f.descuentoActual;
     render();
     showToast('Descuento objetivo de '+codigo+' fijado en '+fmtPct(STATE.descuentoObjetivo[codigo]));
+  });
+  const btnGuardar = document.getElementById('btn-guardar-descuentos');
+  if(btnGuardar) btnGuardar.addEventListener('click', async()=>{
+    btnGuardar.disabled=true; btnGuardar.textContent='Guardando…';
+    try {
+      await guardarProductos();
+      showToast('Descuentos objetivo guardados.');
+    } catch(e){ showToast('Error: '+e.message); }
+    finally { btnGuardar.disabled=false; btnGuardar.textContent='💾 Guardar descuentos objetivo'; }
   });
 }
 
@@ -1223,28 +1246,41 @@ let HIST_SUBTAB = 'precios';
 let HIST_FILTRO_TIPO = 'todos';
 let HIST_FILTRO_TEXTO = '';
 
-function labelMesCosteo(mes){
-  const [y,m] = mes.split('-');
-  const nombres=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  return nombres[+m-1] + ' ' + y;
-}
-
-async function cargarCierres(){
-  CIERRES_COSTEO = await apiFetch('cierres/');
+function guardarSnapshot(nota){
+  const {filas} = calcMatriz();
+  const ind = calcIndirectosTotal();
+  const rojos = filas.filter(f=>f.estadoClass==='rojo').length;
+  const amarillos = filas.filter(f=>f.estadoClass==='amarillo').length;
+  const margenProm = filas.length ? filas.reduce((a,f)=>a+f.margenPct,0)/filas.length : 0;
+  if(!STATE.historialSnapshots) STATE.historialSnapshots = [];
+  STATE.historialSnapshots.unshift({
+    fecha: new Date().toISOString(), nota: nota||'',
+    resumen: {
+      totalProductos: filas.length, totalIndirectos: ind.total,
+      sueldosProductivos: STATE.sueldosProductivos, margenPromedio: margenProm,
+      productosEnRojo: rojos, productosEnAmarillo: amarillos,
+    },
+    snapshot: JSON.parse(JSON.stringify({
+      productos: STATE.productos, insumos: STATE.insumos, recetas: STATE.recetas,
+      manoObra: STATE.manoObra, indirectos: STATE.indirectos, equipos: STATE.equipos,
+      margenObjetivo: STATE.margenObjetivo, sueldosProductivos: STATE.sueldosProductivos,
+      horasDisponibles: STATE.horasDisponibles,
+    })),
+  });
 }
 
 function renderHistorico(){
   const precios = STATE.historialPrecios || [];
-  const cierres = CIERRES_COSTEO || [];
+  const snapshots = STATE.historialSnapshots || [];
   return `
     <div class="co-panel">
       <h1>Histórico</h1>
-      <p class="lede">Cada vez que cambiás un precio (de producto o de insumo) queda registrado acá solo, en esta sesión del navegador. Además podés cerrar un mes para congelar el costo de cada producto tal como está en ese momento — el Estado de Resultados necesita que el mes esté cerrado acá para poder calcular el CMV.</p>
+      <p class="lede">Cada vez que cambiás un precio (de producto o de insumo) queda registrado acá solo. Además podés guardar una "foto" completa del costeo cuando quieras, para poder volver a ese momento más adelante.</p>
       <div class="chip-row">
         <div class="chip ${HIST_SUBTAB==='precios'?'active':''}" data-sub="precios">Cambios de precio (${precios.length})</div>
-        <div class="chip ${HIST_SUBTAB==='snapshots'?'active':''}" data-sub="snapshots">Meses cerrados (${cierres.length})</div>
+        <div class="chip ${HIST_SUBTAB==='snapshots'?'active':''}" data-sub="snapshots">Fotos guardadas (${snapshots.length})</div>
       </div>
-      <div id="histContent">${HIST_SUBTAB==='precios' ? renderHistPrecios(precios) : renderMesesCerrados(cierres)}</div>
+      <div id="histContent">${HIST_SUBTAB==='precios' ? renderHistPrecios(precios) : renderHistSnapshots(snapshots)}</div>
     </div>
   `;
 }
@@ -1293,61 +1329,35 @@ function renderHistPrecios(precios){
   `;
 }
 
-function renderMesesCerrados(cierres){
-  const controles = `
+function renderHistSnapshots(snapshots){
+  const nuevoBtn = `
     <div class="filters">
-      <input type="month" id="mesACerrar">
-      <button class="btn btn-primary btn-sm" id="btnCerrarMes">🔒 Cerrar mes</button>
+      <input type="text" id="notaSnapshot" placeholder="Nota (opcional, ej: 'cierre de mes agosto')" style="min-width:280px">
+      <button class="btn btn-primary btn-sm" id="btnGuardarSnapshot">📸 Guardar foto ahora</button>
     </div>
-    <p class="hint" style="margin:-10px 0 16px">Al cerrar un mes queda congelado el costo unitario de cada producto (y la amortización) tal como están ahora. Si corregís algo en Costeo, podés volver a cerrar el mismo mes y se actualiza.</p>
   `;
-  if(!cierres.length) return controles + `<div class="empty-state"><div class="big">Todavía no cerraste ningún mes</div>Estado de Resultados necesita que el mes esté cerrado acá para poder calcular el CMV.</div>`;
-  const rows = cierres.map(c=>`
+  if(!snapshots.length) return nuevoBtn + `<div class="empty-state"><div class="big">Todavía no guardaste ninguna foto del costeo</div>Usá esto al cerrar cada mes, para poder comparar más adelante.</div>`;
+  const rows = snapshots.map((s,i)=>`
     <tr>
-      <td>${labelMesCosteo(c.mes)}</td>
-      <td class="hint">${fmtFecha(c.fecha)}</td>
-      <td class="num">${c.resumen.total_productos}</td>
-      <td class="num">${fmtPct(c.resumen.margen_promedio)}</td>
-      <td class="num">${c.resumen.productos_en_rojo}</td>
-      <td style="text-align:center"><button class="btn btn-secondary btn-sm btn-ver-cierre" data-mes="${c.mes}">Ver</button></td>
+      <td class="hint">${fmtFecha(s.fecha)}</td>
+      <td>${esc(s.nota)||'<span class="hint">sin nota</span>'}</td>
+      <td class="num">${s.resumen.totalProductos}</td>
+      <td class="num">${fmtMoney0(s.resumen.totalIndirectos)}</td>
+      <td class="num">${fmtMoney0(s.resumen.sueldosProductivos)}</td>
+      <td class="num">${fmtPct(s.resumen.margenPromedio)}</td>
+      <td class="num">${s.resumen.productosEnRojo}</td>
+      <td style="text-align:center">
+        <button class="icon-btn btn-restaurar-snap" data-idx="${i}" title="Restaurar este estado">↺</button>
+        <button class="icon-btn btn-del-snap" data-idx="${i}" title="Eliminar foto">🗑</button>
+      </td>
     </tr>
   `).join('');
-  return controles + `
+  return nuevoBtn + `
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>Mes</th><th>Cerrado el</th><th class="num">Productos</th><th class="num">Margen prom.</th><th class="num">En rojo</th><th></th></tr></thead>
+        <thead><tr><th>Fecha</th><th>Nota</th><th class="num">Prod.</th><th class="num">Indirectos</th><th class="num">Sueldos</th><th class="num">Margen prom.</th><th class="num">En rojo</th><th></th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
-    </div>
-    <div id="cierreDetalle"></div>
-  `;
-}
-
-function renderDetalleCierre(data){
-  const filas = data.matriz.filas;
-  return `
-    <div class="co-panel" style="margin-top:16px">
-      <h2>Costeo cerrado — ${labelMesCosteo(data.mes)}</h2>
-      <p class="hint">Cerrado el ${fmtFecha(data.fecha)}. Vista de solo lectura.</p>
-      <div class="tbl-wrap">
-        <table class="tbl-sticky">
-          <thead><tr><th class="col-prod">Producto</th><th class="num">Precio</th><th class="num">Costo MP</th><th class="num">Costo MO</th><th class="num">Indirecto</th><th class="num">Costo total</th><th class="num">Margen %</th><th>Estado</th></tr></thead>
-          <tbody>
-            ${filas.map(f=>`
-              <tr class="row-${f.estado_class}">
-                <td class="col-prod"><span class="prod-nombre">${esc(f.nombre)}</span></td>
-                <td class="num">${fmtMoney(f.precio_actual)}</td>
-                <td class="num">${fmtMoney(f.mp_unit)}</td>
-                <td class="num">${fmtMoney(f.mo_unit)}</td>
-                <td class="num">${fmtMoney(f.ind_unit)}</td>
-                <td class="num">${fmtMoney(f.costo_total)}</td>
-                <td class="num">${fmtPct(f.margen_pct)}</td>
-                <td><span class="badge ${f.estado_class}">${estadoIcono(f.estado_class)} ${esc(f.estado)}</span></td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
     </div>
   `;
 }
@@ -1382,39 +1392,28 @@ function wireHistorico(){
       showToast('Cambio eliminado del histórico.');
     });
   });
-  const btnCerrar = document.getElementById('btnCerrarMes');
-  if(btnCerrar) btnCerrar.addEventListener('click', async ()=>{
-    const mes = document.getElementById('mesACerrar').value;
-    if(!mes){ showToast('Elegí un mes primero.'); return; }
-    if(!confirm(`¿Cerrar ${labelMesCosteo(mes)}? Esto congela el costo de cada producto tal como está ahora mismo.`)) return;
-    btnCerrar.disabled = true;
-    btnCerrar.textContent = 'Cerrando...';
-    try{
-      await apiFetch('cerrar-mes/', {method:'POST', body:JSON.stringify({mes})});
-      await cargarCierres();
-      showToast('Mes cerrado.');
-      render();
-    }catch(e){
-      showToast('Error al cerrar el mes: ' + e.message);
-    }finally{
-      if(document.getElementById('btnCerrarMes')){
-        document.getElementById('btnCerrarMes').disabled = false;
-        document.getElementById('btnCerrarMes').textContent = '🔒 Cerrar mes';
-      }
-    }
+  const btnSnap = document.getElementById('btnGuardarSnapshot');
+  if(btnSnap) btnSnap.addEventListener('click', ()=>{
+    const nota = document.getElementById('notaSnapshot').value;
+    guardarSnapshot(nota);
+    showToast('Foto guardada.');
+    render();
   });
-  document.querySelectorAll('.btn-ver-cierre').forEach(b=>{
-    b.addEventListener('click', async ()=>{
-      const mes = b.dataset.mes;
-      const detalle = document.getElementById('cierreDetalle');
-      detalle.innerHTML = '<p class="hint">Cargando...</p>';
-      try{
-        const data = await apiFetch('cierre/?mes='+mes);
-        detalle.innerHTML = renderDetalleCierre(data);
-        detalle.scrollIntoView({behavior:'smooth', block:'nearest'});
-      }catch(e){
-        detalle.innerHTML = '<div class="alert warn">No se pudo cargar ese cierre.</div>';
-      }
+  document.querySelectorAll('.btn-restaurar-snap').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const idx = Number(b.dataset.idx);
+      const snap = STATE.historialSnapshots[idx];
+      if(!confirm('¿Restaurar el estado del '+fmtFecha(snap.fecha)+'? Se reemplazan productos, recetas, mano de obra e indirectos actuales.')) return;
+      Object.assign(STATE, JSON.parse(JSON.stringify(snap.snapshot)));
+      showToast('Estado restaurado.');
+      activarTab('resumen');
+    });
+  });
+  document.querySelectorAll('.btn-del-snap').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const idx = Number(b.dataset.idx);
+      STATE.historialSnapshots.splice(idx,1);
+      render();
     });
   });
 }
