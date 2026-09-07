@@ -26,15 +26,15 @@ function mesAnterior(){ const h=new Date(); const a=new Date(h.getFullYear(),h.g
 function labelMes(mk){ const [y,m]=mk.split('-'); const n=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']; return n[+m-1]+' '+y; }
 
 function sello(estado){
-  if(estado.indexOf('manualmente')!==-1) return '<span class="ch-badge amarillo">Error (manual)</span>';
-  if(estado.indexOf('Error')!==-1) return '<span class="ch-badge rojo">Error de fichada</span>';
-  if(estado.indexOf('sin descanso')!==-1||estado.indexOf('descontó')!==-1) return '<span class="ch-badge amarillo">Sin descanso marcado</span>';
-  return '<span class="ch-badge verde">OK</span>';
+  if(estado.indexOf('manualmente')!==-1) return '<span class="badge amarillo">Error (manual)</span>';
+  if(estado.indexOf('Error')!==-1) return '<span class="badge rojo">Error de fichada</span>';
+  if(estado.indexOf('sin descanso')!==-1||estado.indexOf('descontó')!==-1) return '<span class="badge amarillo">Sin descanso marcado</span>';
+  return '<span class="badge verde">OK</span>';
 }
 
 function selloResumen(estado){
   const cls = estado==='OK'?'verde':(estado==='Faltan horas'?'rojo':'amarillo');
-  return '<span class="ch-badge '+cls+'">'+esc(estado)+'</span>';
+  return '<span class="badge '+cls+'">'+esc(estado)+'</span>';
 }
 
 const DIAS_SEMANA = [{v:1,l:'Lunes'},{v:2,l:'Martes'},{v:3,l:'Miércoles'},{v:4,l:'Jueves'},{v:5,l:'Viernes'}];
@@ -46,7 +46,7 @@ function diasDropdown(nombre, campo, seleccionados, label, prefix=''){
     const chk = (seleccionados||[]).includes(d.v)?'checked':'';
     return '<label><input type="checkbox" value="'+d.v+'" '+chk+' data-campo="'+campo+'" data-prefix="'+esc(prefix)+'"> '+d.l+'</label>';
   }).join('');
-  return '<details class="ch-dias-dropdown" id="'+id+'"><summary>'+esc(label)+(count?' ('+count+')':'')+'</summary><div class="ch-dias-panel">'+opts+'</div></details>';
+  return '<details class="dias-dropdown" id="'+id+'"><summary>'+esc(label)+(count?' ('+count+')':'')+'</summary><div class="dias-panel">'+opts+'</div></details>';
 }
 
 function conteoDiasDropdown(nombre, campo, conteo, label, prefix=''){
@@ -56,7 +56,7 @@ function conteoDiasDropdown(nombre, campo, conteo, label, prefix=''){
     const val = Number(conteo[d.v])||0;
     return '<label style="justify-content:space-between;gap:10px"><span>'+d.l+'</span><input type="number" min="0" step="1" style="width:52px" value="'+val+'" data-campo="'+campo+'" data-dia="'+d.v+'" data-prefix="'+esc(prefix)+'"></label>';
   }).join('');
-  return '<details class="ch-dias-dropdown"><summary>'+esc(label)+(total?' ('+total+')':'')+'</summary><div class="ch-dias-panel">'+filas+'</div></details>';
+  return '<details class="dias-dropdown"><summary>'+esc(label)+(total?' ('+total+')':'')+'</summary><div class="dias-panel">'+filas+'</div></details>';
 }
 
 function exportCSV(filename, headers, rows){
@@ -66,7 +66,7 @@ function exportCSV(filename, headers, rows){
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
-function emptyState(msg){ return '<div class="ch-empty"><div class="big">Sin datos</div>'+esc(msg)+'</div>'; }
+function emptyState(msg){ return '<div class="empty-state"><div class="big">Sin datos</div>'+esc(msg)+'</div>'; }
 
 /* ── Estado global ── */
 let chEmpleados = [];
@@ -170,7 +170,7 @@ document.getElementById('chBtnPreview').addEventListener('click', async ()=>{
     renderPreviewEmpleados(data, mes);
     document.getElementById('chBtnImportar').disabled = false;
   } catch(e){
-    document.getElementById('chPreviewEmpleados').innerHTML = '<div class="ch-alert-card">'+esc(e.message)+'</div>';
+    document.getElementById('chPreviewEmpleados').innerHTML = '<div class="alerta-card">'+esc(e.message)+'</div>';
   }
 });
 
@@ -179,18 +179,18 @@ function renderPreviewEmpleados(data, mes){
   chAjustesPendientes = {};
   data.empleados.forEach(n=>{ chAjustesPendientes[n] = data.ajustes[n]||{faltas:[],feriados:[],vacaciones:{},observacion:''}; });
 
-  let html = '<div class="ch-alert-card info" style="margin-bottom:16px">Se encontraron <strong>'+data.total_marcas+'</strong> marcas para <strong>'+data.empleados.length+'</strong> empleados en '+labelMes(mes)+'. Configurá los ajustes y luego hacé clic en "Importar datos".</div>';
+  let html = '<div class="alerta-card info" style="margin-bottom:16px">Se encontraron <strong>'+data.total_marcas+'</strong> marcas para <strong>'+data.empleados.length+'</strong> empleados en '+labelMes(mes)+'. Configurá los ajustes y luego hacé clic en "Importar datos".</div>';
 
   data.empleados.forEach(nombre=>{
     const aj = chAjustesPendientes[nombre];
-    html += '<div class="ch-emp-ajuste" data-nombre="'+esc(nombre)+'">';
+    html += '<div class="emp-ajuste" data-nombre="'+esc(nombre)+'">';
     html += '<div class="emp-nombre">'+esc(nombre)+'</div>';
     html += '<div class="ajuste-row">';
     html += diasDropdown(nombre, 'feriados', aj.feriados, 'Feriados no trabajados', 'imp_');
     html += diasDropdown(nombre, 'faltas', aj.faltas, 'Faltas justificadas', 'imp_');
     html += conteoDiasDropdown(nombre, 'vacaciones', aj.vacaciones, 'Vacaciones', 'imp_');
     html += '</div>';
-    html += '<textarea class="ch-obs-input" placeholder="Observaciones (opcional)..." data-nombre="'+esc(nombre)+'" data-campo="observacion">'+esc(aj.observacion||'')+'</textarea>';
+    html += '<textarea class="obs-input" placeholder="Observaciones (opcional)..." data-nombre="'+esc(nombre)+'" data-campo="observacion">'+esc(aj.observacion||'')+'</textarea>';
     html += '</div>';
   });
   cont.innerHTML = html;
@@ -233,13 +233,13 @@ document.getElementById('chBtnImportar').addEventListener('click', async ()=>{
   btn.disabled = true; btn.textContent = 'Importando...';
   try{
     const data = await chFetch('importar/', {method:'POST', body:JSON.stringify({mes, texto, ajustes:chAjustesPendientes})});
-    document.getElementById('chImportReport').innerHTML = '<div class="ch-alert-card ok">✓ Importación completa — <strong>'+data.nuevas+'</strong> marcas nuevas, <strong>'+data.duplicadas+'</strong> ya existían.</div>';
+    document.getElementById('chImportReport').innerHTML = '<div class="alerta-card ok">✓ Importación completa — <strong>'+data.nuevas+'</strong> marcas nuevas, <strong>'+data.duplicadas+'</strong> ya existían.</div>';
     // Refresh
     [chEmpleados, chMeses] = await Promise.all([chFetch('empleados/'), chFetch('meses/')]);
     chPoblateFilters();
     chRenderDataSummary();
   } catch(e){
-    document.getElementById('chImportReport').innerHTML = '<div class="ch-alert-card">Error: '+esc(e.message)+'</div>';
+    document.getElementById('chImportReport').innerHTML = '<div class="alerta-card">Error: '+esc(e.message)+'</div>';
   } finally{
     btn.disabled = false; btn.textContent = '⤓ Importar datos';
   }
@@ -256,14 +256,14 @@ async function renderDetalle(){
   const cont = document.getElementById('chDetalleContainer');
   const mes = document.getElementById('chFiltroMesDetalle').value;
   const emp = document.getElementById('chFiltroEmpDetalle').value;
-  cont.innerHTML = '<p class="ch-hint">Cargando...</p>';
+  cont.innerHTML = '<p class="hint">Cargando...</p>';
   try{
     let url = 'detalle/?';
     if(mes) url+='mes='+mes+'&';
     if(emp) url+='empleado='+encodeURIComponent(emp);
     const rows = await chFetch(url);
     if(!rows.length){ cont.innerHTML = emptyState('No hay fichadas para este filtro.'); return; }
-    let html = '<div class="ch-tbl-wrap"><table><thead><tr><th>Empleado</th><th>Fecha</th><th style="text-align:right">Marca 1</th><th style="text-align:right">Marca 2</th><th style="text-align:right">Marca 3</th><th style="text-align:right">Marca 4</th><th style="text-align:right">Horas (bruto)</th><th>Estado</th><th style="text-align:right">A liquidar</th></tr></thead><tbody>';
+    let html = '<div class="table-scroll"><table><thead><tr><th>Empleado</th><th>Fecha</th><th style="text-align:right">Marca 1</th><th style="text-align:right">Marca 2</th><th style="text-align:right">Marca 3</th><th style="text-align:right">Marca 4</th><th style="text-align:right">Horas (bruto)</th><th>Estado</th><th style="text-align:right">A liquidar</th></tr></thead><tbody>';
     rows.forEach(r=>{
       html+='<tr><td class="nombre-cell">'+esc(r.nombre)+'</td><td>'+fmtFechaCorta(r.fecha)+'</td>'
         +'<td style="text-align:right">'+(r.h1||'—')+'</td><td style="text-align:right">'+(r.h2||'—')+'</td><td style="text-align:right">'+(r.h3||'—')+'</td><td style="text-align:right">'+(r.h4||'—')+'</td>'
@@ -273,7 +273,7 @@ async function renderDetalle(){
     });
     html+='</tbody></table></div>';
     cont.innerHTML = html;
-  } catch(e){ cont.innerHTML = '<div class="ch-alert-card">Error: '+esc(e.message)+'</div>'; }
+  } catch(e){ cont.innerHTML = '<div class="alerta-card">Error: '+esc(e.message)+'</div>'; }
 }
 
 function exportarDetalle(){
@@ -297,7 +297,7 @@ async function renderResumen(){
   const cont = document.getElementById('chResumenContainer');
   const mes = document.getElementById('chFiltroMesResumen').value;
   if(!mes){ cont.innerHTML = emptyState('Elegí un mes.'); return; }
-  cont.innerHTML = '<p class="ch-hint">Cargando...</p>';
+  cont.innerHTML = '<p class="hint">Cargando...</p>';
   try{
     const data = await chFetch('resumen/?mes='+mes);
     resumenData = data;
@@ -306,13 +306,13 @@ async function renderResumen(){
     } else {
       renderResumenVivo(data, mes);
     }
-  } catch(e){ cont.innerHTML = '<div class="ch-alert-card">Error: '+esc(e.message)+'</div>'; }
+  } catch(e){ cont.innerHTML = '<div class="alerta-card">Error: '+esc(e.message)+'</div>'; }
 }
 
 function renderResumenSnapshot(data){
   const cont = document.getElementById('chResumenContainer');
-  let html = '<div class="ch-alert-card ok" style="margin-bottom:16px">Este mes está cerrado ('+new Date(data.cerrado_el).toLocaleDateString('es-AR')+'). Los datos son del snapshot.</div>';
-  html += '<div class="ch-tbl-wrap"><table><thead><tr><th>Empleado</th><th class="num">Total horas</th><th class="num">Esperadas</th><th class="num">Diferencia</th></tr></thead><tbody>';
+  let html = '<div class="alerta-card ok" style="margin-bottom:16px">Este mes está cerrado ('+new Date(data.cerrado_el).toLocaleDateString('es-AR')+'). Los datos son del snapshot.</div>';
+  html += '<div class="table-scroll"><table><thead><tr><th>Empleado</th><th class="num">Total horas</th><th class="num">Esperadas</th><th class="num">Diferencia</th></tr></thead><tbody>';
   for(const [nombre, snap] of Object.entries(data.snapshot)){
     const dif = snap.diferencia||0;
     const color = dif<-0.01?'var(--error)':(dif>0.01?'var(--good)':'');
@@ -329,14 +329,14 @@ function renderResumenVivo(data, mes){
   const faltan = data.resumenes.filter(r=>r.estado==='Faltan horas').length;
   const errores = data.resumenes.reduce((s,r)=>s+r.dias_con_error,0);
 
-  let html = '<div class="ch-grid-cards">'
-    +'<div class="ch-card"><div class="label">Total horas</div><div class="value">'+fmtDec(total)+' h</div></div>'
-    +'<div class="ch-card"><div class="label">Empleados OK</div><div class="value">'+ok+'</div></div>'
-    +'<div class="ch-card"><div class="label">Con horas faltantes</div><div class="value">'+faltan+'</div></div>'
-    +'<div class="ch-card"><div class="label">Días con error</div><div class="value">'+errores+'</div></div>'
+  let html = '<div class="grid-cards">'
+    +'<div class="card"><div class="label">Total horas</div><div class="value">'+fmtDec(total)+' h</div></div>'
+    +'<div class="card"><div class="label">Empleados OK</div><div class="value">'+ok+'</div></div>'
+    +'<div class="card"><div class="label">Con horas faltantes</div><div class="value">'+faltan+'</div></div>'
+    +'<div class="card"><div class="label">Días con error</div><div class="value">'+errores+'</div></div>'
     +'</div>';
 
-  html += '<div class="ch-tbl-wrap"><table><thead><tr>'
+  html += '<div class="table-scroll"><table><thead><tr>'
     +'<th>Empleado</th>'
     +'<th title="Feriados no trabajados">Feriados</th>'
     +'<th title="Faltas justificadas">Faltas</th>'
@@ -376,7 +376,7 @@ function renderResumenVivo(data, mes){
   if(conAdv.length){
     html+='<div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--gray100)"><h2 style="color:var(--error);font-size:1.05rem;margin-bottom:14px">⚠ Advertencias</h2>';
     conAdv.forEach(r=>{
-      html+='<div class="ch-alert-card"><strong>'+esc(r.nombre)+'</strong> — tiene menos días que el resto del equipo. Días faltantes: '+r.advertencia.map(d=>'<span style="font-family:var(--font-mono);font-size:11px;background:var(--gray100);padding:1px 6px;border-radius:4px;margin:2px">'+fmtFechaCorta(d)+'</span>').join(' ')+'</div>';
+      html+='<div class="alerta-card"><strong>'+esc(r.nombre)+'</strong> — tiene menos días que el resto del equipo. Días faltantes: '+r.advertencia.map(d=>'<span style="font-family:var(--font-mono);font-size:11px;background:var(--gray100);padding:1px 6px;border-radius:4px;margin:2px">'+fmtFechaCorta(d)+'</span>').join(' ')+'</div>';
     });
     html+='</div>';
   }
@@ -428,7 +428,7 @@ if(ES_ADMIN){
 async function renderEvolucion(){
   const cont = document.getElementById('chEvolucionContainer');
   const empFiltro = document.getElementById('chFiltroEmpEvolucion').value;
-  cont.innerHTML = '<p class="ch-hint">Cargando...</p>';
+  cont.innerHTML = '<p class="hint">Cargando...</p>';
   try{
     let url = 'evolucion/';
     if(empFiltro) url+='?empleado='+encodeURIComponent(empFiltro);
@@ -459,7 +459,7 @@ async function renderEvolucion(){
       return '<tr><td class="nombre-cell">'+esc(emp.nombre_display)+'</td>'+cells+totalCell+'</tr>';
     }).join('');
 
-    let html = '<div class="ch-tbl-wrap"><table><thead><tr>'+head+'</tr></thead><tbody>'+rows+'</tbody></table></div>';
+    let html = '<div class="table-scroll"><table><thead><tr>'+head+'</tr></thead><tbody>'+rows+'</tbody></table></div>';
 
     // Si hay un empleado filtrado: gráfico + liquidaciones
     if(empFiltro){
@@ -475,24 +475,24 @@ async function renderEvolucion(){
         // Liquidaciones
         const liqs = data.liquidaciones[emp.nombre]||[];
         const totalLiq = liqs.reduce((s,l)=>s+Number(l.monto),0);
-        html += '<div class="ch-liq-form">';
+        html += '<div class="liq-form">';
         html += '<h2 style="margin-bottom:12px">Liquidaciones — '+esc(emp.nombre_display)+'</h2>';
         if(liqs.length){
-          html += '<div class="ch-liq-historial">';
+          html += '<div class="liq-historial">';
           liqs.forEach(l=>{
-            html+='<div class="ch-liq-item"><span class="monto">'+fmtDec(l.monto)+' h</span><span class="meta">'+fmtFechaCorta(l.fecha)+(l.comentario?' · '+esc(l.comentario):'')+'</span>'
-              +(ES_ADMIN?'<button class="ch-btn ch-btn-danger ch-btn-sm" onclick="eliminarLiquidacion('+l.id+')">🗑</button>':'')+'</div>';
+            html+='<div class="liq-item"><span class="monto">'+fmtDec(l.monto)+' h</span><span class="meta">'+fmtFechaCorta(l.fecha)+(l.comentario?' · '+esc(l.comentario):'')+'</span>'
+              +(ES_ADMIN?'<button class="btn btn-danger btn-sm" onclick="eliminarLiquidacion('+l.id+')">🗑</button>':'')+'</div>';
           });
           html += '</div>';
           html += '<div style="margin-top:10px;font-size:12.5px;color:var(--gray600)">Total liquidado: <strong style="font-family:var(--font-mono)">'+fmtDec(totalLiq)+' h</strong></div>';
         } else {
-          html += '<p class="ch-hint">Sin liquidaciones registradas.</p>';
+          html += '<p class="hint">Sin liquidaciones registradas.</p>';
         }
-        html += '<div class="ch-row" style="margin-top:14px;gap:10px">'
-          +'<div><label class="ch-label">Fecha</label><input type="date" id="chLiqFecha" value="'+todayISO()+'"></div>'
-          +'<div><label class="ch-label">Horas a liquidar</label><input type="number" id="chLiqMonto" min="0" step="0.01" style="width:100px" placeholder="0,00"></div>'
-          +'<div style="flex:1"><label class="ch-label">Comentario (opcional)</label><input type="text" id="chLiqComentario" style="width:100%" placeholder="ej. Pago en efectivo"></div>'
-          +'<div style="margin-top:22px"><button class="ch-btn ch-btn-primary ch-btn-sm" id="chBtnLiquidar">Registrar liquidación</button></div>'
+        html += '<div class="row" style="margin-top:14px;gap:10px">'
+          +'<div><label class="field-label">Fecha</label><input type="date" id="chLiqFecha" value="'+todayISO()+'"></div>'
+          +'<div><label class="field-label">Horas a liquidar</label><input type="number" id="chLiqMonto" min="0" step="0.01" style="width:100px" placeholder="0,00"></div>'
+          +'<div style="flex:1"><label class="field-label">Comentario (opcional)</label><input type="text" id="chLiqComentario" style="width:100%" placeholder="ej. Pago en efectivo"></div>'
+          +'<div style="margin-top:22px"><button class="btn btn-primary btn-sm" id="chBtnLiquidar">Registrar liquidación</button></div>'
           +'</div>';
         html += '</div>';
 
@@ -504,7 +504,7 @@ async function renderEvolucion(){
       }
     }
     cont.innerHTML = html;
-  } catch(e){ cont.innerHTML = '<div class="ch-alert-card">Error: '+esc(e.message)+'</div>'; }
+  } catch(e){ cont.innerHTML = '<div class="alerta-card">Error: '+esc(e.message)+'</div>'; }
 }
 
 function buildBarChartCH(points){
@@ -551,11 +551,11 @@ let configLocal = [];
 async function renderConfig(){
   if(!ES_ADMIN) return;
   const cont = document.getElementById('chConfigContainer');
-  cont.innerHTML = '<p class="ch-hint">Cargando...</p>';
+  cont.innerHTML = '<p class="hint">Cargando...</p>';
   try{
     const empleados = await chFetch('empleados/');
     configLocal = empleados.map(e=>({...e}));
-    let html = '<div class="ch-tbl-wrap"><table><thead><tr>'
+    let html = '<div class="table-scroll"><table><thead><tr>'
       +'<th>Empleado</th><th>Alias (nombre completo)</th><th title="Media jornada">½ Jornada</th>'
       +'<th title="No descontar descanso si marca 2 veces">Sin desc. descanso</th>'
       +'<th title="Bono mensual de horas extra compensadas">Bono h. extra/mes</th>'
@@ -581,7 +581,7 @@ async function renderConfig(){
         else configLocal[idx][campo]=inp.value;
       });
     });
-  } catch(e){ cont.innerHTML = '<div class="ch-alert-card">Error: '+esc(e.message)+'</div>'; }
+  } catch(e){ cont.innerHTML = '<div class="alerta-card">Error: '+esc(e.message)+'</div>'; }
 }
 
 document.getElementById('chBtnGuardarConfig')?.addEventListener('click', async ()=>{
