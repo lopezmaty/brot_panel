@@ -3,7 +3,18 @@ from django.db import models
 
 class Empleado(models.Model):
     nombre = models.CharField(max_length=200, unique=True)
+
+    # Nombre completo que se muestra
     alias = models.CharField(max_length=200, blank=True, default='')
+
+    # Nombre EXACTO recibido desde el reloj
+    nombre_reloj = models.CharField(
+        max_length=200,
+        blank=True,
+        default='',
+        db_index=True
+    )
+
     medio_jornada = models.BooleanField(default=False)
     sin_descuento_descanso = models.BooleanField(default=False)
     bono_horas_extra = models.DecimalField(max_digits=6, decimal_places=2, default=0)
@@ -13,10 +24,10 @@ class Empleado(models.Model):
         ordering = ['nombre']
 
     def __str__(self):
-        return self.alias or self.nombre
+        return self.nombre
 
     def nombre_display(self):
-        return self.alias or self.nombre
+        return self.nombre
 
 
 class MarcaFichada(models.Model):

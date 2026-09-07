@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -261,6 +262,7 @@ def ch_empleados(request):
             'nombre': e.nombre,
             'nombre_display': e.nombre_display(),
             'alias': e.alias,
+            'nombre_reloj': e.nombre_reloj,
             'medio_jornada': e.medio_jornada,
             'sin_descuento_descanso': e.sin_descuento_descanso,
             'bono_horas_extra': float(e.bono_horas_extra),
@@ -280,8 +282,23 @@ def ch_empleados_update(request):
             emp = models.Empleado.objects.get(id=c['id'])
         except models.Empleado.DoesNotExist:
             continue
+
         if 'alias' in c:
-            emp.alias = c['alias']
+            emp.alias = str(c['alias']).strip()
+
+        if 'nombre_reloj' in c:
+            nombre_reloj = _normalizar_nombre(str(c['nombre_reloj'])) if c['nombre_reloj'] else ''
+            if nombre_reloj:
+                duplicado = models.Empleado.objects.filter(
+                    nombre_reloj__iexact=nombre_reloj,
+                    activo=True,
+                ).exclude(id=emp.id).first()
+                if duplicado:
+                    return Response({
+                        'error': f'El alias del reloj "{nombre_reloj}" ya está asignado a {duplicado.nombre_display()}.'
+                    }, status=409)
+            emp.nombre_reloj = nombre_reloj
+
         if 'medio_jornada' in c:
             emp.medio_jornada = bool(c['medio_jornada'])
         if 'sin_descuento_descanso' in c:
@@ -290,6 +307,53 @@ def ch_empleados_update(request):
             emp.bono_horas_extra = float(c['bono_horas_extra'])
         emp.save()
     return Response({'ok': True})
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def ch_empleado_crear(request):
+    """Crea un empleado manualmente y vincula el nombre con el que llega desde el reloj."""
+    nombre_completo = str(request.data.get('nombre_completo', '')).strip()
+    nombre_reloj = str(request.data.get('nombre_reloj', '')).strip()
+
+    if not nombre_completo:
+        return Response({'error': 'Ingresá el nombre completo.'}, status=400)
+    if not nombre_reloj:
+        return Response({'error': 'Ingresá el alias/nombre que figura en el reloj.'}, status=400)
+
+    nombre_reloj = _normalizar_nombre(nombre_reloj)
+
+    if models.Empleado.objects.filter(nombre__iexact=nombre_completo).exists():
+        return Response({'error': 'Ya existe un empleado con ese nombre.'}, status=409)
+
+    duplicado_reloj = models.Empleado.objects.filter(
+        nombre_reloj__iexact=nombre_reloj,
+        activo=True,
+    ).first()
+    if duplicado_reloj:
+        return Response({
+            'error': f'El alias del reloj "{nombre_reloj}" ya está asignado a {duplicado_reloj.nombre_display()}.'
+        }, status=409)
+
+    emp = models.Empleado.objects.create(
+        nombre=nombre_completo,
+        alias=nombre_completo,
+        nombre_reloj=nombre_reloj,
+    )
+
+    return Response({
+        'ok': True,
+        'empleado': {
+            'id': emp.id,
+            'nombre': emp.nombre,
+            'nombre_display': emp.nombre_display(),
+            'alias': emp.alias,
+            'nombre_reloj': emp.nombre_reloj,
+            'medio_jornada': emp.medio_jornada,
+            'sin_descuento_descanso': emp.sin_descuento_descanso,
+            'bono_horas_extra': float(emp.bono_horas_extra),
+        },
+    })
 
 
 # ============================================================
@@ -342,9 +406,8 @@ def ch_importar(request):
     empleados_vistos = set()
 
     for nombre_raw, ts in lineas_raw:
-        nombre_norm = _normalizar_nombre(nombre_raw)
-        emp, _ = models.Empleado.objects.get_or_create(nombre=nombre_norm)
-        empleados_vistos.add(nombre_norm)
+        emp = _resolver_empleado_reloj(nombre_raw, crear=True)
+        empleados_vistos.add(emp.nombre)
         _, created = models.MarcaFichada.objects.get_or_create(
             empleado=emp,
             timestamp=ts,
@@ -383,6 +446,50 @@ def ch_importar(request):
 def _normalizar_nombre(nombre):
     """Capitaliza cada palabra y strip, como normalizeName() del HTML."""
     return ' '.join(w.capitalize() for w in nombre.strip().split())
+
+
+def _resolver_empleado_reloj(nombre_raw, crear=False):
+    """Resuelve el nombre recibido desde el reloj contra un empleado existente."""
+    nombre_norm = _normalizar_nombre(nombre_raw)
+
+    # 1) Alias/nombre específico configurado para el reloj.
+    emp = models.Empleado.objects.filter(
+        nombre_reloj__iexact=nombre_norm,
+        activo=True,
+    ).first()
+    if emp:
+        return emp
+
+    # 2) Compatibilidad con datos existentes: nombre interno.
+    emp = models.Empleado.objects.filter(
+        nombre__iexact=nombre_norm,
+        activo=True,
+    ).first()
+    if emp:
+        if not emp.nombre_reloj:
+            emp.nombre_reloj = nombre_norm
+            emp.save(update_fields=['nombre_reloj'])
+        return emp
+
+    # 3) Compatibilidad adicional con el alias/nombre completo ya existente.
+    emp = models.Empleado.objects.filter(
+        alias__iexact=nombre_norm,
+        activo=True,
+    ).first()
+    if emp:
+        if not emp.nombre_reloj:
+            emp.nombre_reloj = nombre_norm
+            emp.save(update_fields=['nombre_reloj'])
+        return emp
+
+    # 4) Si el reloj trae una persona desconocida, crearla provisoriamente.
+    if crear:
+        return models.Empleado.objects.create(
+            nombre=nombre_norm,
+            nombre_reloj=nombre_norm,
+        )
+
+    return None
 
 
 def _parse_fichadas(texto, mes_esperado):
@@ -492,12 +599,29 @@ def ch_preview_empleados(request):
         return Response({'error': f'El mes {mes} está cerrado.'}, status=409)
 
     lineas = _parse_fichadas(texto, mes)
-    nombres = sorted(set(_normalizar_nombre(n) for n, _ in lineas))
+
+    nombres_set = set()
+    empleados_resueltos = {}
+    for nombre_raw, _ in lineas:
+        emp = _resolver_empleado_reloj(nombre_raw, crear=False)
+        if emp:
+            nombres_set.add(emp.nombre)
+            empleados_resueltos[emp.nombre] = emp
+        else:
+            nombres_set.add(_normalizar_nombre(nombre_raw))
+
+    nombres = sorted(nombres_set)
 
     ajustes_existentes = {}
     for nombre in nombres:
-        try:
-            emp = models.Empleado.objects.get(nombre=nombre)
+        emp = empleados_resueltos.get(nombre)
+        if emp is None:
+            try:
+                emp = models.Empleado.objects.get(nombre=nombre)
+            except models.Empleado.DoesNotExist:
+                emp = None
+
+        if emp:
             try:
                 a = models.AjusteMes.objects.get(empleado=emp, mes=mes)
                 ajustes_existentes[nombre] = {
@@ -508,7 +632,7 @@ def ch_preview_empleados(request):
                 }
             except models.AjusteMes.DoesNotExist:
                 ajustes_existentes[nombre] = {'faltas': [], 'feriados': [], 'vacaciones': {}, 'observacion': ''}
-        except models.Empleado.DoesNotExist:
+        else:
             ajustes_existentes[nombre] = {'faltas': [], 'feriados': [], 'vacaciones': {}, 'observacion': ''}
 
     return Response({
@@ -678,6 +802,51 @@ def ch_abrir_mes(request):
     if deleted == 0:
         return Response({'error': 'El mes no estaba cerrado.'}, status=404)
     return Response({'ok': True, 'mes': mes})
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def ch_limpiar_mes(request):
+    """Elimina los datos operativos de un mes abierto. Los empleados no se eliminan."""
+    mes = request.data.get('mes')
+    if not mes:
+        return Response({'error': 'Falta el mes.'}, status=400)
+
+    try:
+        year, month = [int(x) for x in mes.split('-')]
+        if month < 1 or month > 12:
+            raise ValueError
+    except (ValueError, TypeError):
+        return Response({'error': 'Formato de mes inválido. Usá YYYY-MM.'}, status=400)
+
+    if _mes_cerrado(mes):
+        return Response({
+            'error': 'El mes está cerrado. Primero tenés que abrirlo antes de limpiarlo.'
+        }, status=409)
+
+    primer_dia = date(year, month, 1)
+    ultimo_dia = date(year, month, calendar.monthrange(year, month)[1])
+
+    with transaction.atomic():
+        marcas, _ = models.MarcaFichada.objects.filter(mes=mes).delete()
+        ajustes, _ = models.AjusteMes.objects.filter(mes=mes).delete()
+        errores, _ = models.ErrorFichadaManual.objects.filter(
+            fecha__gte=primer_dia,
+            fecha__lte=ultimo_dia,
+        ).delete()
+        liquidaciones, _ = models.LiquidacionHoras.objects.filter(
+            fecha__gte=primer_dia,
+            fecha__lte=ultimo_dia,
+        ).delete()
+
+    return Response({
+        'ok': True,
+        'mes': mes,
+        'marcas_eliminadas': marcas,
+        'ajustes_eliminados': ajustes,
+        'errores_eliminados': errores,
+        'liquidaciones_eliminadas': liquidaciones,
+    })
 
 
 # ============================================================
