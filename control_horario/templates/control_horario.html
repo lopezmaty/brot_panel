@@ -257,6 +257,26 @@
         {% endif %}
       </div>
     </div>
+
+    {% if es_admin %}
+    <div id="chLimpiarMesPanel" class="liq-form" style="display:none;margin-bottom:18px">
+      <h2 style="margin-bottom:8px">Limpiar mes</h2>
+      <p class="section-help" style="margin-bottom:14px">Elegí exactamente qué mes abierto querés borrar. Los meses cerrados no aparecen en esta lista. La limpieza elimina fichadas, ajustes, errores manuales y liquidaciones del mes, pero no elimina empleados ni su configuración.</p>
+      <div class="row">
+        <div>
+          <label class="field-label">Mes abierto a limpiar</label>
+          <select id="chSelectLimpiarMes"></select>
+        </div>
+        <div style="margin-top:22px">
+          <button class="btn btn-danger" id="chBtnConfirmarLimpiarMes">🗑 Limpiar mes</button>
+        </div>
+        <div style="margin-top:22px">
+          <button class="btn btn-secondary" id="chBtnCancelarLimpiarMes">Cancelar</button>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
     <div id="chEvolucionContainer"></div>
   </div>
 </div>

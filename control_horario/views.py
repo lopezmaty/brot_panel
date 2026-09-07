@@ -275,38 +275,78 @@ def ch_empleados(request):
 @api_view(['POST'])
 @permission_classes([EsAdmin])
 def ch_empleados_update(request):
-    """Actualiza configuración de empleados (solo admin)."""
+    """
+    Actualiza configuración de empleados (solo admin).
+
+    Si al cargar el nombre del reloj existe un empleado provisional creado con
+    ese mismo nombre, mueve sus datos al empleado correcto y elimina el
+    duplicado.
+    """
     cambios = request.data.get('cambios', [])
-    for c in cambios:
-        try:
-            emp = models.Empleado.objects.get(id=c['id'])
-        except models.Empleado.DoesNotExist:
-            continue
+    fusionados = []
 
-        if 'alias' in c:
-            emp.alias = str(c['alias']).strip()
+    try:
+        with transaction.atomic():
+            for c in cambios:
+                try:
+                    emp = models.Empleado.objects.get(id=c['id'])
+                except models.Empleado.DoesNotExist:
+                    # Puede haber sido eliminado al fusionarse con otro empleado
+                    # procesado previamente en este mismo guardado.
+                    continue
 
-        if 'nombre_reloj' in c:
-            nombre_reloj = _normalizar_nombre(str(c['nombre_reloj'])) if c['nombre_reloj'] else ''
-            if nombre_reloj:
-                duplicado = models.Empleado.objects.filter(
-                    nombre_reloj__iexact=nombre_reloj,
-                    activo=True,
-                ).exclude(id=emp.id).first()
-                if duplicado:
-                    return Response({
-                        'error': f'El alias del reloj "{nombre_reloj}" ya está asignado a {duplicado.nombre_display()}.'
-                    }, status=409)
-            emp.nombre_reloj = nombre_reloj
+                if 'alias' in c:
+                    emp.alias = str(c['alias']).strip()
 
-        if 'medio_jornada' in c:
-            emp.medio_jornada = bool(c['medio_jornada'])
-        if 'sin_descuento_descanso' in c:
-            emp.sin_descuento_descanso = bool(c['sin_descuento_descanso'])
-        if 'bono_horas_extra' in c:
-            emp.bono_horas_extra = float(c['bono_horas_extra'])
-        emp.save()
-    return Response({'ok': True})
+                if 'nombre_reloj' in c:
+                    nombre_reloj = (
+                        _normalizar_nombre(str(c['nombre_reloj']))
+                        if c['nombre_reloj']
+                        else ''
+                    )
+
+                    if nombre_reloj:
+                        fusionado = _fusionar_empleado_duplicado(
+                            destino=emp,
+                            nombre_reloj=nombre_reloj,
+                        )
+                        if fusionado:
+                            fusionados.append({
+                                'eliminado': fusionado,
+                                'destino': emp.alias or emp.nombre,
+                            })
+
+                        # Si después de intentar la fusión sigue existiendo otro
+                        # empleado con el mismo alias de reloj, no permitimos
+                        # guardar una relación ambigua.
+                        duplicado = models.Empleado.objects.filter(
+                            nombre_reloj__iexact=nombre_reloj,
+                            activo=True,
+                        ).exclude(id=emp.id).first()
+                        if duplicado:
+                            raise ValueError(
+                                f'El alias del reloj "{nombre_reloj}" ya está '
+                                f'asignado a {duplicado.nombre_display()}.'
+                            )
+
+                    emp.nombre_reloj = nombre_reloj
+
+                if 'medio_jornada' in c:
+                    emp.medio_jornada = bool(c['medio_jornada'])
+                if 'sin_descuento_descanso' in c:
+                    emp.sin_descuento_descanso = bool(c['sin_descuento_descanso'])
+                if 'bono_horas_extra' in c:
+                    emp.bono_horas_extra = float(c['bono_horas_extra'])
+
+                emp.save()
+
+    except ValueError as e:
+        return Response({'error': str(e)}, status=409)
+
+    return Response({
+        'ok': True,
+        'fusionados': fusionados,
+    })
 
 
 @api_view(['POST'])
@@ -446,6 +486,103 @@ def ch_importar(request):
 def _normalizar_nombre(nombre):
     """Capitaliza cada palabra y strip, como normalizeName() del HTML."""
     return ' '.join(w.capitalize() for w in nombre.strip().split())
+
+
+def _fusionar_empleado_duplicado(destino, nombre_reloj):
+    """
+    Fusiona un empleado provisional creado por una importación anterior con el
+    empleado correcto al que el admin acaba de asignar ese nombre de reloj.
+
+    Solo se fusionan candidatos que tengan como nombre interno exactamente el
+    nombre del reloj. Si ese duplicado participa de un mes cerrado, se bloquea
+    la operación para no alterar el historial ya congelado.
+    """
+    nombre_reloj = _normalizar_nombre(nombre_reloj)
+    if not nombre_reloj:
+        return None
+
+    # Un duplicado creado automáticamente por el reloj tiene como nombre
+    # interno el mismo texto que llegó desde el archivo. Esto también cubre
+    # duplicados antiguos creados antes de existir el campo nombre_reloj.
+    duplicado = (
+        models.Empleado.objects
+        .filter(nombre__iexact=nombre_reloj)
+        .exclude(id=destino.id)
+        .first()
+    )
+
+    if not duplicado:
+        return None
+
+    # Si el empleado duplicado figura en un snapshot cerrado, no lo tocamos.
+    # El snapshot usa el nombre del empleado como clave y fusionarlo sin abrir
+    # ese mes podría dejar inconsistencias históricas.
+    meses_cerrados = []
+    for historial in models.HistorialMes.objects.all():
+        snapshot = historial.snapshot or {}
+        if duplicado.nombre in snapshot:
+            meses_cerrados.append(historial.mes)
+
+    if meses_cerrados:
+        raise ValueError(
+            f'No se puede unificar "{duplicado.nombre}" porque tiene datos en '
+            f'meses cerrados: {", ".join(sorted(meses_cerrados))}. '
+            'Primero abrí esos meses y luego volvé a guardar.'
+        )
+
+    # Si ambos empleados tienen ajustes para el mismo mes no decidimos cuál
+    # conservar automáticamente. Es más seguro pedir que se resuelva antes.
+    meses_ajuste_destino = set(
+        models.AjusteMes.objects.filter(empleado=destino)
+        .values_list('mes', flat=True)
+    )
+    meses_ajuste_duplicado = set(
+        models.AjusteMes.objects.filter(empleado=duplicado)
+        .values_list('mes', flat=True)
+    )
+    conflicto_ajustes = sorted(meses_ajuste_destino & meses_ajuste_duplicado)
+    if conflicto_ajustes:
+        raise ValueError(
+            f'No se puede unificar automáticamente "{duplicado.nombre}" '
+            f'porque ambos empleados tienen ajustes en: '
+            f'{", ".join(conflicto_ajustes)}.'
+        )
+
+    # Mover fichadas. Si exactamente la misma marca ya existe en destino,
+    # eliminar la copia para respetar unique_together(empleado, timestamp).
+    for marca in list(models.MarcaFichada.objects.filter(empleado=duplicado)):
+        if models.MarcaFichada.objects.filter(
+            empleado=destino,
+            timestamp=marca.timestamp,
+        ).exists():
+            marca.delete()
+        else:
+            marca.empleado = destino
+            marca.save(update_fields=['empleado'])
+
+    # Ajustes: ya comprobamos que no hay choque por empleado+mes.
+    models.AjusteMes.objects.filter(empleado=duplicado).update(empleado=destino)
+
+    # Errores manuales: eliminar duplicados exactos de fecha y mover el resto.
+    for error in list(models.ErrorFichadaManual.objects.filter(empleado=duplicado)):
+        if models.ErrorFichadaManual.objects.filter(
+            empleado=destino,
+            fecha=error.fecha,
+        ).exists():
+            error.delete()
+        else:
+            error.empleado = destino
+            error.save(update_fields=['empleado'])
+
+    # Las liquidaciones no tienen restricción única por empleado/fecha, por lo
+    # que se pueden trasladar directamente.
+    models.LiquidacionHoras.objects.filter(empleado=duplicado).update(
+        empleado=destino
+    )
+
+    nombre_eliminado = duplicado.nombre
+    duplicado.delete()
+    return nombre_eliminado
 
 
 def _resolver_empleado_reloj(nombre_raw, crear=False):
