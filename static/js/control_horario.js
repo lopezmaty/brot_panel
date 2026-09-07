@@ -95,6 +95,7 @@ function exportCSV(filename, headers, rows){
     ...rows.map(
       r=>r.map(v=>{
         const s=String(v??'');
+
         return /[;\"\n]/.test(s)
           ? '"'+s.replace(/"/g,'""')+'"'
           : s;
@@ -150,23 +151,27 @@ function chRenderDataSummary(){
 
   if(!el) return;
 
-  const cerrados = chMeses.filter(m=>m.cerrado).length;
+  const cerrados =
+    chMeses.filter(m=>m.cerrado).length;
 
   el.textContent =
-    chEmpleados.length+' empleados · '+
-    chMeses.length+' meses'+
+    chEmpleados.length+
+    ' empleados · '+
+    chMeses.length+
+    ' meses'+
     (cerrados?' · '+cerrados+' cerrados':'');
 }
 
 function chPoblateFilters(){
-  const mesesOpts = chMeses.map(m=>
-    '<option value="'+m.mes+'"'+
-    (m.cerrado?' title="Cerrado"':'')+
-    '>'+
-    labelMes(m.mes)+
-    (m.cerrado?' 🔒':'')+
-    ' </option>'
-  ).join('');
+  const mesesOpts =
+    chMeses.map(m=>
+      '<option value="'+m.mes+'"'+
+      (m.cerrado?' title="Cerrado"':'')+
+      '>'+
+      labelMes(m.mes)+
+      (m.cerrado?' 🔒':'')+
+      ' </option>'
+    ).join('');
 
   const empOpts =
     '<option value="">Todos</option>'+
@@ -176,20 +181,29 @@ function chPoblateFilters(){
       '</option>'
     ).join('');
 
-  ['chFiltroMesDetalle','chFiltroMesResumen'].forEach(id=>{
-    const el = document.getElementById(id);
+  [
+    'chFiltroMesDetalle',
+    'chFiltroMesResumen'
+  ].forEach(id=>{
+    const el =
+      document.getElementById(id);
 
     if(el){
       el.innerHTML = mesesOpts;
 
       if(chMeses.length){
-        el.value=chMeses[chMeses.length-1].mes;
+        el.value =
+          chMeses[chMeses.length-1].mes;
       }
     }
   });
 
-  ['chFiltroEmpDetalle','chFiltroEmpEvolucion'].forEach(id=>{
-    const el = document.getElementById(id);
+  [
+    'chFiltroEmpDetalle',
+    'chFiltroEmpEvolucion'
+  ].forEach(id=>{
+    const el =
+      document.getElementById(id);
 
     if(el){
       el.innerHTML = empOpts;
@@ -198,22 +212,30 @@ function chPoblateFilters(){
 }
 
 /* ── Navegación ── */
-document.querySelectorAll('.ch-nav-btn').forEach(btn=>{
+document.querySelectorAll(
+  '.ch-nav-btn'
+).forEach(btn=>{
   btn.addEventListener(
     'click',
-    ()=>activarTabCH(btn.dataset.tab)
+    ()=>activarTabCH(
+      btn.dataset.tab
+    )
   );
 });
 
 function activarTabCH(tab){
-  document.querySelectorAll('.ch-nav-btn').forEach(b=>
+  document.querySelectorAll(
+    '.ch-nav-btn'
+  ).forEach(b=>
     b.classList.toggle(
       'active',
       b.dataset.tab===tab
     )
   );
 
-  document.querySelectorAll('.ch-tab').forEach(t=>
+  document.querySelectorAll(
+    '.ch-tab'
+  ).forEach(t=>
     t.classList.toggle(
       'active',
       t.id==='ch-tab-'+tab
@@ -231,17 +253,24 @@ function activarTabCH(tab){
 ══════════════════════════════════════════ */
 
 const mesImportar =
-  document.getElementById('chMesImportar');
+  document.getElementById(
+    'chMesImportar'
+  );
 
-mesImportar.value = mesAnterior();
+mesImportar.value =
+  mesAnterior();
 
 /* Dropzone */
 
 const dropzone =
-  document.getElementById('chFileDrop');
+  document.getElementById(
+    'chFileDrop'
+  );
 
 const fileInput =
-  document.getElementById('chFileInput');
+  document.getElementById(
+    'chFileInput'
+  );
 
 dropzone.addEventListener(
   'click',
@@ -258,7 +287,9 @@ dropzone.addEventListener(
 
 dropzone.addEventListener(
   'dragleave',
-  ()=>dropzone.classList.remove('drag')
+  ()=>dropzone.classList.remove(
+    'drag'
+  )
 );
 
 dropzone.addEventListener(
@@ -266,7 +297,9 @@ dropzone.addEventListener(
   e=>{
     e.preventDefault();
 
-    dropzone.classList.remove('drag');
+    dropzone.classList.remove(
+      'drag'
+    );
 
     const file =
       e.dataTransfer.files[0];
@@ -281,7 +314,9 @@ fileInput.addEventListener(
   'change',
   ()=>{
     if(fileInput.files[0]){
-      leerArchivo(fileInput.files[0]);
+      leerArchivo(
+        fileInput.files[0]
+      );
     }
   }
 );
@@ -410,7 +445,10 @@ document.getElementById(
   }
 );
 
-function renderPreviewEmpleados(data, mes){
+function renderPreviewEmpleados(
+  data,
+  mes
+){
   const cont =
     document.getElementById(
       'chPreviewEmpleados'
@@ -439,21 +477,25 @@ function renderPreviewEmpleados(data, mes){
     '. Configurá los ajustes y luego hacé clic en "Importar datos".'+
     '</div>';
 
-  data.empleados.forEach(nombre=>{
-    const aj =
-      chAjustesPendientes[nombre];
+  data.empleados.forEach(
+    nombre=>{
+      const aj =
+        chAjustesPendientes[
+          nombre
+        ];
 
-    html +=
-      '<div class="emp-ajuste" data-nombre="'+esc(nombre)+'">';
+      html +=
+        '<div class="emp-ajuste" data-nombre="'+esc(nombre)+'">';
 
-    html +=
-      '<div class="emp-nombre">'+esc(nombre)+'</div>';
+      html +=
+        '<div class="emp-nombre">'+
+        esc(nombre)+
+        '</div>';
 
-    html +=
-      '<div class="ajuste-row">';
+      html +=
+        '<div class="ajuste-row">';
 
-    html +=
-      diasDropdown(
+      html += diasDropdown(
         nombre,
         'feriados',
         aj.feriados,
@@ -461,8 +503,7 @@ function renderPreviewEmpleados(data, mes){
         'imp_'
       );
 
-    html +=
-      diasDropdown(
+      html += diasDropdown(
         nombre,
         'faltas',
         aj.faltas,
@@ -470,8 +511,7 @@ function renderPreviewEmpleados(data, mes){
         'imp_'
       );
 
-    html +=
-      conteoDiasDropdown(
+      html += conteoDiasDropdown(
         nombre,
         'vacaciones',
         aj.vacaciones,
@@ -479,20 +519,19 @@ function renderPreviewEmpleados(data, mes){
         'imp_'
       );
 
-    html +=
-      '</div>';
+      html += '</div>';
 
-    html +=
-      '<textarea class="obs-input" '+
-      'placeholder="Observaciones (opcional)..." '+
-      'data-nombre="'+esc(nombre)+'" '+
-      'data-campo="observacion">'+
-      esc(aj.observacion||'')+
-      '</textarea>';
+      html +=
+        '<textarea class="obs-input" '+
+        'placeholder="Observaciones (opcional)..." '+
+        'data-nombre="'+esc(nombre)+'" '+
+        'data-campo="observacion">'+
+        esc(aj.observacion||'')+
+        '</textarea>';
 
-    html +=
-      '</div>';
-  });
+      html += '</div>';
+    }
+  );
 
   cont.innerHTML = html;
 
@@ -1003,17 +1042,21 @@ function renderResumenSnapshot(data){
     '<table>'+
     '<thead>'+
     '<tr>'+
+
     '<th>Empleado</th>'+
-    '<th class="num">Total horas</th>'+
-    '<th class="num">Esperadas</th>'+
-    '<th class="num">Diferencia</th>'+
+    '<th style="text-align:center">Total horas</th>'+
+    '<th style="text-align:center">Esperadas</th>'+
+    '<th style="text-align:center">Diferencia</th>'+
+
     '</tr>'+
     '</thead>'+
     '<tbody>';
 
   for(
     const [nombre, snap]
-    of Object.entries(data.snapshot)
+    of Object.entries(
+      data.snapshot
+    )
   ){
     const dif =
       snap.diferencia||0;
@@ -1034,7 +1077,7 @@ function renderResumenSnapshot(data){
       esc(nombre)+
       '</td>'+
 
-      '<td style="font-family:var(--font-mono);text-align:right">'+
+      '<td style="font-family:var(--font-mono);text-align:center">'+
       (
         snap.total
           ? fmtDec(snap.total)+' h'
@@ -1042,7 +1085,7 @@ function renderResumenSnapshot(data){
       )+
       '</td>'+
 
-      '<td style="font-family:var(--font-mono);text-align:right">'+
+      '<td style="font-family:var(--font-mono);text-align:center">'+
       (
         snap.esperadas
           ? fmtDec(snap.esperadas)+' h'
@@ -1050,7 +1093,7 @@ function renderResumenSnapshot(data){
       )+
       '</td>'+
 
-      '<td style="font-family:var(--font-mono);text-align:right;font-weight:700;color:'+
+      '<td style="font-family:var(--font-mono);text-align:center;font-weight:700;color:'+
       color+
       '">'+
       fmtHorasEtq(dif)+
@@ -1068,7 +1111,10 @@ function renderResumenSnapshot(data){
     html;
 }
 
-function renderResumenVivo(data, mes){
+function renderResumenVivo(
+  data,
+  mes
+){
   const cont =
     document.getElementById(
       'chResumenContainer'
@@ -1134,141 +1180,179 @@ function renderResumenVivo(data, mes){
     '<tr>'+
 
     '<th>Empleado</th>'+
-    '<th title="Feriados no trabajados">Feriados</th>'+
-    '<th title="Faltas justificadas">Faltas</th>'+
-    '<th title="Vacaciones">Vac.</th>'+
-    '<th class="num">Total h.</th>'+
-    '<th class="num">Esperadas</th>'+
-    '<th class="num">Días err.</th>'+
-    '<th class="num">Diferencia</th>'+
-    '<th>Estado</th>'+
+
+    '<th title="Feriados no trabajados">'+
+    'Feriados'+
+    '</th>'+
+
+    '<th title="Faltas justificadas">'+
+    'Faltas'+
+    '</th>'+
+
+    '<th title="Vacaciones">'+
+    'Vac.'+
+    '</th>'+
+
+    '<th style="text-align:center">'+
+    'Total h.'+
+    '</th>'+
+
+    '<th style="text-align:center">'+
+    'Esperadas'+
+    '</th>'+
+
+    '<th style="text-align:center">'+
+    'Días err.'+
+    '</th>'+
+
+    '<th style="text-align:center">'+
+    'Diferencia'+
+    '</th>'+
+
+    '<th>'+
+    'Estado'+
+    '</th>'+
 
     '</tr>'+
     '</thead>'+
     '<tbody>';
 
-  data.resumenes.forEach(r=>{
-    const dif =
-      r.diferencia;
+  data.resumenes.forEach(
+    r=>{
+      const dif =
+        r.diferencia;
 
-    const color =
-      dif<-0.01
-        ? 'var(--error)'
-        : (
-          dif>0.01
-            ? 'var(--good)'
-            : ''
-        );
+      const color =
+        dif<-0.01
+          ? 'var(--error)'
+          : (
+            dif>0.01
+              ? 'var(--good)'
+              : ''
+          );
 
-    let difCell =
-      '<span style="font-weight:700;color:'+
-      color+
-      '">'+
-      fmtHorasEtq(dif)+
-      '</span>';
+      let difCell =
+        '<span style="font-weight:700;color:'+
+        color+
+        '">'+
+        fmtHorasEtq(dif)+
+        '</span>';
 
-    if(r.bono_compensado>0){
-      difCell+=
-        '<div style="font-size:10.5px;color:var(--gray600)">'+
-        'Bono: -'+
-        fmtDec(
-          r.bono_compensado
-        )+
-        ' de '+
-        fmtDec(
-          r.bono_extra
-        )+
-        ' h'+
-        '</div>';
-    }
+      if(
+        r.bono_compensado>0
+      ){
+        difCell+=
+          '<div style="font-size:10.5px;color:var(--gray600)">'+
+          'Bono: -'+
+          fmtDec(
+            r.bono_compensado
+          )+
+          ' de '+
+          fmtDec(
+            r.bono_extra
+          )+
+          ' h'+
+          '</div>';
+      }
 
-    const ferDisplay =
-      (r.feriados||[]).length
-        ? DIAS_SEMANA
-          .filter(
-            d=>(r.feriados).includes(d.v)
+      const ferDisplay =
+        (r.feriados||[]).length
+          ? DIAS_SEMANA
+            .filter(
+              d=>
+                (r.feriados)
+                .includes(d.v)
+            )
+            .map(
+              d=>d.l.slice(0,3)
+            )
+            .join(', ')
+          : '—';
+
+      const faltDisplay =
+        (r.faltas||[]).length
+          ? DIAS_SEMANA
+            .filter(
+              d=>
+                (r.faltas)
+                .includes(d.v)
+            )
+            .map(
+              d=>d.l.slice(0,3)
+            )
+            .join(', ')
+          : '—';
+
+      const vacTotal =
+        r.vacaciones
+          ? Object.values(
+            r.vacaciones
+          ).reduce(
+            (s,v)=>s+Number(v),
+            0
           )
-          .map(
-            d=>d.l.slice(0,3)
-          )
-          .join(', ')
-        : '—';
+          : 0;
 
-    const faltDisplay =
-      (r.faltas||[]).length
-        ? DIAS_SEMANA
-          .filter(
-            d=>(r.faltas).includes(d.v)
-          )
-          .map(
-            d=>d.l.slice(0,3)
-          )
-          .join(', ')
-        : '—';
-
-    const vacTotal =
-      r.vacaciones
-        ? Object.values(
-          r.vacaciones
-        ).reduce(
-          (s,v)=>s+Number(v),
-          0
-        )
-        : 0;
-
-    html+=
-      '<tr>'+
-
-      '<td class="nombre-cell">'+
-      esc(r.nombre)+
-      '</td>'+
-
-      '<td style="font-size:12px">'+
-      esc(ferDisplay)+
-      '</td>'+
-
-      '<td style="font-size:12px">'+
-      esc(faltDisplay)+
-      '</td>'+
-
-      '<td style="text-align:center">'+
-      vacTotal+
-      '</td>'+
-
-      '<td style="font-family:var(--font-mono);text-align:right">'+
-      fmtDec(r.total_horas_mes)+
-      ' h'+
-      '</td>'+
-
-      '<td style="font-family:var(--font-mono);text-align:right">'+
-      fmtDec(r.horas_esperadas)+
-      ' h'+
-      '</td>'+
-
-      '<td style="text-align:center">'+
-      r.dias_con_error+
-      '</td>'+
-
-      '<td style="text-align:right">'+
-      difCell+
-      '</td>'+
-
-      '<td>'+
-      selloResumen(r.estado)+
-      '</td>'+
-
-      '</tr>';
-
-    if(r.observacion){
       html+=
         '<tr>'+
-        '<td colspan="9" style="font-size:12px;color:var(--gray600);padding-left:20px;font-style:italic">'+
-        '📝 '+
-        esc(r.observacion)+
+
+        '<td class="nombre-cell">'+
+        esc(r.nombre)+
         '</td>'+
+
+        '<td style="font-size:12px">'+
+        esc(ferDisplay)+
+        '</td>'+
+
+        '<td style="font-size:12px">'+
+        esc(faltDisplay)+
+        '</td>'+
+
+        '<td style="text-align:center">'+
+        vacTotal+
+        '</td>'+
+
+        '<td style="font-family:var(--font-mono);text-align:center">'+
+        fmtDec(
+          r.total_horas_mes
+        )+
+        ' h'+
+        '</td>'+
+
+        '<td style="font-family:var(--font-mono);text-align:center">'+
+        fmtDec(
+          r.horas_esperadas
+        )+
+        ' h'+
+        '</td>'+
+
+        '<td style="text-align:center">'+
+        r.dias_con_error+
+        '</td>'+
+
+        '<td style="text-align:center">'+
+        difCell+
+        '</td>'+
+
+        '<td>'+
+        selloResumen(
+          r.estado
+        )+
+        '</td>'+
+
         '</tr>';
+
+      if(r.observacion){
+        html+=
+          '<tr>'+
+          '<td colspan="9" style="font-size:12px;color:var(--gray600);padding-left:20px;font-style:italic">'+
+          '📝 '+
+          esc(r.observacion)+
+          '</td>'+
+          '</tr>';
+      }
     }
-  });
+  );
 
   html+=
     '</tbody>'+
@@ -1291,21 +1375,23 @@ function renderResumenVivo(data, mes){
       '⚠ Advertencias'+
       '</h2>';
 
-    conAdv.forEach(r=>{
-      html+=
-        '<div class="alerta-card">'+
-        '<strong>'+
-        esc(r.nombre)+
-        '</strong>'+
-        ' — tiene menos días que el resto del equipo. Días faltantes: '+
-        r.advertencia.map(
-          d=>
-            '<span style="font-family:var(--font-mono);font-size:11px;background:var(--gray100);padding:1px 6px;border-radius:4px;margin:2px">'+
-            fmtFechaCorta(d)+
-            '</span>'
-        ).join(' ')+
-        '</div>';
-    });
+    conAdv.forEach(
+      r=>{
+        html+=
+          '<div class="alerta-card">'+
+          '<strong>'+
+          esc(r.nombre)+
+          '</strong>'+
+          ' — tiene menos días que el resto del equipo. Días faltantes: '+
+          r.advertencia.map(
+            d=>
+              '<span style="font-family:var(--font-mono);font-size:11px;background:var(--gray100);padding:1px 6px;border-radius:4px;margin:2px">'+
+              fmtFechaCorta(d)+
+              '</span>'
+          ).join(' ')+
+          '</div>';
+      }
+    );
 
     html+='</div>';
   }
@@ -1332,15 +1418,19 @@ function exportarResumen(){
     resumenData.resumenes.map(
       r=>[
         r.nombre,
+
         fmtDec(
           r.total_horas_mes
         ).replace(',','.'),
+
         fmtDec(
           r.horas_esperadas
         ).replace(',','.'),
+
         fmtDec(
           r.diferencia
         ).replace(',','.'),
+
         r.estado
       ]
     );
@@ -1376,8 +1466,8 @@ document.getElementById(
       (
         chMeses.length
           ? chMeses[
-            chMeses.length-1
-          ].mes
+              chMeses.length-1
+            ].mes
           : ''
       );
 
@@ -1522,7 +1612,6 @@ if(ES_ADMIN){
     );
 
   function poblarMesesAbiertosParaLimpiar(){
-
     if(!selectLimpiar){
       return [];
     }
@@ -1543,7 +1632,6 @@ if(ES_ADMIN){
       ).join('');
 
     if(abiertos.length){
-
       const actual =
         document.getElementById(
           'chFiltroMesResumen'
@@ -1757,6 +1845,8 @@ async function renderEvolucion(){
       return;
     }
 
+    /* Tabla de evolución */
+
     let head =
       '<th>Empleado</th>'+
       data.meses.map(
@@ -1777,124 +1867,130 @@ async function renderEvolucion(){
       '<th>Saldo bruto</th>';
 
     let rows =
-      data.empleados.map(emp=>{
-        let totalBruto=0;
+      data.empleados.map(
+        emp=>{
+          let totalBruto=0;
 
-        const cells =
-          data.meses.map(m=>{
-            const d =
-              data.datos[m] &&
-              data.datos[m][emp.nombre];
+          const cells =
+            data.meses.map(
+              m=>{
+                const d =
+                  data.datos[m] &&
+                  data.datos[m][
+                    emp.nombre
+                  ];
 
-            if(!d){
-              return '<td>—</td>';
-            }
+                if(!d){
+                  return '<td>—</td>';
+                }
 
-            totalBruto +=
-              d.diferencia;
+                totalBruto +=
+                  d.diferencia;
 
-            const color =
-              d.diferencia<-0.01
-                ? 'var(--error)'
-                : (
-                  d.diferencia>0.01
-                    ? 'var(--good)'
-                    : 'var(--gray600)'
-                );
+                const color =
+                  d.diferencia<-0.01
+                    ? 'var(--error)'
+                    : (
+                      d.diferencia>0.01
+                        ? 'var(--good)'
+                        : 'var(--gray600)'
+                    );
 
-            return '<td style="font-weight:600;color:'+
-              color+
-              '">'+
-              fmtHorasEtq(
-                d.diferencia
-              )+
-              '</td>';
-          }).join('');
+                return '<td style="font-weight:600;color:'+
+                  color+
+                  '">'+
+                  fmtHorasEtq(
+                    d.diferencia
+                  )+
+                  '</td>';
+              }
+            ).join('');
 
-        const liqs =
-          data.liquidaciones[
-            emp.nombre
-          ]||[];
+          const liqs =
+            data.liquidaciones[
+              emp.nombre
+            ]||[];
 
-        const totalLiq =
-          liqs.reduce(
-            (s,l)=>s+Number(l.monto),
-            0
-          );
-
-        const saldo =
-          totalBruto-totalLiq;
-
-        const saldoColor =
-          saldo<-0.01
-            ? 'var(--error)'
-            : (
-              saldo>0.01
-                ? 'var(--good)'
-                : '#5B655E'
+          const totalLiq =
+            liqs.reduce(
+              (s,l)=>s+Number(l.monto),
+              0
             );
 
-        const etiqueta =
-          saldo<-0.01
-            ? 'Debe recuperar'
-            : (
-              saldo>0.01
-                ? 'Horas extra'
-                : 'Al día'
-            );
+          const saldo =
+            totalBruto-totalLiq;
 
-        let liqExtra = '';
+          const saldoColor =
+            saldo<-0.01
+              ? 'var(--error)'
+              : (
+                saldo>0.01
+                  ? 'var(--good)'
+                  : '#5B655E'
+              );
 
-        if(
-          Math.abs(
-            totalLiq
-          )>0.01
-        ){
-          liqExtra =
-            '<div style="font-size:9.5px;color:var(--gray400);margin-top:2px">'+
-            'Bruto '+
-            fmtHorasEtq(
-              totalBruto
-            )+
-            ' · Liquidado '+
-            fmtDec(
+          const etiqueta =
+            saldo<-0.01
+              ? 'Debe recuperar'
+              : (
+                saldo>0.01
+                  ? 'Horas extra'
+                  : 'Al día'
+              );
+
+          let liqExtra = '';
+
+          if(
+            Math.abs(
               totalLiq
+            )>0.01
+          ){
+            liqExtra =
+              '<div style="font-size:9.5px;color:var(--gray400);margin-top:2px">'+
+              'Bruto '+
+              fmtHorasEtq(
+                totalBruto
+              )+
+              ' · Liquidado '+
+              fmtDec(
+                totalLiq
+              )+
+              ' h'+
+              '</div>';
+          }
+
+          let totalCell =
+            '<td>'+
+
+            '<div style="font-weight:700;color:'+
+            saldoColor+
+            '">'+
+            fmtHorasEtq(
+              saldo
             )+
-            ' h'+
-            '</div>';
+            '</div>'+
+
+            '<div style="font-size:10px;text-transform:uppercase;letter-spacing:0.3px;color:'+
+            saldoColor+
+            '">'+
+            etiqueta+
+            '</div>'+
+
+            liqExtra+
+
+            '</td>';
+
+          return '<tr>'+
+            '<td class="nombre-cell">'+
+            esc(
+              emp.nombre_display
+            )+
+            '</td>'+
+            cells+
+            totalCell+
+            '</tr>';
         }
-
-        let totalCell =
-          '<td>'+
-
-          '<div style="font-weight:700;color:'+
-          saldoColor+
-          '">'+
-          fmtHorasEtq(
-            saldo
-          )+
-          '</div>'+
-
-          '<div style="font-size:10px;text-transform:uppercase;letter-spacing:0.3px;color:'+
-          saldoColor+
-          '">'+
-          etiqueta+
-          '</div>'+
-
-          liqExtra+
-
-          '</td>';
-
-        return '<tr>'+
-          '<td class="nombre-cell">'+
-          esc(
-            emp.nombre_display
-          )+
-          '</td>'+
-          cells+
-          totalCell+
-          '</tr>';
-      }).join('');
+      ).join('');
 
     let html =
       '<div class="table-scroll">'+
@@ -1980,9 +2076,10 @@ async function renderEvolucion(){
               )+
               (
                 l.comentario
-                  ? ' · '+esc(
-                    l.comentario
-                  )
+                  ? ' · '+
+                    esc(
+                      l.comentario
+                    )
                   : ''
               )+
               '</span>'+
@@ -2174,7 +2271,9 @@ function buildBarChartCH(points){
     '</svg>';
 }
 
-async function registrarLiquidacion(nombre){
+async function registrarLiquidacion(
+  nombre
+){
   const fecha=
     document.getElementById(
       'chLiqFecha'
@@ -2607,9 +2706,9 @@ document.getElementById(
       chRenderDataSummary();
 
       /*
-       * Importante:
-       * al guardar puede haberse fusionado
-       * y eliminado un empleado duplicado.
+       * Si durante el guardado se fusionó
+       * un empleado duplicado, recargamos
+       * la tabla para que desaparezca.
        */
       await renderConfig();
 
