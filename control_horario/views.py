@@ -255,7 +255,19 @@ def control_horario_view(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def ch_empleados(request):
-    empleados = models.Empleado.objects.filter(activo=True)
+    # En el uso normal devolvemos solo empleados visibles/activos.
+    # Configuración puede pedir todos con ?todos=1 para poder volver a
+    # mostrar a un empleado que fue ocultado.
+    incluir_todos = (
+        request.GET.get('todos') == '1'
+        and request.user.perfil.rol == 'admin'
+    )
+
+    if incluir_todos:
+        empleados = models.Empleado.objects.all()
+    else:
+        empleados = models.Empleado.objects.filter(activo=True)
+
     data = [
         {
             'id': e.id,
@@ -266,6 +278,7 @@ def ch_empleados(request):
             'medio_jornada': e.medio_jornada,
             'sin_descuento_descanso': e.sin_descuento_descanso,
             'bono_horas_extra': float(e.bono_horas_extra),
+            'activo': e.activo,
         }
         for e in empleados
     ]
@@ -337,6 +350,8 @@ def ch_empleados_update(request):
                     emp.sin_descuento_descanso = bool(c['sin_descuento_descanso'])
                 if 'bono_horas_extra' in c:
                     emp.bono_horas_extra = float(c['bono_horas_extra'])
+                if 'activo' in c:
+                    emp.activo = bool(c['activo'])
 
                 emp.save()
 
@@ -392,6 +407,7 @@ def ch_empleado_crear(request):
             'medio_jornada': emp.medio_jornada,
             'sin_descuento_descanso': emp.sin_descuento_descanso,
             'bono_horas_extra': float(emp.bono_horas_extra),
+            'activo': emp.activo,
         },
     })
 
@@ -815,14 +831,29 @@ def ch_resumen(request):
     if not mes:
         return Response({'error': 'Falta el mes.'}, status=400)
 
-    # Si el mes está cerrado, devolver el snapshot
+    # Si el mes está cerrado, devolver el snapshot. Los empleados ocultos
+    # no se muestran, pero no se eliminan del snapshot: si se vuelven a
+    # activar, reaparecen con su información histórica intacta.
     try:
         historial = models.HistorialMes.objects.get(mes=mes)
+
+        nombres_activos = set(
+            models.Empleado.objects
+            .filter(activo=True)
+            .values_list('nombre', flat=True)
+        )
+
+        snapshot_filtrado = {
+            nombre: datos
+            for nombre, datos in (historial.snapshot or {}).items()
+            if nombre in nombres_activos
+        }
+
         return Response({
             'mes': mes,
             'cerrado': True,
             'cerrado_el': historial.cerrado_el.isoformat(),
-            'snapshot': historial.snapshot,
+            'snapshot': snapshot_filtrado,
         })
     except models.HistorialMes.DoesNotExist:
         pass
