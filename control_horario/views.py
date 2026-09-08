@@ -14,13 +14,13 @@ import calendar
 # CONSTANTES DE CÁLCULO (idénticas al HTML original)
 # ============================================================
 HORAS_ERROR_COMPLETA = 8.34
-HORAS_ERROR_MEDIA = 4.2
+HORAS_ERROR_MEDIA = 4.0
 DESCANSO_COMPLETA = 0.5    # 30 min
-DESCANSO_MEDIA = 0.25      # 15 min
+DESCANSO_MEDIA = 0.0       # sin descuento de descanso en media jornada
 
 # Horario esperado por día de semana (JS weekday: 0=dom, 1=lun..6=sab)
 SCHED_COMPLETA = {0: 0, 1: 9, 2: 8, 3: 8, 4: 8, 5: 9, 6: 0}
-SCHED_MEDIA    = {0: 0, 1: 4.5, 2: 4, 3: 4, 4: 4, 5: 4.5, 6: 0}
+SCHED_MEDIA    = {0: 0, 1: 4, 2: 4, 3: 4, 4: 4, 5: 4, 6: 0}
 
 
 # ============================================================
@@ -255,9 +255,6 @@ def control_horario_view(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def ch_empleados(request):
-    # En el uso normal devolvemos solo empleados visibles/activos.
-    # Configuración puede pedir todos con ?todos=1 para poder volver a
-    # mostrar a un empleado que fue ocultado.
     incluir_todos = (
         request.GET.get('todos') == '1'
         and request.user.perfil.rol == 'admin'
@@ -288,13 +285,6 @@ def ch_empleados(request):
 @api_view(['POST'])
 @permission_classes([EsAdmin])
 def ch_empleados_update(request):
-    """
-    Actualiza configuración de empleados (solo admin).
-
-    Si al cargar el nombre del reloj existe un empleado provisional creado con
-    ese mismo nombre, mueve sus datos al empleado correcto y elimina el
-    duplicado.
-    """
     cambios = request.data.get('cambios', [])
     fusionados = []
 
@@ -304,8 +294,6 @@ def ch_empleados_update(request):
                 try:
                     emp = models.Empleado.objects.get(id=c['id'])
                 except models.Empleado.DoesNotExist:
-                    # Puede haber sido eliminado al fusionarse con otro empleado
-                    # procesado previamente en este mismo guardado.
                     continue
 
                 if 'alias' in c:
@@ -329,9 +317,6 @@ def ch_empleados_update(request):
                                 'destino': emp.alias or emp.nombre,
                             })
 
-                        # Si después de intentar la fusión sigue existiendo otro
-                        # empleado con el mismo alias de reloj, no permitimos
-                        # guardar una relación ambigua.
                         duplicado = models.Empleado.objects.filter(
                             nombre_reloj__iexact=nombre_reloj,
                             activo=True,
@@ -367,7 +352,6 @@ def ch_empleados_update(request):
 @api_view(['POST'])
 @permission_classes([EsAdmin])
 def ch_empleado_crear(request):
-    """Crea un empleado manualmente y vincula el nombre con el que llega desde el reloj."""
     nombre_completo = str(request.data.get('nombre_completo', '')).strip()
     nombre_reloj = str(request.data.get('nombre_reloj', '')).strip()
 
@@ -440,8 +424,6 @@ def ch_meses(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def ch_importar(request):
-    """Importa fichadas de un mes desde el archivo del reloj biométrico.
-    Acepta el mismo formato que el HTML: CSV/TSV con columna FechaHora."""
     mes = request.data.get('mes')
     texto = request.data.get('texto', '')
     ajustes_por_empleado = request.data.get('ajustes', {})
@@ -451,12 +433,10 @@ def ch_importar(request):
     if _mes_cerrado(mes):
         return Response({'error': f'El mes {mes} está cerrado y no se puede reimportar.'}, status=409)
 
-    # Parsear el texto del reloj (mismo formato que el HTML)
     lineas_raw = _parse_fichadas(texto, mes)
     if not lineas_raw:
         return Response({'error': 'No se encontraron registros válidos en el archivo.'}, status=400)
 
-    # Importar marcas
     nuevas = 0
     duplicadas = 0
     empleados_vistos = set()
@@ -474,7 +454,6 @@ def ch_importar(request):
         else:
             duplicadas += 1
 
-    # Guardar ajustes por empleado
     for nombre, ajuste in ajustes_por_empleado.items():
         try:
             emp = models.Empleado.objects.get(nombre=nombre)
@@ -500,26 +479,14 @@ def ch_importar(request):
 
 
 def _normalizar_nombre(nombre):
-    """Capitaliza cada palabra y strip, como normalizeName() del HTML."""
     return ' '.join(w.capitalize() for w in nombre.strip().split())
 
 
 def _fusionar_empleado_duplicado(destino, nombre_reloj):
-    """
-    Fusiona un empleado provisional creado por una importación anterior con el
-    empleado correcto al que el admin acaba de asignar ese nombre de reloj.
-
-    Solo se fusionan candidatos que tengan como nombre interno exactamente el
-    nombre del reloj. Si ese duplicado participa de un mes cerrado, se bloquea
-    la operación para no alterar el historial ya congelado.
-    """
     nombre_reloj = _normalizar_nombre(nombre_reloj)
     if not nombre_reloj:
         return None
 
-    # Un duplicado creado automáticamente por el reloj tiene como nombre
-    # interno el mismo texto que llegó desde el archivo. Esto también cubre
-    # duplicados antiguos creados antes de existir el campo nombre_reloj.
     duplicado = (
         models.Empleado.objects
         .filter(nombre__iexact=nombre_reloj)
@@ -530,9 +497,6 @@ def _fusionar_empleado_duplicado(destino, nombre_reloj):
     if not duplicado:
         return None
 
-    # Si el empleado duplicado figura en un snapshot cerrado, no lo tocamos.
-    # El snapshot usa el nombre del empleado como clave y fusionarlo sin abrir
-    # ese mes podría dejar inconsistencias históricas.
     meses_cerrados = []
     for historial in models.HistorialMes.objects.all():
         snapshot = historial.snapshot or {}
@@ -546,8 +510,6 @@ def _fusionar_empleado_duplicado(destino, nombre_reloj):
             'Primero abrí esos meses y luego volvé a guardar.'
         )
 
-    # Si ambos empleados tienen ajustes para el mismo mes no decidimos cuál
-    # conservar automáticamente. Es más seguro pedir que se resuelva antes.
     meses_ajuste_destino = set(
         models.AjusteMes.objects.filter(empleado=destino)
         .values_list('mes', flat=True)
@@ -564,8 +526,6 @@ def _fusionar_empleado_duplicado(destino, nombre_reloj):
             f'{", ".join(conflicto_ajustes)}.'
         )
 
-    # Mover fichadas. Si exactamente la misma marca ya existe en destino,
-    # eliminar la copia para respetar unique_together(empleado, timestamp).
     for marca in list(models.MarcaFichada.objects.filter(empleado=duplicado)):
         if models.MarcaFichada.objects.filter(
             empleado=destino,
@@ -576,10 +536,8 @@ def _fusionar_empleado_duplicado(destino, nombre_reloj):
             marca.empleado = destino
             marca.save(update_fields=['empleado'])
 
-    # Ajustes: ya comprobamos que no hay choque por empleado+mes.
     models.AjusteMes.objects.filter(empleado=duplicado).update(empleado=destino)
 
-    # Errores manuales: eliminar duplicados exactos de fecha y mover el resto.
     for error in list(models.ErrorFichadaManual.objects.filter(empleado=duplicado)):
         if models.ErrorFichadaManual.objects.filter(
             empleado=destino,
@@ -590,8 +548,6 @@ def _fusionar_empleado_duplicado(destino, nombre_reloj):
             error.empleado = destino
             error.save(update_fields=['empleado'])
 
-    # Las liquidaciones no tienen restricción única por empleado/fecha, por lo
-    # que se pueden trasladar directamente.
     models.LiquidacionHoras.objects.filter(empleado=duplicado).update(
         empleado=destino
     )
@@ -602,10 +558,8 @@ def _fusionar_empleado_duplicado(destino, nombre_reloj):
 
 
 def _resolver_empleado_reloj(nombre_raw, crear=False):
-    """Resuelve el nombre recibido desde el reloj contra un empleado existente."""
     nombre_norm = _normalizar_nombre(nombre_raw)
 
-    # 1) Alias/nombre específico configurado para el reloj.
     emp = models.Empleado.objects.filter(
         nombre_reloj__iexact=nombre_norm,
         activo=True,
@@ -613,7 +567,6 @@ def _resolver_empleado_reloj(nombre_raw, crear=False):
     if emp:
         return emp
 
-    # 2) Compatibilidad con datos existentes: nombre interno.
     emp = models.Empleado.objects.filter(
         nombre__iexact=nombre_norm,
         activo=True,
@@ -624,7 +577,6 @@ def _resolver_empleado_reloj(nombre_raw, crear=False):
             emp.save(update_fields=['nombre_reloj'])
         return emp
 
-    # 3) Compatibilidad adicional con el alias/nombre completo ya existente.
     emp = models.Empleado.objects.filter(
         alias__iexact=nombre_norm,
         activo=True,
@@ -635,7 +587,6 @@ def _resolver_empleado_reloj(nombre_raw, crear=False):
             emp.save(update_fields=['nombre_reloj'])
         return emp
 
-    # 4) Si el reloj trae una persona desconocida, crearla provisoriamente.
     if crear:
         return models.Empleado.objects.create(
             nombre=nombre_norm,
@@ -646,18 +597,13 @@ def _resolver_empleado_reloj(nombre_raw, crear=False):
 
 
 def _parse_fichadas(texto, mes_esperado):
-    """Parsea el formato del reloj biométrico UDISKLOG (TAB-delimitado).
-    Columnas UDISKLOG: No, Mchn, EnNo, Name, Mode, IOMd, DateTime
-    También acepta CSV con ; o , y el formato anterior del HTML.
-    Devuelve lista de (nombre, datetime UTC)."""
     resultado = []
     lineas = [l.rstrip('\r') for l in texto.replace('\r\n', '\n').split('\n')]
     lineas = [l for l in lineas if l.strip()]
     if not lineas:
         return resultado
 
-    # Detectar delimitador desde las primeras líneas de datos
-    delimitador = '\t'  # default para UDISKLOG
+    delimitador = '\t'
     for l in lineas:
         stripped = l.strip()
         if stripped and not stripped.startswith('UDISKLOG') and not stripped.startswith('No\t'):
@@ -667,7 +613,6 @@ def _parse_fichadas(texto, mes_esperado):
                 delimitador = ','
             break
 
-    # Índices por defecto para UDISKLOG: No(0) Mchn(1) EnNo(2) Name(3) Mode(4) IOMd(5) DateTime(6)
     col_nombre = 3
     col_fecha = 6
 
@@ -678,24 +623,16 @@ def _parse_fichadas(texto, mes_esperado):
 
         primera = parts[0].lower().strip()
 
-        # Saltar líneas de cabecera/metadata
         if 'udisklog' in primera or primera in ('no', '#', ''):
-            # UDISKLOG: el header tiene columnas vacías intercaladas que no aparecen
-            # en las filas de datos. Solo actualizamos índices si el header NO tiene
-            # columnas vacías (formato CSV estándar sin huecos).
             header_low = [p.strip().lower() for p in parts]
-            non_empty = [h for h in header_low if h]
             if '' not in header_low:
-                # CSV sin huecos: detectar índices normalmente
                 for i, h in enumerate(header_low):
                     if h in ('nombre', 'name'):
                         col_nombre = i
                     if h in ('datetime', 'fechahora', 'fecha') or ('date' in h and 'time' in h):
                         col_fecha = i
-            # Si hay huecos (UDISKLOG), dejamos los defaults 3 y 6 que son correctos
             continue
 
-        # Saltar líneas que no son registros numéricos
         if not primera.replace('0', '').isdigit() and not primera.isdigit():
             continue
 
@@ -708,14 +645,12 @@ def _parse_fichadas(texto, mes_esperado):
         if not nombre or not fecha_str:
             continue
 
-        # Intentar múltiples formatos de fecha
-        # Normalizar espacios múltiples (UDISKLOG usa doble espacio entre fecha y hora)
         fecha_norm = ' '.join(fecha_str.split())
         ts = None
         for fmt in (
-            '%Y/%m/%d %H:%M:%S',   # UDISKLOG: 2026/08/03 05:42:54
-            '%Y-%m-%d %H:%M:%S',   # estándar
-            '%d/%m/%Y %H:%M:%S',   # dd/mm/yyyy
+            '%Y/%m/%d %H:%M:%S',
+            '%Y-%m-%d %H:%M:%S',
+            '%d/%m/%Y %H:%M:%S',
         ):
             try:
                 ts = datetime.strptime(fecha_norm, fmt)
@@ -735,14 +670,12 @@ def _parse_fichadas(texto, mes_esperado):
 
 
 # ============================================================
-# API — PREVISUALIZAR EMPLEADOS DEL ARCHIVO (antes de importar)
+# API — PREVISUALIZAR EMPLEADOS DEL ARCHIVO
 # ============================================================
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def ch_preview_empleados(request):
-    """Parsea el archivo y devuelve los empleados que trae, con sus ajustes
-    ya guardados (si existen), para que el usuario configure antes de importar."""
     mes = request.data.get('mes')
     texto = request.data.get('texto', '')
 
@@ -831,9 +764,6 @@ def ch_resumen(request):
     if not mes:
         return Response({'error': 'Falta el mes.'}, status=400)
 
-    # Si el mes está cerrado, devolver el snapshot. Los empleados ocultos
-    # no se muestran, pero no se eliminan del snapshot: si se vuelven a
-    # activar, reaparecen con su información histórica intacta.
     try:
         historial = models.HistorialMes.objects.get(mes=mes)
 
@@ -875,12 +805,10 @@ def ch_resumen(request):
         r = monthly_summary(detalle, emp.nombre, mes, emp, ajuste)
         resumenes.append(r)
 
-    # Advertencias: empleados con muchos menos días que el resto
     _agregar_advertencias(resumenes, detalle, mes)
 
     total_general = sum(r['total_horas_mes'] for r in resumenes)
 
-    # Liquidaciones del mes (para evolución)
     liq_map = {}
     for liq in models.LiquidacionHoras.objects.filter(empleado__in=empleados_mes).select_related('empleado'):
         liq_map.setdefault(liq.empleado.nombre, []).append({
@@ -899,7 +827,6 @@ def ch_resumen(request):
 
 
 def _agregar_advertencias(resumenes, detalle, mes):
-    """Detecta empleados con menos días trabajados que el equipo (mismo patrón que el HTML)."""
     if not resumenes:
         return
     dias_por_emp = {r['nombre_raw']: set(row['fecha'] for row in detalle if row['nombre_raw'] == r['nombre_raw'] and row['mes'] == mes) for r in resumenes}
@@ -907,7 +834,6 @@ def _agregar_advertencias(resumenes, detalle, mes):
     for dias in dias_por_emp.values():
         todos_los_dias |= dias
 
-    umbral = len(todos_los_dias) * 0.6
     for r in resumenes:
         dias_emp = dias_por_emp.get(r['nombre_raw'], set())
         dias_faltantes = sorted(todos_los_dias - dias_emp)
@@ -930,7 +856,6 @@ def ch_cerrar_mes(request):
     if _mes_cerrado(mes):
         return Response({'error': 'El mes ya está cerrado.'}, status=409)
 
-    # Calcular y guardar snapshot
     qs = models.MarcaFichada.objects.filter(mes=mes).select_related('empleado')
     errores = _errores_manuales_set(mes)
     detalle = build_detalle(qs, errores)
@@ -975,7 +900,6 @@ def ch_abrir_mes(request):
 @api_view(['POST'])
 @permission_classes([EsAdmin])
 def ch_limpiar_mes(request):
-    """Elimina los datos operativos de un mes abierto. Los empleados no se eliminan."""
     mes = request.data.get('mes')
     if not mes:
         return Response({'error': 'Falta el mes.'}, status=400)
@@ -1026,7 +950,6 @@ def ch_limpiar_mes(request):
 def ch_evolucion(request):
     empleado_filtro = request.GET.get('empleado')
 
-    # Todos los meses con datos
     meses_marcas = list(models.MarcaFichada.objects.values_list('mes', flat=True).distinct())
     meses_historial = list(models.HistorialMes.objects.values_list('mes', flat=True))
     todos_meses = sorted(set(meses_marcas + meses_historial))
@@ -1062,7 +985,7 @@ def ch_evolucion(request):
             if mes in historial_map and emp.nombre in historial_map[mes]:
                 snap = historial_map[mes][emp.nombre]
                 datos[mes][emp.nombre] = {
-                    'diferencia': snap.get('diferencia', snap.get('diferencia', 0)),
+                    'diferencia': snap.get('diferencia', 0),
                     'cerrado': True,
                 }
             else:
@@ -1124,7 +1047,7 @@ def ch_eliminar_liquidacion(request, liq_id):
 
 
 # ============================================================
-# API — AJUSTES (guardar feriados/faltas/vacaciones por empleado)
+# API — AJUSTES
 # ============================================================
 
 @api_view(['POST'])
