@@ -263,13 +263,13 @@ async function renderDetalle(){
     if(emp) url+='empleado='+encodeURIComponent(emp);
     const rows = await chFetch(url);
     if(!rows.length){ cont.innerHTML = emptyState('No hay fichadas para este filtro.'); return; }
-    const colErrTh = ES_ADMIN ? '<th style="text-align:center" title="Marcar como error de fichada">Error fichada</th>' : '';
+    const colErrTh = ES_ADMIN ? '<th style="text-align:center" title="Error de fichada">Error de fichada</th>' : '';
     let html = '<div class="table-scroll"><table><thead><tr><th>Empleado</th><th>Fecha</th><th style="text-align:right">Marca 1</th><th style="text-align:right">Marca 2</th><th style="text-align:right">Marca 3</th><th style="text-align:right">Marca 4</th><th style="text-align:right">Horas (bruto)</th><th>Estado</th><th style="text-align:right">A liquidar</th>'+colErrTh+'</tr></thead><tbody>';
     rows.forEach(r=>{
       const colErrTd = ES_ADMIN
         ? '<td style="text-align:center"><input type="checkbox" class="ch-err-manual"'
           +' data-nombre="'+esc(r.nombre_raw||r.nombre)+'" data-fecha="'+esc(r.fecha)+'"'
-          +(r.es_error_manual?' checked':'')+' title="Marcar como error de fichada"></td>'
+          +(r.es_error_manual?' checked':'')+' title="Error de fichada"></td>'
         : '';
       html+='<tr><td class="nombre-cell">'+esc(r.nombre)+'</td><td>'+fmtFechaCorta(r.fecha)+'</td>'
         +'<td style="text-align:right">'+(r.h1||'—')+'</td><td style="text-align:right">'+(r.h2||'—')+'</td><td style="text-align:right">'+(r.h3||'—')+'</td><td style="text-align:right">'+(r.h4||'—')+'</td>'
@@ -290,7 +290,14 @@ async function renderDetalle(){
           chk.disabled = true;
           try{
             await chFetch(endpoint, {method:'POST', body:JSON.stringify({empleado:nombre, fecha})});
+            // Refrescar detalle Y resumen para que los totales queden actualizados
             await renderDetalle();
+            // Si el resumen del mismo mes está visible, refrescarlo también
+            const mesDetalle = document.getElementById('chFiltroMesDetalle').value;
+            const mesResumen = document.getElementById('chFiltroMesResumen') ? document.getElementById('chFiltroMesResumen').value : null;
+            if(mesDetalle && mesResumen && mesDetalle === mesResumen){
+              await renderResumen();
+            }
           } catch(err){
             chk.checked = !chk.checked;
             alert('Error: '+err.message);
