@@ -100,7 +100,7 @@ def build_detalle(marcas_qs, errores_manuales_set):
                 'h4': g['marcas'][3].strftime('%H:%M:%S') if len(g['marcas']) > 3 else None,
                 'horas': None,
                 'a_liquidar': horas_error,
-                'estado': f'Error de fichada, cargar {round(horas_error, 2)} hs (marcado manualmente)',
+                'estado': f'Error de fichada, cargar {round(horas_error, 2)} hs',
                 'forzado': True,
             })
         else:
