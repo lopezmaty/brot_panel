@@ -750,7 +750,56 @@ def ch_detalle(request):
     if empleado:
         detalle = [r for r in detalle if r['nombre_raw'] == empleado]
 
+    # Agregar flag es_error_manual para que el frontend muestre el checkbox tildado
+    errores_set = _errores_manuales_set(mes)
+    # Necesitamos el map empleado_nombre -> empleado_id
+    emp_id_map = {e.nombre: e.id for e in models.Empleado.objects.all()}
+    for row in detalle:
+        emp_id = emp_id_map.get(row['nombre_raw'])
+        if emp_id:
+            from datetime import date as _date
+            fecha_obj = _date.fromisoformat(row['fecha'])
+            row['es_error_manual'] = (emp_id, fecha_obj) in errores_set
+        else:
+            row['es_error_manual'] = False
+
     return Response(detalle)
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def ch_marcar_error_manual(request):
+    """Marca una fila del detalle como error de fichada manual (solo admin)."""
+    nombre = request.data.get('empleado')
+    fecha_str = request.data.get('fecha')
+    if not nombre or not fecha_str:
+        return Response({'error': 'Faltan datos.'}, status=400)
+    try:
+        emp = models.Empleado.objects.get(nombre=nombre)
+    except models.Empleado.DoesNotExist:
+        return Response({'error': 'Empleado no encontrado.'}, status=404)
+    from datetime import date as _date
+    fecha = _date.fromisoformat(fecha_str)
+    models.ErrorFichadaManual.objects.get_or_create(empleado=emp, fecha=fecha)
+    return Response({'ok': True})
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def ch_desmarcar_error_manual(request):
+    """Quita la marca de error manual de una fila del detalle (solo admin)."""
+    nombre = request.data.get('empleado')
+    fecha_str = request.data.get('fecha')
+    if not nombre or not fecha_str:
+        return Response({'error': 'Faltan datos.'}, status=400)
+    try:
+        emp = models.Empleado.objects.get(nombre=nombre)
+    except models.Empleado.DoesNotExist:
+        return Response({'error': 'Empleado no encontrado.'}, status=404)
+    from datetime import date as _date
+    fecha = _date.fromisoformat(fecha_str)
+    models.ErrorFichadaManual.objects.filter(empleado=emp, fecha=fecha).delete()
+    return Response({'ok': True})
 
 
 # ============================================================

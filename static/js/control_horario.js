@@ -263,16 +263,43 @@ async function renderDetalle(){
     if(emp) url+='empleado='+encodeURIComponent(emp);
     const rows = await chFetch(url);
     if(!rows.length){ cont.innerHTML = emptyState('No hay fichadas para este filtro.'); return; }
-    let html = '<div class="table-scroll"><table><thead><tr><th>Empleado</th><th>Fecha</th><th style="text-align:right">Marca 1</th><th style="text-align:right">Marca 2</th><th style="text-align:right">Marca 3</th><th style="text-align:right">Marca 4</th><th style="text-align:right">Horas (bruto)</th><th>Estado</th><th style="text-align:right">A liquidar</th></tr></thead><tbody>';
+    const colErrTh = ES_ADMIN ? '<th style="text-align:center" title="Marcar como error de fichada">Error fichada</th>' : '';
+    let html = '<div class="table-scroll"><table><thead><tr><th>Empleado</th><th>Fecha</th><th style="text-align:right">Marca 1</th><th style="text-align:right">Marca 2</th><th style="text-align:right">Marca 3</th><th style="text-align:right">Marca 4</th><th style="text-align:right">Horas (bruto)</th><th>Estado</th><th style="text-align:right">A liquidar</th>'+colErrTh+'</tr></thead><tbody>';
     rows.forEach(r=>{
+      const colErrTd = ES_ADMIN
+        ? '<td style="text-align:center"><input type="checkbox" class="ch-err-manual"'
+          +' data-nombre="'+esc(r.nombre_raw||r.nombre)+'" data-fecha="'+esc(r.fecha)+'"'
+          +(r.es_error_manual?' checked':'')+' title="Marcar como error de fichada"></td>'
+        : '';
       html+='<tr><td class="nombre-cell">'+esc(r.nombre)+'</td><td>'+fmtFechaCorta(r.fecha)+'</td>'
         +'<td style="text-align:right">'+(r.h1||'—')+'</td><td style="text-align:right">'+(r.h2||'—')+'</td><td style="text-align:right">'+(r.h3||'—')+'</td><td style="text-align:right">'+(r.h4||'—')+'</td>'
         +'<td style="text-align:right">'+(r.horas!==null?fmtDec(r.horas)+' h':'—')+'</td>'
         +'<td>'+sello(r.estado)+'</td>'
-        +'<td style="text-align:right;font-weight:700">'+fmtDec(r.a_liquidar)+' h</td></tr>';
+        +'<td style="text-align:right;font-weight:700">'+fmtDec(r.a_liquidar)+' h</td>'
+        +colErrTd+'</tr>';
     });
     html+='</tbody></table></div>';
     cont.innerHTML = html;
+    // Wire checkboxes error manual (solo admin)
+    if(ES_ADMIN){
+      cont.querySelectorAll('.ch-err-manual').forEach(chk=>{
+        chk.addEventListener('change', async ()=>{
+          const nombre = chk.dataset.nombre;
+          const fecha = chk.dataset.fecha;
+          const endpoint = chk.checked ? 'marcar-error-manual/' : 'desmarcar-error-manual/';
+          chk.disabled = true;
+          try{
+            await chFetch(endpoint, {method:'POST', body:JSON.stringify({empleado:nombre, fecha})});
+            await renderDetalle();
+          } catch(err){
+            chk.checked = !chk.checked;
+            alert('Error: '+err.message);
+          } finally{
+            chk.disabled = false;
+          }
+        });
+      });
+    }
   } catch(e){ cont.innerHTML = '<div class="alerta-card">Error: '+esc(e.message)+'</div>'; }
 }
 

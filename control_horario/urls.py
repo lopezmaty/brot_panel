@@ -18,4 +18,6 @@ urlpatterns = [
     path('liquidacion/<int:liq_id>/eliminar/', views.ch_eliminar_liquidacion, name='ch_eliminar_liquidacion'),
     path('ajuste/', views.ch_guardar_ajuste, name='ch_guardar_ajuste'),
     path('data-summary/', views.ch_data_summary, name='ch_data_summary'),
+    path('marcar-error-manual/', views.ch_marcar_error_manual, name='ch_marcar_error_manual'),
+    path('desmarcar-error-manual/', views.ch_desmarcar_error_manual, name='ch_desmarcar_error_manual'),
 ]
