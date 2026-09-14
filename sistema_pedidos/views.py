@@ -39,40 +39,98 @@ class PedidoViewset(viewsets.ModelViewSet):
         estado_nuevo = pedido.estado
 
         if estado_anterior != estado_nuevo and pedido.cliente.mail:
-            mensajes = {
-                'en_proceso': (
-                    f'Hola {pedido.cliente.nombre},\n\n'
-                    f'Tu pedido #{pedido.id:04d} ha sido confirmado y está siendo preparado.\n\n'
-                    f'Recordá no tener saldos vencidos para poder proceder con la entrega del mismo. '
-                    f'Si no es el caso, por favor contactate con administración al WhatsApp: '
-                    f'+54 9 3513 24-3882\n\n'
-                    f'Gracias,\nBrot Panes'
-                ),
-                'completado': (
-                    f'Hola {pedido.cliente.nombre},\n\n'
-                    f'Tu pedido #{pedido.id:04d} está listo.\n\n'
-                    f'Recordá no tener saldos vencidos para poder proceder con la entrega del mismo. '
-                    f'Si no es el caso, por favor contactate con administración al WhatsApp: '
-                    f'+54 9 3513 24-3882\n\n'
-                    f'Gracias,\nBrot Panes'
-                ),
-                'cancelado': (
-                    f'Hola {pedido.cliente.nombre},\n\n'
-                    f'Tu pedido #{pedido.id:04d} fue cancelado.\n\n'
-                    f'Para más información contactate con administración al WhatsApp: '
-                    f'+54 9 3513 24-3882\n\n'
-                    f'Gracias,\nBrot Panes'
-                ),
+
+            whatsapp = '+54 9 3513 24-3882'
+
+            def html_pedido(titulo, mensaje_principal, mostrar_deuda=False):
+                deuda_html = f"""
+                <p style="color: #444; font-size: 15px; line-height: 1.6; margin: 0 0 16px 0;">
+                    Recordá no tener saldos vencidos para poder proceder con la entrega.
+                    Si tenés algún saldo pendiente, contactate con administración al WhatsApp:
+                    <a href="https://wa.me/5493513243882"
+                       style="color: #e8521a;">{whatsapp}</a>
+                </p>
+                """ if mostrar_deuda else ""
+
+                return f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;
+                            padding: 32px; background: #ffffff;">
+                    <div style="text-align: center; margin-bottom: 32px;">
+                        <h1 style="color: #1a1a1a; font-size: 24px; margin: 0;">Brot Panes</h1>
+                    </div>
+                    <div style="background: #f9f9f9; border-radius: 8px; padding: 32px;">
+                        <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px 0;">{titulo}</h2>
+                        <p style="color: #444; font-size: 15px; line-height: 1.6; margin: 0 0 16px 0;">
+                            Hola {pedido.cliente.nombre},
+                        </p>
+                        <p style="color: #444; font-size: 15px; line-height: 1.6; margin: 0 0 16px 0;">
+                            {mensaje_principal}
+                        </p>
+                        {deuda_html}
+                        <p style="color: #444; font-size: 15px; line-height: 1.6; margin: 0;">
+                            Gracias por elegirnos.
+                        </p>
+                    </div>
+                    <p style="color: #aaa; font-size: 12px; text-align: center; margin-top: 24px;">
+                        Brot Panes · Córdoba, Argentina
+                    </p>
+                </div>
+                """
+
+            configs = {
+                'en_proceso': {
+                    'asunto': f'Pedido #{pedido.id:04d} confirmado — Brot Panes',
+                    'texto': (
+                        f'Hola {pedido.cliente.nombre},\n\n'
+                        f'Tu pedido #{pedido.id:04d} ha sido confirmado y está siendo preparado.\n\n'
+                        f'Recordá no tener saldos vencidos para poder proceder con la entrega. '
+                        f'Contactate con administración al WhatsApp: {whatsapp}\n\nGracias,\nBrot Panes'
+                    ),
+                    'html': html_pedido(
+                        f'Pedido #{pedido.id:04d} confirmado',
+                        f'Tu pedido <strong>#{pedido.id:04d}</strong> fue confirmado y está siendo preparado.',
+                        mostrar_deuda=True,
+                    ),
+                },
+                'completado': {
+                    'asunto': f'Pedido #{pedido.id:04d} listo — Brot Panes',
+                    'texto': (
+                        f'Hola {pedido.cliente.nombre},\n\n'
+                        f'Tu pedido #{pedido.id:04d} está listo.\n\n'
+                        f'Recordá no tener saldos vencidos para poder proceder con la entrega. '
+                        f'Contactate con administración al WhatsApp: {whatsapp}\n\nGracias,\nBrot Panes'
+                    ),
+                    'html': html_pedido(
+                        f'Pedido #{pedido.id:04d} listo',
+                        f'Tu pedido <strong>#{pedido.id:04d}</strong> está listo para ser entregado.',
+                        mostrar_deuda=True,
+                    ),
+                },
+                'cancelado': {
+                    'asunto': f'Pedido #{pedido.id:04d} cancelado — Brot Panes',
+                    'texto': (
+                        f'Hola {pedido.cliente.nombre},\n\n'
+                        f'Tu pedido #{pedido.id:04d} fue cancelado.\n\n'
+                        f'Para más información contactate al WhatsApp: {whatsapp}\n\nGracias,\nBrot Panes'
+                    ),
+                    'html': html_pedido(
+                        f'Pedido #{pedido.id:04d} cancelado',
+                        f'Tu pedido <strong>#{pedido.id:04d}</strong> fue cancelado. '
+                        f'Para más información contactate con administración al WhatsApp: '
+                        f'<a href="https://wa.me/5493513243882" style="color: #e8521a;">{whatsapp}</a>',
+                        mostrar_deuda=False,
+                    ),
+                },
             }
-            asuntos = {
-                'en_proceso': f'Pedido #{pedido.id:04d} confirmado — Brot Panes',
-                'completado': f'Pedido #{pedido.id:04d} listo — Brot Panes',
-                'cancelado': f'Pedido #{pedido.id:04d} cancelado — Brot Panes',
-            }
-            mensaje = mensajes.get(estado_nuevo)
-            asunto = asuntos.get(estado_nuevo)
-            if mensaje:
-                enviar_email_resend(pedido.cliente.mail, asunto, mensaje)
+
+            config = configs.get(estado_nuevo)
+            if config:
+                enviar_email_resend(
+                    pedido.cliente.mail,
+                    config['asunto'],
+                    config['texto'],
+                    config['html'],
+                )
 
         return response
 
@@ -208,6 +266,7 @@ def confirmar_pedido_catalogo(request, token):
 
     return Response({'pedido_id': pedido.id}, status=201)
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def ventas_xubio_15dias(request):
@@ -272,6 +331,7 @@ def ventas_xubio_15dias(request):
     except Exception as e:
         print(f"Xubio ventas error: {str(e)}")
         return Response({'error': str(e)}, status=500)
+
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
