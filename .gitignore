@@ -5,4 +5,4 @@ __pycache__/
 db.sqlite3
 media/
 staticfiles/
-brot_panel/.gitignore
+brot_panel/.gitignore.env
