@@ -145,7 +145,6 @@ def facturar_pedido(pedido):
     for item in items_qs:
         precio_sin_iva = float(item.precio) / 1.105
         subtotal = float(item.precio) * item.cantidad
-        iva_item = round((float(item.precio) - precio_sin_iva) * item.cantidad, 2)
 
         items.append({
             'transaccionCVItemId': 0,
@@ -158,7 +157,6 @@ def facturar_pedido(pedido):
             'cantidad': item.cantidad,
             'precio': round(precio_sin_iva, 2),
             'precioconivaincluido': float(item.precio),
-            'iva': iva_item,
             'importe': round(subtotal, 2),
             'total': round(subtotal, 2),
             'montoExento': 0,
