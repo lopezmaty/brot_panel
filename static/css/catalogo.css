@@ -133,10 +133,9 @@ html, body {
 .producto-fila {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 14px 18px;
   border-top: 1px solid #F1EEE8;
-  gap: 16px;
+  gap: 10px;
   transition: background 0.12s;
 }
 
@@ -148,8 +147,14 @@ html, body {
   flex: 1;
   min-width: 0;
   display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.producto-info-top {
+  display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -157,12 +162,6 @@ html, body {
   font-weight: 600;
   font-size: 14px;
   color: #16213E;
-}
-
-.producto-variedad {
-  font-size: 12px;
-  color: var(--text-secondary);
-  font-weight: 400;
 }
 
 .producto-tamaño-badge {
@@ -178,8 +177,8 @@ html, body {
   font-size: 13.5px;
   font-weight: 700;
   color: #E87722;
-  margin-left: auto;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .producto-cantidad-ctrl {
@@ -322,6 +321,7 @@ html, body {
   color: white;
   cursor: pointer;
   transition: background 0.12s;
+  width: 100%;
 }
 
 #btnEnviarPedido:hover { background: #D46A1A; }
