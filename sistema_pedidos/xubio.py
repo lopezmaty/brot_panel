@@ -22,13 +22,30 @@ LETRA_COMPROBANTE = {
 }
 
 PUNTOS_VENTA = {
-    'factura': {
+    1: {  # Factura → Web Service
         'puntoVentaId': 214112,
-        'puntoVentaNumero': '00003',
+        'puntoVentaNombre': 'Factura',
+        'puntoVentaCodigo': 'FACTURA',
     },
-    'proforma': {
+    6: {  # Recibo → Proforma
         'puntoVentaId': 154275,
-        'puntoVentaNumero': '09999',
+        'puntoVentaNombre': 'Proforma',
+        'puntoVentaCodigo': 'PROFORMA',
+    },
+}
+
+CIRCUITO_CONTABLE = {
+    1: {
+        'ID': 2247,
+        'nombre': 'Web Service',
+        'codigo': 'WEB_SERVICE',
+        'id': 2247,
+    },
+    6: {
+        'ID': -2,
+        'nombre': 'default',
+        'codigo': 'default',
+        'id': -2,
     },
 }
 
@@ -100,29 +117,6 @@ def crear_cliente_en_xubio(cliente):
     return None
 
 
-def obtener_proximo_numero_comprobante(punto_venta_numero, letra):
-    token = obtener_token()
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Accept': 'application/json',
-    }
-    response = requests.get(
-        f'{XUBIO_BASE}/talonario',
-        params={'puntoDeVenta': punto_venta_numero},
-        headers=headers,
-    )
-    response.raise_for_status()
-    talonarios = response.json()
-
-    tipo_buscado = f'Facturas de Venta {letra}'
-    for talonario in talonarios:
-        if talonario.get('tipoComprobante') == tipo_buscado:
-            ultimo = int(talonario.get('ultimoUtilizado', '0'))
-            return str(ultimo + 1).zfill(8)
-
-    return None
-
-
 def facturar_pedido(pedido):
     token = obtener_token()
     headers = {
@@ -133,63 +127,79 @@ def facturar_pedido(pedido):
 
     cliente = pedido.cliente
     fecha_hoy = date.today()
-    fecha_vto = fecha_hoy + timedelta(days=cliente.dias_cc)
-
-    punto_venta_key = 'proforma' if cliente.xubio_punto_venta_id == 154275 else 'factura'
-    punto_venta = PUNTOS_VENTA[punto_venta_key]
+    dias_cc = cliente.dias_cc if cliente.dias_cc else 0
+    fecha_vto = fecha_hoy + timedelta(days=dias_cc)
 
     tipo = cliente.xubio_tipo_comprobante
-    nombre_comprobante = NOMBRE_COMPROBANTE.get(tipo, 'Factura')
+    punto_venta = PUNTOS_VENTA[tipo]
+    circuito = CIRCUITO_CONTABLE[tipo]
+    nombre_comprobante = NOMBRE_COMPROBANTE[tipo]
 
-    letra = LETRA_COMPROBANTE.get(cliente.condicion_iva, 'B')
-    numero_documento = obtener_proximo_numero_comprobante(punto_venta['puntoVentaNumero'], letra)
+    items_qs = pedido.itempedido_set.all()
 
-    if numero_documento is None:
-        return 400, {'error': f'No se encontró talonario para Facturas de Venta {letra} en el punto de venta {punto_venta["puntoVentaNumero"]}'}
+    importetotal = sum(float(item.precio) * item.cantidad for item in items_qs)
+    importeImpuestos = round(importetotal - importetotal / 1.105, 2)
+    importeGravado = round(importetotal - importeImpuestos, 2)
 
     items = []
-    for item in pedido.itempedido_set.all():
+    for item in items_qs:
         precio_sin_iva = float(item.precio) / 1.105
-        iva_monto = float(item.precio) - precio_sin_iva
         subtotal = float(item.precio) * item.cantidad
+        iva_item = round((float(item.precio) - precio_sin_iva) * item.cantidad, 2)
 
         items.append({
+            'transaccionCVItemId': 0,
+            'transaccionId': 0,
             'producto': {
+                'ID': item.producto.xubio_producto_id,
                 'id': item.producto.xubio_producto_id,
-                'productoid': item.producto.xubio_producto_id,
             },
-            'centroDeCosto': None,
-            'deposito': {'id': DEPOSITO_ID},
             'descripcion': str(item.producto),
             'cantidad': item.cantidad,
             'precio': round(precio_sin_iva, 2),
             'precioconivaincluido': float(item.precio),
-            'iva': round(iva_monto * item.cantidad, 2),
-            'importe': round(precio_sin_iva * item.cantidad, 2),
+            'iva': iva_item,
+            'importe': round(subtotal, 2),
             'total': round(subtotal, 2),
             'montoExento': 0,
             'porcentajeDescuento': 0,
         })
 
     payload = {
+        'circuitoContable': circuito,
+        'transaccionid': 0,
         'externalId': str(pedido.id),
-        'cliente': {'id': cliente.xubio_cliente_id},
+        'cliente': {
+            'ID': cliente.xubio_cliente_id,
+            'id': cliente.xubio_cliente_id,
+        },
         'tipo': tipo,
         'nombre': nombre_comprobante,
         'fecha': fecha_hoy.strftime('%Y-%m-%d'),
         'fechaVto': fecha_vto.strftime('%Y-%m-%d'),
         'puntoVenta': {
-            'id': punto_venta['puntoVentaId'],
             'ID': punto_venta['puntoVentaId'],
-            'codigo': punto_venta['puntoVentaNumero'],
+            'nombre': punto_venta['puntoVentaNombre'],
+            'codigo': punto_venta['puntoVentaCodigo'],
+            'id': punto_venta['puntoVentaId'],
         },
-        'numeroDocumento': numero_documento,
         'condicionDePago': 1,
-        'deposito': {'id': DEPOSITO_ID},
-        'cantComprobantesEmitidos': 1,
-        'cantComprobantesCancelados': 0,
+        'deposito': {
+            'ID': DEPOSITO_ID,
+            'nombre': 'Depósito Universal',
+            'codigo': 'DEPOSITO_UNIVERSAL',
+            'id': DEPOSITO_ID,
+        },
         'cotizacion': 1,
-        'provincia': {'provincia_id': PROVINCIA_ID},
+        'importetotal': round(importetotal, 2),
+        'importeImpuestos': importeImpuestos,
+        'importeGravado': importeGravado,
+        'provincia': {
+            'provincia_id': PROVINCIA_ID,
+            'codigo': 'CORDOBA',
+            'nombre': 'Cordoba',
+            'pais': 'Argentina',
+        },
         'vendedor': {'vendedorId': 8399},
         'porcentajeComision': 0,
         'mailEstado': '',
@@ -201,16 +211,11 @@ def facturar_pedido(pedido):
         'transaccionCobranzaItems': [],
     }
 
-    print(f"Xubio payload: {payload}")
-
     response = requests.post(
-        f'{XUBIO_BASE}/comprobanteVentaBean',
+        f'{XUBIO_BASE}/facturar',
         json=payload,
         headers=headers,
     )
-
-    print(f"Xubio status: {response.status_code}")
-    print(f"Xubio response: {response.text}")
 
     return response.status_code, response.json() if response.text else {}
 
@@ -232,13 +237,6 @@ def obtener_precios_lista(xubio_lista_precio_id):
 
 
 def _paginar_comprobantes(endpoint, fecha_desde, fecha_hasta, headers):
-    """
-    Trae comprobantes de un endpoint que pagina por lastTransactionID, ignorando
-    el filtro de fechaDesde/fechaHasta del servidor (bug conocido de Xubio en modo
-    paginado). Filtra por fecha del lado del cliente y corta en cuanto encuentra
-    un comprobante más viejo que fecha_desde, ya que vienen ordenados del más
-    nuevo al más viejo.
-    """
     comprobantes = []
     last_id = None
     limit = 500
@@ -288,12 +286,6 @@ def _paginar_comprobantes(endpoint, fecha_desde, fecha_hasta, headers):
 
 
 def obtener_compras_mes(fecha_desde, fecha_hasta):
-    """
-    fecha_desde, fecha_hasta: strings 'YYYY-MM-DD'.
-    Devuelve TODAS las líneas del rango, con el shape que espera Mapa Económico.
-    Trata las Notas de Crédito de proveedor (tipo 3) como negativas, ya que son
-    devoluciones que restan del total comprado.
-    """
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
     token = obtener_token()
@@ -330,8 +322,6 @@ def obtener_compras_mes(fecha_desde, fecha_hasta):
             fecha = detalle.get('fecha')
             documento = detalle.get('numeroDocumento', '')
             transaccion_id = detalle.get('transaccionid')
-
-            # tipo 3 = Nota de Crédito de proveedor (devolución, resta)
             signo = -1 if detalle.get('tipo') == 3 else 1
 
             for item in detalle.get('transaccionProductoItems', []):
@@ -351,13 +341,6 @@ def obtener_compras_mes(fecha_desde, fecha_hasta):
 
 
 def obtener_ventas_mes(fecha_desde, fecha_hasta):
-    """
-    fecha_desde, fecha_hasta: strings 'YYYY-MM-DD'.
-    Trae TODAS las ventas del rango, agrupadas por cliente y por producto.
-    Excluye ítems que no son producto real (envíos, packaging, líneas de IVA genéricas, etc.)
-    y trata las Notas de Crédito (tipo 3) como negativas, ya que son devoluciones.
-    Devuelve un dict con las métricas que usa el Mapa Económico.
-    """
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
     token = obtener_token()
@@ -395,8 +378,6 @@ def obtener_ventas_mes(fecha_desde, fecha_hasta):
 
             cliente_nombre = (detalle.get('cliente') or {}).get('nombre', '') or 'Sin nombre'
             items = detalle.get('transaccionProductoItems', [])
-
-            # tipo 3 = Nota de Crédito (devolución, resta) / cualquier otro tipo suma normal
             signo = -1 if detalle.get('tipo') == 3 else 1
 
             importe_comprobante = 0
@@ -463,16 +444,6 @@ def obtener_ventas_mes(fecha_desde, fecha_hasta):
 
 
 def obtener_ventas_diarias_producto(fecha_desde, fecha_hasta):
-    """
-    fecha_desde, fecha_hasta: strings 'YYYY-MM-DD'.
-    Para Estado de Resultados: trae las ventas del rango agrupadas por
-    día + producto (NO por cliente — esa info no se usa acá). Excluye los
-    mismos ítems no-producto que obtener_ventas_mes y aplica el mismo
-    signo negativo a Notas de Crédito (tipo 3).
-    Devuelve una lista de líneas, una por combinación fecha+producto:
-    [{'fecha': 'YYYY-MM-DD', 'xubio_producto_id': int|None, 'producto': str,
-      'cantidad': float, 'importe': float}, ...]
-    """
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
     token = obtener_token()
@@ -497,8 +468,6 @@ def obtener_ventas_diarias_producto(fecha_desde, fecha_hasta):
         return None
 
     ids = [c.get('transaccionid') for c in comprobantes if c.get('transaccionid')]
-
-    # clave = (fecha, xubio_producto_id o nombre si no viene id)
     diario_agg = {}
 
     with ThreadPoolExecutor(max_workers=10) as executor:
@@ -510,8 +479,6 @@ def obtener_ventas_diarias_producto(fecha_desde, fecha_hasta):
 
             fecha = detalle.get('fecha')
             items = detalle.get('transaccionProductoItems', [])
-
-            # tipo 3 = Nota de Crédito (devolución, resta) / cualquier otro tipo suma normal
             signo = -1 if detalle.get('tipo') == 3 else 1
 
             for item in items:
