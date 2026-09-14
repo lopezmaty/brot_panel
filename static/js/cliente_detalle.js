@@ -110,7 +110,7 @@ async function crearOEditarCliente() {
     });
 
     if (response.ok) {
-        window.location.href = '/panel/clientes/';
+        window.location.href = '/clientes/';
     } else {
         alert('No se pudo guardar el cliente');
     }
