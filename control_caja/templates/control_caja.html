@@ -815,6 +815,12 @@ function renderResumen(data) {
 }
 {% endif %}
 
+// Mover modales al body para evitar problemas de posicionamiento
+document.body.appendChild(document.getElementById('ccModalMovimiento'));
+{% if es_admin %}
+document.body.appendChild(document.getElementById('ccModalSaldo'));
+{% endif %}
+
 // ── INIT ───────────────────────────────────────────────────────────────────────
 cargarSaldoActual();
 cargarMovimientos();
