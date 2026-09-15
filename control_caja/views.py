@@ -1,19 +1,13 @@
 import json
-import io
 from decimal import Decimal, InvalidOperation
-from datetime import date, timedelta
+from datetime import date
 
-import openpyxl
 import pandas as pd
 
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
-from django.contrib.auth.decorators import login_required
-from django.db.models import Sum, Q
+from django.db.models import Sum
 
-from users.permissions import EsAdmin, EsColab
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
@@ -31,8 +25,31 @@ def es_colab(user):
     return hasattr(user, 'perfil') and user.perfil.rol in ('admin', 'colab')
 
 
+def _normalizar_nro(nro):
+    """Normaliza 1-558 → 0001-00000558"""
+    if not nro:
+        return ''
+    partes = nro.strip().split('-')
+    if len(partes) == 2:
+        try:
+            return f'{int(partes[0]):04d}-{int(partes[1]):08d}'
+        except ValueError:
+            pass
+    return nro.strip()
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def control_caja_view_api(request):
+    return JsonResponse({'ok': True})
+
+
+from django.contrib.auth.decorators import login_required
+
+
 @login_required
 def control_caja_view(request):
+    from django.shortcuts import render
     return render(request, 'control_caja.html', {
         'es_admin': es_admin(request.user),
     })
@@ -64,7 +81,7 @@ def api_saldo_inicial(request):
 
 def _calcular_estado(m):
     if m.campos_completos():
-        return 'completo'
+        return 'bloqueado'
     return 'parcial'
 
 
@@ -107,10 +124,10 @@ def api_movimientos(request):
     m.tipo = data.get('tipo', '')
     m.cliente_proveedor = data.get('cliente_proveedor', '')
     m.detalle = data.get('detalle', '')
-    m.nro_comprobante = data.get('nro_comprobante', '')
-    m.nro_recibo_op = data.get('nro_recibo_op', '')
+    m.nro_comprobante = _normalizar_nro(data.get('nro_comprobante', ''))
+    m.nro_recibo_op = _normalizar_nro(data.get('nro_recibo_op', ''))
     raw_monto = data.get('monto')
-    m.monto = Decimal(str(raw_monto)) if raw_monto not in (None, '', ) else None
+    m.monto = Decimal(str(raw_monto)) if raw_monto not in (None, '') else None
     m.observaciones = data.get('observaciones', '')
     m.estado = _calcular_estado(m)
     m.save()
@@ -128,7 +145,6 @@ def api_movimiento_detalle(request, pk):
     if request.method == 'GET':
         return JsonResponse(_movimiento_a_dict(m))
 
-    # Colab solo puede editar parciales; admin puede editar todo excepto bloqueados
     if m.estado == 'bloqueado' and not es_admin(request.user):
         return JsonResponse({'error': 'Movimiento bloqueado'}, status=403)
 
@@ -143,10 +159,10 @@ def api_movimiento_detalle(request, pk):
 
     data = request.data
 
-    # Admin puede bloquear/desbloquear
-    if es_admin(request.user) and 'estado' in data:
+    # Admin puede desbloquear manualmente
+    if es_admin(request.user) and 'estado' in data and len(data) == 1:
         nuevo_estado = data['estado']
-        if nuevo_estado in ('bloqueado', 'completo', 'parcial'):
+        if nuevo_estado in ('bloqueado', 'parcial'):
             m.estado = nuevo_estado
             m.save()
             return JsonResponse(_movimiento_a_dict(m))
@@ -155,17 +171,13 @@ def api_movimiento_detalle(request, pk):
     m.tipo = data.get('tipo', m.tipo)
     m.cliente_proveedor = data.get('cliente_proveedor', m.cliente_proveedor)
     m.detalle = data.get('detalle', m.detalle)
-    m.nro_comprobante = data.get('nro_comprobante', m.nro_comprobante)
-    m.nro_recibo_op = data.get('nro_recibo_op', m.nro_recibo_op)
+    m.nro_comprobante = _normalizar_nro(data.get('nro_comprobante', m.nro_comprobante))
+    m.nro_recibo_op = _normalizar_nro(data.get('nro_recibo_op', m.nro_recibo_op))
     raw_monto = data.get('monto')
     if raw_monto not in (None, ''):
         m.monto = Decimal(str(raw_monto))
     m.observaciones = data.get('observaciones', m.observaciones)
-
-    # Si ya estaba bloqueado solo admin llega acá, puede volver a calcular
-    if m.estado != 'bloqueado':
-        m.estado = _calcular_estado(m)
-
+    m.estado = _calcular_estado(m)
     m.save()
     return JsonResponse(_movimiento_a_dict(m))
 
@@ -173,7 +185,6 @@ def api_movimiento_detalle(request, pk):
 # ── CIERRE DIARIO ──────────────────────────────────────────────────────────────
 
 def _saldo_teorico_dia(fecha):
-    """Suma saldo inicial + todos los movimientos completos/bloqueados hasta esa fecha."""
     saldo_inicial = float(SaldoInicial.objects.get_or_create(pk=1)[0].monto)
     movimientos = MovimientoCaja.objects.filter(
         fecha__lte=fecha,
@@ -280,13 +291,11 @@ def api_conciliacion_importar(request):
 
     try:
         df = pd.read_excel(archivo)
-        # Solo caja
         df = df[df['Cuenta'].str.strip().str.lower() == 'caja']
-        df = df[df['Tipo'].str.strip().str.lower() != 'ajuste por inflacion']
+        df = df[~df['Tipo'].str.strip().str.lower().str.contains('ajuste')]
     except Exception as e:
         return JsonResponse({'error': f'Error leyendo archivo: {str(e)}'}, status=400)
 
-    # Limpiar conciliaciones anteriores de esta importación
     ConciliacionItem.objects.all().delete()
 
     resultados = {'ok': 0, 'falta_en_caja': 0, 'monto_difiere': 0}
@@ -299,16 +308,12 @@ def api_conciliacion_importar(request):
             importe_xubio = Decimal(str(row['Importe']))
             cliente_xubio = str(row.get('Cliente', '')).strip()
 
-            # Buscar en movimientos por nro_recibo_op
             movimiento = None
-            candidatos = MovimientoCaja.objects.filter(
-                nro_recibo_op__icontains=nro_normalizado.split('-')[-1]
-            ) if nro_normalizado else MovimientoCaja.objects.none()
-
-            for c in candidatos:
-                if c.nro_recibo_normalizado() == nro_normalizado:
-                    movimiento = c
-                    break
+            if nro_normalizado:
+                for c in MovimientoCaja.objects.filter(nro_recibo_op__endswith=nro_normalizado.split('-')[-1]):
+                    if c.nro_recibo_normalizado() == nro_normalizado:
+                        movimiento = c
+                        break
 
             if movimiento is None:
                 estado = 'falta_en_caja'
@@ -380,7 +385,6 @@ def api_resumen_mensual(request):
         return JsonResponse({'error': 'Solo admin'}, status=403)
 
     anio = int(request.GET.get('anio', date.today().year))
-
     meses = list(range(1, 13))
     tipos = [t[0] for t in MovimientoCaja._meta.get_field('tipo').choices]
 
@@ -396,18 +400,11 @@ def api_resumen_mensual(request):
             ).aggregate(total=Sum('monto'))
             resultado[tipo][mes] = float(agg['total'] or 0)
 
-    # Totales por mes
     totales_ingresos = {}
     totales_egresos = {}
     for mes in meses:
-        ing = sum(
-            resultado[t][mes] for t in tipos if t in TIPOS_INGRESO
-        )
-        egr = sum(
-            resultado[t][mes] for t in tipos if t in TIPOS_EGRESO
-        )
-        totales_ingresos[mes] = ing
-        totales_egresos[mes] = egr
+        totales_ingresos[mes] = sum(resultado[t][mes] for t in tipos if t in TIPOS_INGRESO)
+        totales_egresos[mes] = sum(resultado[t][mes] for t in tipos if t in TIPOS_EGRESO)
 
     return JsonResponse({
         'anio': anio,
@@ -415,5 +412,3 @@ def api_resumen_mensual(request):
         'totales_ingresos': totales_ingresos,
         'totales_egresos': totales_egresos,
     })
-
-# Create your views here.
