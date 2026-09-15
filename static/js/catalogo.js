@@ -134,12 +134,7 @@ document.getElementById('btnConfirmarPedido').addEventListener('click', async fu
     });
 
     if (response.ok) {
-      document.body.innerHTML = `
-        <div style="text-align:center; padding:80px 24px; font-family:'DM Sans',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--bg-base);">
-          <div style="font-size:56px; margin-bottom:20px;">✅</div>
-          <h2 style="font-size:24px; font-weight:700; color:var(--text-heading); margin-bottom:8px;">¡Pedido enviado!</h2>
-          <p style="color:var(--text-secondary); font-size:15px;">Nos pondremos en contacto para confirmar la entrega.</p>
-        </div>`;
+      window.location.href = `/catalogo/${TOKEN}/perfil/?pedido=ok`;
     } else {
       alert('No se pudo enviar el pedido. Intentá de nuevo.');
       btn.textContent = 'Confirmar pedido';
