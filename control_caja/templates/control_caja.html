@@ -377,6 +377,11 @@ function fmt(n) {
 
 function fmtFecha(s) {
   if (!s) return '—';
+  // Manejar tanto yyyy-mm-dd como mm/dd/yyyy
+  if (s.includes('/')) {
+    const [m, d, y] = s.split('/');
+    return `${d}/${m}/${y}`;
+  }
   const [y, m, d] = s.split('-');
   return `${d}/${m}/${y}`;
 }
