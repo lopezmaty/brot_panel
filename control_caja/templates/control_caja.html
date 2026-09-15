@@ -90,6 +90,19 @@
 .cc-modal-title { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--navy); margin: 0 0 20px; }
 .cc-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); flex-wrap: wrap; }
 .cc-full-width { grid-column: 1 / -1; }
+.cc-fecha-input {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 7px 11px;
+  font-family: inherit;
+  font-size: .85rem;
+  width: 130px;
+}
+.cc-fecha-input:focus {
+  outline: none;
+  border-color: var(--sky);
+  box-shadow: 0 0 0 3px rgba(58,175,228,.15);
+}
 @media (min-width: 769px) {
   .mobile-sidebar-nav { display: none !important; }
 }
@@ -131,11 +144,11 @@
     <div class="cc-toolbar">
       <div>
         <label style="font-size:.74rem;font-weight:600;color:var(--gray600);display:block;margin-bottom:4px;">Desde</label>
-        <input type="date" id="ccFechaDesde" style="border:1.5px solid var(--border);border-radius:10px;padding:7px 11px;font-family:inherit;font-size:.85rem;">
+        <input type="text" id="ccFechaDesde" placeholder="dd/mm/yyyy" maxlength="10" class="cc-fecha-input">
       </div>
       <div>
         <label style="font-size:.74rem;font-weight:600;color:var(--gray600);display:block;margin-bottom:4px;">Hasta</label>
-        <input type="date" id="ccFechaHasta" style="border:1.5px solid var(--border);border-radius:10px;padding:7px 11px;font-family:inherit;font-size:.85rem;">
+        <input type="text" id="ccFechaHasta" placeholder="dd/mm/yyyy" maxlength="10" class="cc-fecha-input">
       </div>
       <div style="margin-top:22px;">
         <button class="cc-btn cc-btn-secondary cc-btn-sm" id="btnFiltrarMovimientos">Filtrar</button>
@@ -175,7 +188,7 @@
     <div class="cc-form-inline" style="max-width:700px;">
       <div>
         <label>Fecha</label>
-        <input type="date" id="cierreFecha">
+        <input type="text" id="cierreFecha" placeholder="dd/mm/yyyy" maxlength="10">
       </div>
       <div>
         <label>Efectivo contado ($)</label>
@@ -198,8 +211,8 @@
     <div class="cc-toolbar">
       <h2 style="margin:0;">Historial de cierres</h2>
       <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
-        <input type="date" id="cierreDesde" style="border:1.5px solid var(--border);border-radius:10px;padding:7px 11px;font-family:inherit;font-size:.85rem;">
-        <input type="date" id="cierreHasta" style="border:1.5px solid var(--border);border-radius:10px;padding:7px 11px;font-family:inherit;font-size:.85rem;">
+        <input type="text" id="cierreDesde" placeholder="dd/mm/yyyy" maxlength="10" class="cc-fecha-input">
+        <input type="text" id="cierreHasta" placeholder="dd/mm/yyyy" maxlength="10" class="cc-fecha-input">
         <button class="cc-btn cc-btn-secondary cc-btn-sm" id="btnFiltrarCierres">Filtrar</button>
       </div>
     </div>
@@ -288,7 +301,7 @@
     <div class="cc-form-inline">
       <div>
         <label>Fecha</label>
-        <input type="date" id="ccFecha">
+        <input type="text" id="ccFecha" placeholder="dd/mm/yyyy" maxlength="10">
       </div>
       <div>
         <label>Tipo de movimiento</label>
@@ -376,15 +389,47 @@ function fmt(n) {
 }
 
 function fmtFecha(s) {
-  if (!s) return '—';
-  // Manejar tanto yyyy-mm-dd como mm/dd/yyyy
+  if (!s) return '';
   if (s.includes('/')) {
-    const [m, d, y] = s.split('/');
+    const parts = s.split('/');
+    if (parts.length === 3 && parts[2].length === 4) return s; // ya es dd/mm/yyyy
+    const [m, d, y] = parts;
     return `${d}/${m}/${y}`;
   }
   const [y, m, d] = s.split('-');
   return `${d}/${m}/${y}`;
 }
+
+function parseFecha(s) {
+  // dd/mm/yyyy → yyyy-mm-dd
+  if (!s) return null;
+  if (s.includes('-') && s.indexOf('-') === 4) return s;
+  const parts = s.split('/');
+  if (parts.length !== 3) return null;
+  const [d, m, y] = parts;
+  if (!d || !m || !y || y.length !== 4) return null;
+  return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+}
+
+function fechaHoy() {
+  const hoy = new Date();
+  const d = String(hoy.getDate()).padStart(2,'0');
+  const m = String(hoy.getMonth()+1).padStart(2,'0');
+  const y = hoy.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+
+// Auto-formatear fecha mientras escribe
+function autoFormatFecha(input) {
+  input.addEventListener('input', function() {
+    let v = this.value.replace(/\D/g,'');
+    if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+    if (v.length >= 6) v = v.slice(0,5) + '/' + v.slice(5);
+    this.value = v.slice(0,10);
+  });
+}
+
+document.querySelectorAll('.cc-fecha-input, #ccFecha, #cierreFecha, #cierreDesde, #cierreHasta').forEach(autoFormatFecha);
 
 // ── NAV ────────────────────────────────────────────────────────────────────────
 document.querySelectorAll('.cc-nav-btn').forEach(btn => {
@@ -419,8 +464,8 @@ async function cargarSaldoActual() {
 
 // ── MOVIMIENTOS ────────────────────────────────────────────────────────────────
 async function cargarMovimientos() {
-  const desde = document.getElementById('ccFechaDesde').value;
-  const hasta = document.getElementById('ccFechaHasta').value;
+  const desde = parseFecha(document.getElementById('ccFechaDesde').value);
+  const hasta = parseFecha(document.getElementById('ccFechaHasta').value);
   let url = '/administracion/control-caja/api/movimientos/';
   const params = [];
   if (desde) params.push(`fecha_desde=${desde}`);
@@ -466,7 +511,7 @@ function abrirModalMovimiento(id = null) {
   if (id === null) {
     document.getElementById('ccModalTitulo').textContent = 'Nuevo movimiento';
     document.getElementById('ccMovimientoId').value = '';
-    document.getElementById('ccFecha').value = new Date().toISOString().split('T')[0];
+    document.getElementById('ccFecha').value = fechaHoy();
     document.getElementById('ccTipo').value = '';
     document.getElementById('ccClienteProveedor').value = '';
     document.getElementById('ccDetalle').value = '';
@@ -486,7 +531,7 @@ function abrirModalMovimiento(id = null) {
       .then(m => {
         document.getElementById('ccModalTitulo').textContent = m.estado === 'bloqueado' ? 'Ver movimiento' : 'Editar movimiento';
         document.getElementById('ccMovimientoId').value = m.id;
-        document.getElementById('ccFecha').value = m.fecha || '';
+        document.getElementById('ccFecha').value = fmtFecha(m.fecha);
         document.getElementById('ccTipo').value = m.tipo;
         document.getElementById('ccClienteProveedor').value = m.cliente_proveedor;
         document.getElementById('ccDetalle').value = m.detalle;
@@ -517,7 +562,7 @@ document.getElementById('ccModalMovimiento').addEventListener('click', function(
 document.getElementById('btnGuardarMovimiento').addEventListener('click', async () => {
   const id = document.getElementById('ccMovimientoId').value;
   const payload = {
-    fecha: document.getElementById('ccFecha').value || null,
+    fecha: parseFecha(document.getElementById('ccFecha').value),
     tipo: document.getElementById('ccTipo').value,
     cliente_proveedor: document.getElementById('ccClienteProveedor').value,
     detalle: document.getElementById('ccDetalle').value,
@@ -614,8 +659,8 @@ document.getElementById('btnFiltrarMovimientos').addEventListener('click', carga
 
 // ── CIERRE DIARIO ──────────────────────────────────────────────────────────────
 async function cargarCierres() {
-  const desde = document.getElementById('cierreDesde').value;
-  const hasta = document.getElementById('cierreHasta').value;
+  const desde = parseFecha(document.getElementById('cierreDesde').value);
+  const hasta = parseFecha(document.getElementById('cierreHasta').value);
   let url = '/administracion/control-caja/api/cierre-diario/';
   const params = [];
   if (desde) params.push(`fecha_desde=${desde}`);
@@ -647,7 +692,7 @@ async function cargarCierres() {
   if (CC_ES_ADMIN) {
     tbody.querySelectorAll('.btn-editar-cierre').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.getElementById('cierreFecha').value = btn.dataset.fecha;
+        document.getElementById('cierreFecha').value = fmtFecha(btn.dataset.fecha);
         document.getElementById('cierreEfectivo').value = btn.dataset.efectivo;
         document.getElementById('cierreResponsable').value = btn.dataset.responsable;
         document.getElementById('cierreObservaciones').value = btn.dataset.obs;
@@ -659,13 +704,14 @@ async function cargarCierres() {
 }
 
 document.getElementById('btnGuardarCierre').addEventListener('click', async () => {
-  const fecha = document.getElementById('cierreFecha').value;
+  const fechaRaw = document.getElementById('cierreFecha').value;
+  const fecha = parseFecha(fechaRaw);
   const efectivo = document.getElementById('cierreEfectivo').value;
   const responsable = document.getElementById('cierreResponsable').value;
   const observaciones = document.getElementById('cierreObservaciones').value;
 
   if (!fecha) {
-    document.getElementById('cierreMsg').innerHTML = '<div class="cc-alert error">La fecha es obligatoria.</div>';
+    document.getElementById('cierreMsg').innerHTML = '<div class="cc-alert error">La fecha es obligatoria (formato dd/mm/yyyy).</div>';
     return;
   }
 
