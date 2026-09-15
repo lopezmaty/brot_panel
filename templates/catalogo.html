@@ -34,7 +34,7 @@
 
 <div class="catalogo-contenido">
 
-  <div class="catalogo-saludo">¡Hola{% if cliente.nombre %}, {{ cliente.nombre|title }}{% endif %}! 👋</div>
+  <div class="catalogo-saludo">¡Bienvenido/a a Brot Panes{% if cliente.nombre %}, {{ cliente.nombre|title }}{% endif %}! 👋</div>
   <div class="catalogo-subtitulo">Seleccioná los productos que querés pedir.</div>
 
   {% if not sin_lista %}
@@ -61,12 +61,10 @@
     {% for item in familia_group.list %}
     <div class="producto-fila">
       <div class="producto-info">
-        <div class="producto-info-top">
-          <span class="producto-nombre">{{ item.producto.nombre }} {{ item.producto.variedad.nombre }}</span>
-          <span class="producto-tamaño-badge" style="background: {{ item.tamaño_bg }}; color: {{ item.tamaño_color }};">{{ item.producto.tamaño.nombre }}</span>
-        </div>
+        <span class="producto-nombre">{{ item.producto.nombre }} {{ item.producto.variedad.nombre }}</span>
+        <span class="producto-tamaño-badge" style="background: {{ item.tamaño_bg }}; color: {{ item.tamaño_color }};">{{ item.producto.tamaño.nombre }}</span>
+        <span class="producto-precio">${{ item.precio|floatformat:2 }}</span>
       </div>
-      <span class="producto-precio">${{ item.precio|floatformat:2 }}</span>
       <div class="producto-cantidad-ctrl">
         <input type="text" inputmode="numeric" pattern="[0-9]*" class="input-cantidad"
                id="cantidad-{{ item.producto.id }}"
@@ -106,7 +104,7 @@
           </select>
           <label>Observaciones (opcional)</label>
           <textarea id="inputObservaciones" rows="2" placeholder="Aclaraciones, horarios, etc."></textarea>
-          <button type="button" class="btn-primary" id="btnEnviarPedido">Enviar pedido</button>
+          <button type="button" class="btn-primary" id="btnEnviarPedido" style="width: 100%;">Enviar pedido</button>
         </div>
       </div>
     </div>
@@ -125,7 +123,7 @@
 </div>
 
 <span id="catalogo-token" data-token="{{ cliente.token }}" style="display:none;"></span>
-<script src="{% static 'js/catalogo.js' %}"></script>
+<script src="{% static 'js/catalogo.js' %}?v=3"></script>
 
 </body>
 </html>
