@@ -50,7 +50,7 @@ def api_saldo_inicial(request):
     if not es_admin(request.user):
         return JsonResponse({'error': 'Solo admin'}, status=403)
 
-    data = json.loads(request.body)
+    data = request.data
     try:
         obj.monto = Decimal(str(data['monto']))
         obj.actualizado_por = request.user
@@ -101,7 +101,7 @@ def api_movimientos(request):
     if not es_colab(request.user):
         return JsonResponse({'error': 'Sin permiso'}, status=403)
 
-    data = json.loads(request.body)
+    data = request.data
     m = MovimientoCaja(creado_por=request.user)
     m.fecha = data.get('fecha') or None
     m.tipo = data.get('tipo', '')
@@ -141,7 +141,7 @@ def api_movimiento_detalle(request, pk):
         m.delete()
         return JsonResponse({'ok': True})
 
-    data = json.loads(request.body)
+    data = request.data
 
     # Admin puede bloquear/desbloquear
     if es_admin(request.user) and 'estado' in data:
@@ -221,7 +221,7 @@ def api_cierre_diario(request):
     if not es_colab(request.user):
         return JsonResponse({'error': 'Sin permiso'}, status=403)
 
-    data = json.loads(request.body)
+    data = request.data
     fecha = data.get('fecha')
     if not fecha:
         return JsonResponse({'error': 'Fecha requerida'}, status=400)
@@ -247,7 +247,7 @@ def api_cierre_diario_detalle(request, pk):
     if not es_colab(request.user):
         return JsonResponse({'error': 'Sin permiso'}, status=403)
 
-    data = json.loads(request.body)
+    data = request.data
     raw = data.get('efectivo_contado')
     c.efectivo_contado = Decimal(str(raw)) if raw not in (None, '') else None
     c.responsable = data.get('responsable', c.responsable)
