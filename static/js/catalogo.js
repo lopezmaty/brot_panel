@@ -134,7 +134,20 @@ document.getElementById('btnConfirmarPedido').addEventListener('click', async fu
     });
 
     if (response.ok) {
-      window.location.href = `/catalogo/${TOKEN}/perfil/?pedido=ok`;
+      document.getElementById('modalConfirmar').style.display = 'none';
+      document.body.insertAdjacentHTML('beforeend', `
+        <div id="modalExito" style="position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:300; display:flex; align-items:center; justify-content:center; padding:24px;">
+          <div style="background:#ffffff; border-radius:20px; padding:40px 32px; max-width:380px; width:100%; text-align:center; font-family:'DM Sans',sans-serif;">
+            <div style="font-size:56px; margin-bottom:16px;">✅</div>
+            <h2 style="font-size:22px; font-weight:700; color:#16213E; margin:0 0 8px;">¡Pedido enviado!</h2>
+            <p style="color:#4A5D7A; font-size:14px; margin:0 0 28px;">Nos pondremos en contacto para confirmar la entrega.</p>
+            <a href="/catalogo/${TOKEN}/perfil/?pedido=ok"
+               style="background:#16213E; color:white; text-decoration:none; padding:14px 28px; border-radius:12px; font-size:15px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; box-sizing:border-box;">
+              📋 Ir a mis pedidos
+            </a>
+          </div>
+        </div>
+      `);
     } else {
       alert('No se pudo enviar el pedido. Intentá de nuevo.');
       btn.textContent = 'Confirmar pedido';
