@@ -71,7 +71,7 @@ def _calcular_estado(m):
 def _movimiento_a_dict(m):
     return {
         'id': m.id,
-        'fecha': m.fecha.isoformat() if m.fecha else None,
+        'fecha': m.fecha.isoformat() if m.fecha and hasattr(m.fecha, 'isoformat') else str(m.fecha) if m.fecha else None,
         'tipo': m.tipo,
         'cliente_proveedor': m.cliente_proveedor,
         'detalle': m.detalle,
