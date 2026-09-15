@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from control_caja.views import control_caja_view
 
 urlpatterns = [
     path('dashboard/', views.dashboard_view, name='dashboard'),
@@ -21,4 +22,5 @@ urlpatterns = [
     path('pedidos/<int:pedido_id>/comanda/', views.comanda, name='comanda_pedido'),
     path('lista_precios/<lista_precios_id>/subir_pdf/', views.subir_pdf_catalogo_view, name='subir_pdf_catalogo'),
     path('produccion/calculadora/', views.calculadora_produccion_view, name='calculadora_produccion'),
+    path('administracion/control-caja/', control_caja_view, name='control_caja'),
 ]

@@ -1,0 +1,964 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+.cc-wrap {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--gray800);
+  font-size: 14px;
+}
+.cc-wrap h1, .cc-wrap h2 {
+  font-family: 'DM Serif Display', serif;
+  color: var(--navy);
+  font-weight: 400;
+}
+.cc-wrap h1 { font-size: 1.5rem; margin: 0 0 6px; }
+.cc-wrap h2 { font-size: 1.15rem; margin: 0 0 14px; }
+.cc-sidebar-title {
+  color: var(--gray400);
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  padding: 16px 20px 8px;
+  font-weight: 600;
+}
+.cc-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--gray400);
+  text-align: left;
+  padding: 11px 20px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .83rem;
+  font-weight: 500;
+  position: relative;
+}
+.cc-nav-btn:hover { background: rgba(255,255,255,.05); color: #fff; }
+.cc-nav-btn.active { background: rgba(58,175,228,.15); color: #fff; }
+.cc-nav-btn.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--orange);
+}
+.cc-tab { display: none; }
+.cc-tab.active { display: block; }
+.cc-panel {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(15,35,64,.08), 0 1px 4px rgba(15,35,64,.05);
+  padding: 24px 28px;
+  margin-bottom: 18px;
+}
+.cc-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.cc-wrap table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+.cc-wrap thead th {
+  text-align: left;
+  padding: 9px 10px;
+  color: rgba(255,255,255,.65);
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  background: var(--navy);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cc-wrap tbody td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--gray100);
+  vertical-align: middle;
+}
+.cc-wrap tbody tr:hover { background: var(--gray50); }
+.cc-tbl-wrap { overflow-x: auto; }
+.cc-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cc-badge.parcial { background: #FDF3E0; color: #B5750B; }
+.cc-badge.completo { background: #E8F6EC; color: #166534; }
+.cc-badge.bloqueado { background: #E6F4FB; color: #1B6FA8; }
+.cc-badge.ok { background: #E8F6EC; color: #166534; }
+.cc-badge.falta_en_caja { background: #FDEDED; color: #C0392B; }
+.cc-badge.monto_difiere { background: #FDF3E0; color: #B5750B; }
+.cc-badge.falta_en_xubio { background: var(--gray100); color: var(--gray600); }
+.cc-ingreso { color: #166534; font-weight: 700; }
+.cc-egreso { color: #C0392B; font-weight: 700; }
+.cc-fila-parcial { background: #FFFBF0 !important; }
+.cc-fila-bloqueada { background: #F0F7FF !important; opacity: .85; }
+.cc-fila-diferencia { background: #FDEDED !important; }
+.cc-saldo-card {
+  background: var(--navy);
+  color: #fff;
+  border-radius: 14px;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.cc-saldo-card .label { font-size: .75rem; opacity: .65; text-transform: uppercase; letter-spacing: .5px; }
+.cc-saldo-card .valor { font-size: 1.6rem; font-weight: 700; font-family: 'DM Serif Display', serif; }
+.cc-form-inline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.cc-form-inline label {
+  display: block;
+  font-size: .74rem;
+  font-weight: 600;
+  color: var(--gray600);
+  margin-bottom: 5px;
+}
+.cc-form-inline input,
+.cc-form-inline select,
+.cc-form-inline textarea {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 11px;
+  font-family: inherit;
+  font-size: .85rem;
+  background: #fff;
+  color: var(--gray800);
+}
+.cc-form-inline input:focus,
+.cc-form-inline select:focus {
+  outline: none;
+  border-color: var(--sky);
+  box-shadow: 0 0 0 3px rgba(58,175,228,.15);
+}
+.cc-btn {
+  padding: 9px 18px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: .82rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.cc-btn-primary { background: var(--orange); color: #fff; }
+.cc-btn-primary:hover { background: #d45f20; }
+.cc-btn-secondary { background: var(--gray100); color: var(--gray600); }
+.cc-btn-secondary:hover { background: var(--gray200); }
+.cc-btn-danger { background: #FDEDED; color: #C0392B; }
+.cc-btn-danger:hover { background: #fdd; }
+.cc-btn-sm { padding: 5px 10px; font-size: .76rem; border-radius: 8px; }
+.cc-btn:disabled { opacity: .45; cursor: not-allowed; }
+.cc-resumen-tabla { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.cc-resumen-tabla th {
+  background: var(--navy);
+  color: rgba(255,255,255,.65);
+  padding: 8px 10px;
+  text-align: right;
+  font-size: .68rem;
+  text-transform: uppercase;
+}
+.cc-resumen-tabla th:first-child { text-align: left; }
+.cc-resumen-tabla td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--gray100);
+  text-align: right;
+  font-family: ui-monospace, monospace;
+}
+.cc-resumen-tabla td:first-child { text-align: left; font-family: inherit; font-weight: 600; }
+.cc-resumen-tabla tr.row-total { background: var(--gray50); font-weight: 700; border-top: 2px solid var(--border); }
+.cc-resumen-tabla tr.row-total td { font-weight: 700; }
+.cc-empty { text-align: center; padding: 40px; color: var(--gray400); }
+.cc-hint { font-size: .76rem; color: var(--gray400); }
+.cc-alert { padding: 12px 16px; border-radius: 10px; font-size: .83rem; margin-bottom: 14px; }
+.cc-alert.warn { background: #FFF7ED; color: #9A3412; border-left: 3px solid var(--orange); }
+.cc-alert.ok { background: #E8F6EC; color: #166534; border-left: 3px solid #16A34A; }
+.cc-alert.error { background: #FDEDED; color: #C0392B; border-left: 3px solid #C0392B; }
+.cc-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 400;
+  align-items: center;
+  justify-content: center;
+}
+.cc-modal-overlay.open { display: flex; }
+.cc-modal-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.cc-modal-title { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--navy); margin: 0 0 20px; }
+.cc-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.cc-full-width { grid-column: 1 / -1; }
+</style>
+{% endblock %}
+
+{% block sidebar %}
+<div class="cc-sidebar-title">Control de Caja</div>
+<nav id="cc-nav">
+  <button class="cc-nav-btn active" data-tab="movimientos">💵 Movimientos</button>
+  <button class="cc-nav-btn" data-tab="cierre">📋 Cierre diario</button>
+  {% if es_admin %}
+  <button class="cc-nav-btn" data-tab="conciliacion">🔗 Conciliación</button>
+  <button class="cc-nav-btn" data-tab="resumen">📊 Resumen mensual</button>
+  {% endif %}
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="cc-wrap">
+{% csrf_token %}
+
+<nav class="mobile-sidebar-nav">
+  <a href="#" class="active" data-tab="movimientos">💵 Movimientos</a>
+  <a href="#" data-tab="cierre">📋 Cierre</a>
+  {% if es_admin %}
+  <a href="#" data-tab="conciliacion">🔗 Conciliación</a>
+  <a href="#" data-tab="resumen">📊 Resumen</a>
+  {% endif %}
+</nav>
+
+<span class="page-eyebrow">Administración</span>
+<h1 class="page-title">Control de Caja</h1>
+
+<!-- SALDO ACTUAL -->
+<div class="cc-saldo-card" id="ccSaldoCard">
+  <div>
+    <div class="label">Saldo actual de caja</div>
+    <div class="valor" id="ccSaldoValor">Cargando...</div>
+  </div>
+  {% if es_admin %}
+  <button class="cc-btn cc-btn-secondary cc-btn-sm" id="btnEditarSaldoInicial">⚙ Saldo inicial</button>
+  {% endif %}
+</div>
+
+<!-- ══ TAB MOVIMIENTOS ══ -->
+<div class="cc-tab active" id="tab-movimientos">
+  <div class="cc-panel">
+    <div class="cc-toolbar">
+      <div>
+        <label style="font-size:.74rem;font-weight:600;color:var(--gray600);display:block;margin-bottom:4px;">Desde</label>
+        <input type="date" id="ccFechaDesde" style="border:1.5px solid var(--border);border-radius:10px;padding:7px 11px;font-family:inherit;font-size:.85rem;">
+      </div>
+      <div>
+        <label style="font-size:.74rem;font-weight:600;color:var(--gray600);display:block;margin-bottom:4px;">Hasta</label>
+        <input type="date" id="ccFechaHasta" style="border:1.5px solid var(--border);border-radius:10px;padding:7px 11px;font-family:inherit;font-size:.85rem;">
+      </div>
+      <div style="margin-top:22px;">
+        <button class="cc-btn cc-btn-secondary cc-btn-sm" id="btnFiltrarMovimientos">Filtrar</button>
+      </div>
+      <div style="margin-top:22px;margin-left:auto;">
+        <button class="cc-btn cc-btn-primary" id="btnNuevoMovimiento">＋ Nuevo movimiento</button>
+      </div>
+    </div>
+
+    <div class="cc-tbl-wrap">
+      <table id="tablaMovimientos">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Cliente / Proveedor</th>
+            <th>Detalle</th>
+            <th>N° Comprobante</th>
+            <th>N° Recibo / OP</th>
+            <th style="text-align:right">Monto</th>
+            <th>Estado</th>
+            <th>Conciliado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="bodyMovimientos">
+          <tr><td colspan="10" class="cc-empty">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB CIERRE DIARIO ══ -->
+<div class="cc-tab" id="tab-cierre">
+  <div class="cc-panel">
+    <h2>Registrar cierre del día</h2>
+    <div class="cc-form-inline" style="max-width:700px;">
+      <div>
+        <label>Fecha</label>
+        <input type="date" id="cierreFecha">
+      </div>
+      <div>
+        <label>Efectivo contado ($)</label>
+        <input type="number" id="cierreEfectivo" placeholder="0.00" step="0.01">
+      </div>
+      <div>
+        <label>Responsable</label>
+        <input type="text" id="cierreResponsable" placeholder="Nombre">
+      </div>
+      <div class="cc-full-width">
+        <label>Observaciones</label>
+        <input type="text" id="cierreObservaciones" placeholder="Opcional">
+      </div>
+    </div>
+    <button class="cc-btn cc-btn-primary" id="btnGuardarCierre">Guardar cierre</button>
+    <div id="cierreMsg" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="cc-panel">
+    <div class="cc-toolbar">
+      <h2 style="margin:0;">Historial de cierres</h2>
+      <div style="margin-left:auto;display:flex;gap:8px;">
+        <input type="date" id="cierreDesde" style="border:1.5px solid var(--border);border-radius:10px;padding:7px 11px;font-family:inherit;font-size:.85rem;">
+        <input type="date" id="cierreHasta" style="border:1.5px solid var(--border);border-radius:10px;padding:7px 11px;font-family:inherit;font-size:.85rem;">
+        <button class="cc-btn cc-btn-secondary cc-btn-sm" id="btnFiltrarCierres">Filtrar</button>
+      </div>
+    </div>
+    <div class="cc-tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th style="text-align:right">Saldo teórico</th>
+            <th style="text-align:right">Efectivo contado</th>
+            <th style="text-align:right">Diferencia</th>
+            <th>Responsable</th>
+            <th>Observaciones</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="bodyCierres">
+          <tr><td colspan="7" class="cc-empty">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% if es_admin %}
+<!-- ══ TAB CONCILIACIÓN ══ -->
+<div class="cc-tab" id="tab-conciliacion">
+  <div class="cc-panel">
+    <h2>Importar archivo de Xubio</h2>
+    <p style="color:var(--gray600);font-size:.86rem;margin-bottom:16px;">
+      Exportá el reporte de Análisis de Cobranzas desde Xubio en formato .xlsx. El sistema toma solo los registros de <strong>Caja</strong> y los compara con los movimientos cargados.
+    </p>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+      <input type="file" id="conciliacionArchivo" accept=".xlsx,.xls" style="border:1.5px solid var(--border);border-radius:10px;padding:7px 11px;font-family:inherit;font-size:.85rem;">
+      <button class="cc-btn cc-btn-primary" id="btnImportarConciliacion">Importar y conciliar</button>
+    </div>
+    <div id="conciliacionMsg" style="margin-top:14px;"></div>
+  </div>
+
+  <div class="cc-panel">
+    <h2>Resultado de conciliación</h2>
+    <div class="cc-tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>N° Comprobante Xubio</th>
+            <th>Cliente</th>
+            <th style="text-align:right">Importe Xubio</th>
+            <th style="text-align:right">Monto caja</th>
+            <th style="text-align:right">Diferencia</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="bodyConciliacion">
+          <tr><td colspan="7" class="cc-empty">Importá un archivo para ver los resultados.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB RESUMEN MENSUAL ══ -->
+<div class="cc-tab" id="tab-resumen">
+  <div class="cc-panel">
+    <div class="cc-toolbar">
+      <div>
+        <label style="font-size:.74rem;font-weight:600;color:var(--gray600);display:block;margin-bottom:4px;">Año</label>
+        <select id="resumenAnio" style="border:1.5px solid var(--border);border-radius:10px;padding:7px 11px;font-family:inherit;font-size:.85rem;">
+        </select>
+      </div>
+      <div style="margin-top:22px;">
+        <button class="cc-btn cc-btn-secondary cc-btn-sm" id="btnCargarResumen">Cargar</button>
+      </div>
+    </div>
+    <div id="resumenContenido">
+      <p class="cc-empty">Elegí un año y hacé click en Cargar.</p>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+</div>
+
+<!-- MODAL MOVIMIENTO -->
+<div class="cc-modal-overlay" id="ccModalMovimiento">
+  <div class="cc-modal-box">
+    <h2 class="cc-modal-title" id="ccModalTitulo">Nuevo movimiento</h2>
+    <input type="hidden" id="ccMovimientoId">
+    <div class="cc-form-inline">
+      <div>
+        <label>Fecha</label>
+        <input type="date" id="ccFecha">
+      </div>
+      <div>
+        <label>Tipo de movimiento</label>
+        <select id="ccTipo">
+          <option value="">— Seleccioná —</option>
+          <option value="cobro_ventas">Cobro ventas</option>
+          <option value="pago_proveedor">Pago proveedor</option>
+          <option value="otro_egreso">Otro egreso</option>
+          <option value="otro_ingreso">Otro ingreso</option>
+          <option value="gasto_caja_chica">Gasto caja chica</option>
+          <option value="sueldo_jornal">Sueldo/Jornal</option>
+        </select>
+      </div>
+      <div>
+        <label>Cliente / Proveedor</label>
+        <input type="text" id="ccClienteProveedor" placeholder="Nombre">
+      </div>
+      <div>
+        <label>Detalle / Concepto</label>
+        <input type="text" id="ccDetalle" placeholder="Opcional">
+      </div>
+      <div>
+        <label>N° Comprobante</label>
+        <input type="text" id="ccNroComprobante" placeholder="Ej: 0003-00001234">
+      </div>
+      <div>
+        <label>N° Recibo / OP</label>
+        <input type="text" id="ccNroRecibo" placeholder="Ej: 0001-00003071">
+      </div>
+      <div>
+        <label>Monto ($)</label>
+        <input type="number" id="ccMonto" placeholder="0.00" step="0.01">
+      </div>
+      <div class="cc-full-width">
+        <label>Observaciones</label>
+        <input type="text" id="ccObservaciones" placeholder="Opcional">
+      </div>
+    </div>
+    <div id="ccMovimientoMsg" style="margin-bottom:8px;"></div>
+    <div class="cc-modal-actions">
+      {% if es_admin %}
+      <button class="cc-btn cc-btn-danger cc-btn-sm" id="btnEliminarMovimiento" style="display:none;margin-right:auto;">Eliminar</button>
+      <button class="cc-btn cc-btn-secondary cc-btn-sm" id="btnBloquearMovimiento" style="display:none;">🔒 Bloquear</button>
+      {% endif %}
+      <button class="cc-btn cc-btn-secondary" id="btnCancelarMovimiento">Cancelar</button>
+      <button class="cc-btn cc-btn-primary" id="btnGuardarMovimiento">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SALDO INICIAL -->
+{% if es_admin %}
+<div class="cc-modal-overlay" id="ccModalSaldo">
+  <div class="cc-modal-box" style="max-width:380px;">
+    <h2 class="cc-modal-title">Saldo inicial de caja</h2>
+    <div class="cc-form-inline">
+      <div class="cc-full-width">
+        <label>Monto ($)</label>
+        <input type="number" id="saldoInicialInput" step="0.01" placeholder="0.00">
+      </div>
+    </div>
+    <div id="saldoMsg" style="margin-bottom:8px;"></div>
+    <div class="cc-modal-actions">
+      <button class="cc-btn cc-btn-secondary" id="btnCancelarSaldo">Cancelar</button>
+      <button class="cc-btn cc-btn-primary" id="btnGuardarSaldo">Guardar</button>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<script>
+const CC_ES_ADMIN = {{ es_admin|lower }};
+const CC_CSRF = document.querySelector('[name=csrftoken]')?.value || getCsrfToken();
+
+function getCsrfToken() {
+  const v = `; ${document.cookie}`;
+  const p = v.split('; csrftoken=');
+  if (p.length === 2) return p.pop().split(';').shift();
+  return '';
+}
+
+function fmt(n) {
+  if (n === null || n === undefined) return '—';
+  return '$' + Number(n).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
+function fmtFecha(s) {
+  if (!s) return '—';
+  const [y, m, d] = s.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+// ── NAV ────────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.cc-nav-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.cc-nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.cc-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById(`tab-${this.dataset.tab}`).classList.add('active');
+    syncMobileNav(this.dataset.tab);
+  });
+});
+
+function syncMobileNav(tab) {
+  document.querySelectorAll('.mobile-sidebar-nav a').forEach(a => {
+    a.classList.toggle('active', a.dataset.tab === tab);
+  });
+}
+
+document.querySelectorAll('.mobile-sidebar-nav a').forEach(a => {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    const btn = document.querySelector(`.cc-nav-btn[data-tab="${this.dataset.tab}"]`);
+    if (btn) btn.click();
+  });
+});
+
+// ── SALDO ACTUAL ───────────────────────────────────────────────────────────────
+async function cargarSaldoActual() {
+  try {
+    const r = await fetch('/administracion/control-caja/api/movimientos/');
+    const data = await r.json();
+    const saldoR = await fetch('/administracion/control-caja/api/saldo-inicial/');
+    const saldoData = await saldoR.json();
+    let total = saldoData.monto;
+    data.movimientos.forEach(m => {
+      if (m.estado === 'completo' || m.estado === 'bloqueado') {
+        if (m.monto !== null) {
+          if (m.es_ingreso) total += m.monto;
+          else total -= m.monto;
+        }
+      }
+    });
+    document.getElementById('ccSaldoValor').textContent = fmt(total);
+  } catch(e) {
+    document.getElementById('ccSaldoValor').textContent = 'Error';
+  }
+}
+
+// ── MOVIMIENTOS ────────────────────────────────────────────────────────────────
+async function cargarMovimientos() {
+  const desde = document.getElementById('ccFechaDesde').value;
+  const hasta = document.getElementById('ccFechaHasta').value;
+  let url = '/administracion/control-caja/api/movimientos/';
+  const params = [];
+  if (desde) params.push(`fecha_desde=${desde}`);
+  if (hasta) params.push(`fecha_hasta=${hasta}`);
+  if (params.length) url += '?' + params.join('&');
+
+  const r = await fetch(url);
+  const data = await r.json();
+  renderMovimientos(data.movimientos);
+}
+
+function renderMovimientos(movimientos) {
+  const tbody = document.getElementById('bodyMovimientos');
+  if (!movimientos.length) {
+    tbody.innerHTML = '<tr><td colspan="10" class="cc-empty">Sin movimientos en el período.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = movimientos.map(m => {
+    const rowClass = m.estado === 'parcial' ? 'cc-fila-parcial' : m.estado === 'bloqueado' ? 'cc-fila-bloqueada' : '';
+    const montoClass = m.es_ingreso ? 'cc-ingreso' : 'cc-egreso';
+    const montoPrefix = m.es_ingreso ? '+' : '-';
+    return `<tr class="${rowClass}">
+      <td>${fmtFecha(m.fecha)}</td>
+      <td>${m.tipo.replace('_', ' ')}</td>
+      <td>${m.cliente_proveedor || '—'}</td>
+      <td style="color:var(--gray600);font-size:.8rem;">${m.detalle || '—'}</td>
+      <td style="font-family:monospace;font-size:.8rem;">${m.nro_comprobante || '—'}</td>
+      <td style="font-family:monospace;font-size:.8rem;">${m.nro_recibo_op || '—'}</td>
+      <td class="${montoClass}" style="text-align:right;">${m.monto !== null ? montoPrefix + fmt(m.monto) : '—'}</td>
+      <td><span class="cc-badge ${m.estado}">${m.estado}</span></td>
+      <td>${m.conciliado ? '✅' : '—'}</td>
+      <td>
+        <button class="cc-btn cc-btn-secondary cc-btn-sm btn-editar-movimiento"
+                data-id="${m.id}" ${m.estado === 'bloqueado' && !CC_ES_ADMIN ? 'disabled' : ''}>
+          ${m.estado === 'bloqueado' && CC_ES_ADMIN ? '🔓 Ver' : '✏ Editar'}
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('.btn-editar-movimiento').forEach(btn => {
+    btn.addEventListener('click', () => abrirModalMovimiento(parseInt(btn.dataset.id)));
+  });
+}
+
+function abrirModalMovimiento(id = null) {
+  const modal = document.getElementById('ccModalMovimiento');
+  document.getElementById('ccMovimientoMsg').innerHTML = '';
+
+  if (id === null) {
+    document.getElementById('ccModalTitulo').textContent = 'Nuevo movimiento';
+    document.getElementById('ccMovimientoId').value = '';
+    document.getElementById('ccFecha').value = new Date().toISOString().split('T')[0];
+    document.getElementById('ccTipo').value = '';
+    document.getElementById('ccClienteProveedor').value = '';
+    document.getElementById('ccDetalle').value = '';
+    document.getElementById('ccNroComprobante').value = '';
+    document.getElementById('ccNroRecibo').value = '';
+    document.getElementById('ccMonto').value = '';
+    document.getElementById('ccObservaciones').value = '';
+    if (CC_ES_ADMIN) {
+      document.getElementById('btnEliminarMovimiento').style.display = 'none';
+      document.getElementById('btnBloquearMovimiento').style.display = 'none';
+    }
+  } else {
+    fetch(`/administracion/control-caja/api/movimientos/${id}/`)
+      .then(r => r.json())
+      .then(m => {
+        document.getElementById('ccModalTitulo').textContent = 'Editar movimiento';
+        document.getElementById('ccMovimientoId').value = m.id;
+        document.getElementById('ccFecha').value = m.fecha || '';
+        document.getElementById('ccTipo').value = m.tipo;
+        document.getElementById('ccClienteProveedor').value = m.cliente_proveedor;
+        document.getElementById('ccDetalle').value = m.detalle;
+        document.getElementById('ccNroComprobante').value = m.nro_comprobante;
+        document.getElementById('ccNroRecibo').value = m.nro_recibo_op;
+        document.getElementById('ccMonto').value = m.monto !== null ? m.monto : '';
+        document.getElementById('ccObservaciones').value = m.observaciones;
+
+        if (CC_ES_ADMIN) {
+          document.getElementById('btnEliminarMovimiento').style.display = 'inline-flex';
+          const btnBloquear = document.getElementById('btnBloquearMovimiento');
+          btnBloquear.style.display = 'inline-flex';
+          btnBloquear.textContent = m.estado === 'bloqueado' ? '🔓 Desbloquear' : '🔒 Bloquear';
+          btnBloquear.dataset.estadoActual = m.estado;
+        }
+
+        const bloqueado = m.estado === 'bloqueado';
+        ['ccFecha','ccTipo','ccClienteProveedor','ccDetalle','ccNroComprobante','ccNroRecibo','ccMonto','ccObservaciones'].forEach(id => {
+          document.getElementById(id).disabled = bloqueado && !CC_ES_ADMIN;
+        });
+        document.getElementById('btnGuardarMovimiento').disabled = bloqueado && !CC_ES_ADMIN;
+      });
+  }
+
+  modal.classList.add('open');
+}
+
+document.getElementById('btnNuevoMovimiento').addEventListener('click', () => abrirModalMovimiento());
+document.getElementById('btnCancelarMovimiento').addEventListener('click', () => {
+  document.getElementById('ccModalMovimiento').classList.remove('open');
+});
+
+document.getElementById('btnGuardarMovimiento').addEventListener('click', async () => {
+  const id = document.getElementById('ccMovimientoId').value;
+  const payload = {
+    fecha: document.getElementById('ccFecha').value || null,
+    tipo: document.getElementById('ccTipo').value,
+    cliente_proveedor: document.getElementById('ccClienteProveedor').value,
+    detalle: document.getElementById('ccDetalle').value,
+    nro_comprobante: document.getElementById('ccNroComprobante').value,
+    nro_recibo_op: document.getElementById('ccNroRecibo').value,
+    monto: document.getElementById('ccMonto').value || null,
+    observaciones: document.getElementById('ccObservaciones').value,
+  };
+
+  const url = id
+    ? `/administracion/control-caja/api/movimientos/${id}/`
+    : '/administracion/control-caja/api/movimientos/';
+  const method = id ? 'PUT' : 'POST';
+
+  const r = await fetch(url, {
+    method,
+    headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken()},
+    body: JSON.stringify(payload),
+  });
+
+  if (r.ok) {
+    document.getElementById('ccModalMovimiento').classList.remove('open');
+    cargarMovimientos();
+    cargarSaldoActual();
+  } else {
+    const err = await r.json();
+    document.getElementById('ccMovimientoMsg').innerHTML =
+      `<div class="cc-alert error">${err.error || 'Error al guardar'}</div>`;
+  }
+});
+
+if (CC_ES_ADMIN) {
+  document.getElementById('btnEliminarMovimiento').addEventListener('click', async () => {
+    const id = document.getElementById('ccMovimientoId').value;
+    if (!id) return;
+    const ok = await confirmarAccion('¿Eliminar este movimiento? Esta acción no se puede deshacer.');
+    if (!ok) return;
+    await fetch(`/administracion/control-caja/api/movimientos/${id}/`, {
+      method: 'DELETE',
+      headers: {'X-CSRFToken': getCsrfToken()},
+    });
+    document.getElementById('ccModalMovimiento').classList.remove('open');
+    cargarMovimientos();
+    cargarSaldoActual();
+  });
+
+  document.getElementById('btnBloquearMovimiento').addEventListener('click', async () => {
+    const id = document.getElementById('ccMovimientoId').value;
+    const estadoActual = document.getElementById('btnBloquearMovimiento').dataset.estadoActual;
+    const nuevoEstado = estadoActual === 'bloqueado' ? 'completo' : 'bloqueado';
+    await fetch(`/administracion/control-caja/api/movimientos/${id}/`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken()},
+      body: JSON.stringify({estado: nuevoEstado}),
+    });
+    document.getElementById('ccModalMovimiento').classList.remove('open');
+    cargarMovimientos();
+    cargarSaldoActual();
+  });
+
+  document.getElementById('btnEditarSaldoInicial').addEventListener('click', async () => {
+    const r = await fetch('/administracion/control-caja/api/saldo-inicial/');
+    const data = await r.json();
+    document.getElementById('saldoInicialInput').value = data.monto;
+    document.getElementById('ccModalSaldo').classList.add('open');
+  });
+
+  document.getElementById('btnCancelarSaldo').addEventListener('click', () => {
+    document.getElementById('ccModalSaldo').classList.remove('open');
+  });
+
+  document.getElementById('btnGuardarSaldo').addEventListener('click', async () => {
+    const monto = document.getElementById('saldoInicialInput').value;
+    const r = await fetch('/administracion/control-caja/api/saldo-inicial/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken()},
+      body: JSON.stringify({monto}),
+    });
+    if (r.ok) {
+      document.getElementById('ccModalSaldo').classList.remove('open');
+      cargarSaldoActual();
+    } else {
+      document.getElementById('saldoMsg').innerHTML = '<div class="cc-alert error">Error al guardar</div>';
+    }
+  });
+}
+
+document.getElementById('btnFiltrarMovimientos').addEventListener('click', cargarMovimientos);
+
+// ── CIERRE DIARIO ──────────────────────────────────────────────────────────────
+async function cargarCierres() {
+  const desde = document.getElementById('cierreDesde').value;
+  const hasta = document.getElementById('cierreHasta').value;
+  let url = '/administracion/control-caja/api/cierre-diario/';
+  const params = [];
+  if (desde) params.push(`fecha_desde=${desde}`);
+  if (hasta) params.push(`fecha_hasta=${hasta}`);
+  if (params.length) url += '?' + params.join('&');
+
+  const r = await fetch(url);
+  const data = await r.json();
+  const tbody = document.getElementById('bodyCierres');
+
+  if (!data.cierres.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="cc-empty">Sin cierres registrados.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = data.cierres.map(c => {
+    const difClass = c.diferencia === 0 ? '' : 'cc-fila-diferencia';
+    const difStr = c.diferencia !== null
+      ? (c.diferencia > 0 ? `+${fmt(c.diferencia)}` : fmt(c.diferencia))
+      : '—';
+    return `<tr class="${difClass}">
+      <td>${fmtFecha(c.fecha)}</td>
+      <td style="text-align:right">${fmt(c.saldo_teorico)}</td>
+      <td style="text-align:right">${c.efectivo_contado !== null ? fmt(c.efectivo_contado) : '—'}</td>
+      <td style="text-align:right;font-weight:700;color:${c.diferencia === 0 ? '#166534' : '#C0392B'}">${difStr}</td>
+      <td>${c.responsable || '—'}</td>
+      <td style="font-size:.8rem;color:var(--gray600)">${c.observaciones || '—'}</td>
+      <td>
+        <button class="cc-btn cc-btn-secondary cc-btn-sm btn-editar-cierre" data-id="${c.id}">✏</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+document.getElementById('btnGuardarCierre').addEventListener('click', async () => {
+  const payload = {
+    fecha: document.getElementById('cierreFecha').value,
+    efectivo_contado: document.getElementById('cierreEfectivo').value || null,
+    responsable: document.getElementById('cierreResponsable').value,
+    observaciones: document.getElementById('cierreObservaciones').value,
+  };
+  if (!payload.fecha) {
+    document.getElementById('cierreMsg').innerHTML = '<div class="cc-alert error">La fecha es obligatoria.</div>';
+    return;
+  }
+  const r = await fetch('/administracion/control-caja/api/cierre-diario/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken()},
+    body: JSON.stringify(payload),
+  });
+  const data = await r.json();
+  if (r.ok) {
+    const dif = data.diferencia;
+    const msg = dif === 0
+      ? '<div class="cc-alert ok">✅ Cierre guardado. Diferencia: $0.</div>'
+      : `<div class="cc-alert warn">⚠ Cierre guardado. Diferencia: ${fmt(dif)}. Justificá en observaciones.</div>`;
+    document.getElementById('cierreMsg').innerHTML = msg;
+    cargarCierres();
+  } else {
+    document.getElementById('cierreMsg').innerHTML = `<div class="cc-alert error">${data.error}</div>`;
+  }
+});
+
+document.getElementById('btnFiltrarCierres').addEventListener('click', cargarCierres);
+
+// ── CONCILIACIÓN ───────────────────────────────────────────────────────────────
+if (CC_ES_ADMIN) {
+  document.getElementById('btnImportarConciliacion').addEventListener('click', async () => {
+    const archivo = document.getElementById('conciliacionArchivo').files[0];
+    if (!archivo) {
+      document.getElementById('conciliacionMsg').innerHTML = '<div class="cc-alert error">Seleccioná un archivo.</div>';
+      return;
+    }
+    const form = new FormData();
+    form.append('archivo', archivo);
+    document.getElementById('conciliacionMsg').innerHTML = '<div class="cc-alert warn">Procesando...</div>';
+
+    const r = await fetch('/administracion/control-caja/api/conciliacion/importar/', {
+      method: 'POST',
+      headers: {'X-CSRFToken': getCsrfToken()},
+      body: form,
+    });
+    const data = await r.json();
+    if (r.ok) {
+      document.getElementById('conciliacionMsg').innerHTML =
+        `<div class="cc-alert ok">✅ Importado. OK: ${data.resultados.ok || 0} | Falta en caja: ${data.resultados.falta_en_caja || 0} | Monto difiere: ${data.resultados.monto_difiere || 0}</div>`;
+      cargarConciliacion();
+    } else {
+      document.getElementById('conciliacionMsg').innerHTML = `<div class="cc-alert error">${data.error}</div>`;
+    }
+  });
+
+  async function cargarConciliacion() {
+    const r = await fetch('/administracion/control-caja/api/conciliacion/');
+    const data = await r.json();
+    const tbody = document.getElementById('bodyConciliacion');
+    if (!data.items.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="cc-empty">Sin resultados.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.items.map(i => `
+      <tr>
+        <td>${fmtFecha(i.fecha_xubio)}</td>
+        <td style="font-family:monospace;font-size:.8rem;">${i.nro_comprobante_xubio}</td>
+        <td>${i.cliente_xubio}</td>
+        <td style="text-align:right">${fmt(i.importe_xubio)}</td>
+        <td style="text-align:right">${i.monto_caja !== null ? fmt(i.monto_caja) : '—'}</td>
+        <td style="text-align:right;font-weight:700;color:${i.diferencia === 0 ? '#166634' : '#C0392B'}">${fmt(i.diferencia)}</td>
+        <td><span class="cc-badge ${i.estado}">${i.estado.replace(/_/g, ' ')}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  // ── RESUMEN MENSUAL ──────────────────────────────────────────────────────────
+  const anioSelect = document.getElementById('resumenAnio');
+  const anioActual = new Date().getFullYear();
+  for (let y = anioActual; y >= anioActual - 3; y--) {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    anioSelect.appendChild(opt);
+  }
+
+  document.getElementById('btnCargarResumen').addEventListener('click', async () => {
+    const anio = document.getElementById('resumenAnio').value;
+    const r = await fetch(`/administracion/control-caja/api/resumen-mensual/?anio=${anio}`);
+    const data = await r.json();
+    renderResumen(data);
+  });
+
+  function renderResumen(data) {
+    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const tipos = {
+      cobro_ventas: 'Cobro ventas',
+      otro_ingreso: 'Otro ingreso',
+      pago_proveedor: 'Pago proveedor',
+      otro_egreso: 'Otro egreso',
+      gasto_caja_chica: 'Gasto caja chica',
+      sueldo_jornal: 'Sueldo/Jornal',
+    };
+
+    let html = `<div class="cc-tbl-wrap"><table class="cc-resumen-tabla">
+      <thead><tr><th>Categoría</th>${meses.map(m => `<th>${m}</th>`).join('')}<th>Total</th></tr></thead>
+      <tbody>`;
+
+    // Ingresos
+    html += `<tr><td colspan="${meses.length + 2}" style="background:var(--pale);color:var(--navy);font-weight:700;padding:8px 10px;">INGRESOS</td></tr>`;
+    ['cobro_ventas','otro_ingreso'].forEach(tipo => {
+      const fila = data.tipos[tipo] || {};
+      let total = 0;
+      const celdas = Object.values(fila).map(v => { total += v; return `<td>${v > 0 ? fmt(v) : '—'}</td>`; }).join('');
+      html += `<tr><td>${tipos[tipo]}</td>${celdas}<td>${fmt(total)}</td></tr>`;
+    });
+    html += `<tr class="row-total"><td>Total ingresos</td>${Object.values(data.totales_ingresos).map(v => `<td>${fmt(v)}</td>`).join('')}<td>${fmt(Object.values(data.totales_ingresos).reduce((a,b) => a+b, 0))}</td></tr>`;
+
+    // Egresos
+    html += `<tr><td colspan="${meses.length + 2}" style="background:#FDEDED;color:#C0392B;font-weight:700;padding:8px 10px;">EGRESOS</td></tr>`;
+    ['pago_proveedor','otro_egreso','gasto_caja_chica','sueldo_jornal'].forEach(tipo => {
+      const fila = data.tipos[tipo] || {};
+      let total = 0;
+      const celdas = Object.values(fila).map(v => { total += v; return `<td>${v > 0 ? fmt(v) : '—'}</td>`; }).join('');
+      html += `<tr><td>${tipos[tipo]}</td>${celdas}<td>${fmt(total)}</td></tr>`;
+    });
+    html += `<tr class="row-total"><td>Total egresos</td>${Object.values(data.totales_egresos).map(v => `<td>${fmt(v)}</td>`).join('')}<td>${fmt(Object.values(data.totales_egresos).reduce((a,b) => a+b, 0))}</td></tr>`;
+
+    // Resultado
+    html += `<tr class="row-total" style="background:var(--navy);color:#fff;">
+      <td style="color:#fff;">Resultado</td>
+      ${Object.keys(data.totales_ingresos).map(m => {
+        const res = (data.totales_ingresos[m] || 0) - (data.totales_egresos[m] || 0);
+        return `<td style="color:${res >= 0 ? '#86efac' : '#fca5a5'}">${fmt(res)}</td>`;
+      }).join('')}
+      <td style="color:#fff;">${fmt(Object.values(data.totales_ingresos).reduce((a,b)=>a+b,0) - Object.values(data.totales_egresos).reduce((a,b)=>a+b,0))}</td>
+    </tr>`;
+
+    html += '</tbody></table></div>';
+    document.getElementById('resumenContenido').innerHTML = html;
+  }
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────────
+cargarSaldoActual();
+cargarMovimientos();
+cargarCierres();
+</script>
+{% endblock %}

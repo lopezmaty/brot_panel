@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'frontend',
     'gestion_gerencial',
     'control_horario',
+    'control_caja',
 ]
 
 MIDDLEWARE = [

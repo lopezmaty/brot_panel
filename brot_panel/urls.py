@@ -45,6 +45,7 @@ urlpatterns = [
     path('gestion-gerencial/estado-resultados/', estado_resultados_view, name='estado_resultados'),
     path('api/control_horario/', include('control_horario.urls')),
     path('administracion/control-horario/', control_horario_view, name='control_horario'),
+    path('administracion/control-caja/', include('control_caja.urls')),
 
 ]
 
