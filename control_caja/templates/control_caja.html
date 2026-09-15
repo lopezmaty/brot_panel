@@ -62,8 +62,6 @@
 .cc-alert.warn { background: #FFF7ED; color: #9A3412; border-left: 3px solid var(--orange); }
 .cc-alert.ok { background: #E8F6EC; color: #166534; border-left: 3px solid #16A34A; }
 .cc-alert.error { background: #FDEDED; color: #C0392B; border-left: 3px solid #C0392B; }
-
-/* MODALES — fuera de cualquier contenedor con transform */
 .cc-modal-overlay {
   display: none;
   position: fixed !important;
@@ -92,8 +90,6 @@
 .cc-modal-title { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--navy); margin: 0 0 20px; }
 .cc-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); flex-wrap: wrap; }
 .cc-full-width { grid-column: 1 / -1; }
-
-/* Ocultar nav móvil en desktop */
 @media (min-width: 769px) {
   .mobile-sidebar-nav { display: none !important; }
 }
@@ -119,7 +115,6 @@
 <span class="page-eyebrow">Administración</span>
 <h1 class="page-title">Control de Caja</h1>
 
-<!-- SALDO ACTUAL -->
 <div class="cc-saldo-card">
   <div>
     <div class="label">Saldo actual de caja</div>
@@ -285,7 +280,7 @@
 
 </div>
 
-<!-- ══ MODAL MOVIMIENTO — fuera del cc-wrap ══ -->
+<!-- ══ MODAL MOVIMIENTO ══ -->
 <div class="cc-modal-overlay" id="ccModalMovimiento">
   <div class="cc-modal-box">
     <h2 class="cc-modal-title" id="ccModalTitulo">Nuevo movimiento</h2>
@@ -317,11 +312,11 @@
       </div>
       <div>
         <label>N° Comprobante</label>
-        <input type="text" id="ccNroComprobante" placeholder="Ej: 0003-00001234">
+        <input type="text" id="ccNroComprobante" placeholder="Ej: 1-1234">
       </div>
       <div>
         <label>N° Recibo / OP</label>
-        <input type="text" id="ccNroRecibo" placeholder="Ej: 0001-00003071">
+        <input type="text" id="ccNroRecibo" placeholder="Ej: 1-3071">
       </div>
       <div>
         <label>Monto ($)</label>
@@ -336,7 +331,7 @@
     <div class="cc-modal-actions">
       {% if es_admin %}
       <button class="cc-btn cc-btn-danger cc-btn-sm" id="btnEliminarMovimiento" style="display:none;margin-right:auto;">Eliminar</button>
-      <button class="cc-btn cc-btn-secondary cc-btn-sm" id="btnBloquearMovimiento" style="display:none;">🔒 Bloquear</button>
+      <button class="cc-btn cc-btn-secondary cc-btn-sm" id="btnDesbloquearMovimiento" style="display:none;">🔓 Desbloquear</button>
       {% endif %}
       <button class="cc-btn cc-btn-secondary" id="btnCancelarMovimiento">Cancelar</button>
       <button class="cc-btn cc-btn-primary" id="btnGuardarMovimiento">Guardar</button>
@@ -344,7 +339,7 @@
   </div>
 </div>
 
-<!-- ══ MODAL SALDO INICIAL — fuera del cc-wrap ══ -->
+<!-- ══ MODAL SALDO INICIAL ══ -->
 {% if es_admin %}
 <div class="cc-modal-overlay" id="ccModalSaldo">
   <div class="cc-modal-box" style="max-width:380px;">
@@ -441,6 +436,7 @@ function renderMovimientos(movimientos) {
     const rowClass = m.estado === 'parcial' ? 'cc-fila-parcial' : m.estado === 'bloqueado' ? 'cc-fila-bloqueada' : '';
     const montoClass = m.es_ingreso ? 'cc-ingreso' : 'cc-egreso';
     const montoPrefix = m.es_ingreso ? '+' : '-';
+    const puedeEditar = m.estado !== 'bloqueado' || CC_ES_ADMIN;
     return `<tr class="${rowClass}">
       <td>${fmtFecha(m.fecha)}</td>
       <td>${m.tipo.replace(/_/g, ' ')}</td>
@@ -451,12 +447,7 @@ function renderMovimientos(movimientos) {
       <td class="${montoClass}" style="text-align:right;">${m.monto !== null ? montoPrefix + fmt(m.monto) : '—'}</td>
       <td><span class="cc-badge ${m.estado}">${m.estado}</span></td>
       <td>${m.conciliado ? '✅' : '—'}</td>
-      <td>
-        <button class="cc-btn cc-btn-secondary cc-btn-sm btn-editar-movimiento"
-                data-id="${m.id}" ${m.estado === 'bloqueado' && !CC_ES_ADMIN ? 'disabled' : ''}>
-          ${m.estado === 'bloqueado' && CC_ES_ADMIN ? '🔓 Ver' : '✏ Editar'}
-        </button>
-      </td>
+      <td>${puedeEditar ? `<button class="cc-btn cc-btn-secondary cc-btn-sm btn-editar-movimiento" data-id="${m.id}">${m.estado === 'bloqueado' ? '🔓 Ver' : '✏ Editar'}</button>` : ''}</td>
     </tr>`;
   }).join('');
   tbody.querySelectorAll('.btn-editar-movimiento').forEach(btn => {
@@ -482,13 +473,13 @@ function abrirModalMovimiento(id = null) {
     document.getElementById('btnGuardarMovimiento').disabled = false;
     if (CC_ES_ADMIN) {
       document.getElementById('btnEliminarMovimiento').style.display = 'none';
-      document.getElementById('btnBloquearMovimiento').style.display = 'none';
+      document.getElementById('btnDesbloquearMovimiento').style.display = 'none';
     }
   } else {
     fetch(`/administracion/control-caja/api/movimientos/${id}/`)
       .then(r => r.json())
       .then(m => {
-        document.getElementById('ccModalTitulo').textContent = 'Editar movimiento';
+        document.getElementById('ccModalTitulo').textContent = m.estado === 'bloqueado' ? 'Ver movimiento' : 'Editar movimiento';
         document.getElementById('ccMovimientoId').value = m.id;
         document.getElementById('ccFecha').value = m.fecha || '';
         document.getElementById('ccTipo').value = m.tipo;
@@ -503,10 +494,7 @@ function abrirModalMovimiento(id = null) {
         document.getElementById('btnGuardarMovimiento').disabled = bloqueado && !CC_ES_ADMIN;
         if (CC_ES_ADMIN) {
           document.getElementById('btnEliminarMovimiento').style.display = 'inline-flex';
-          const btnBloquear = document.getElementById('btnBloquearMovimiento');
-          btnBloquear.style.display = 'inline-flex';
-          btnBloquear.textContent = bloqueado ? '🔓 Desbloquear' : '🔒 Bloquear';
-          btnBloquear.dataset.estadoActual = m.estado;
+          document.getElementById('btnDesbloquearMovimiento').style.display = bloqueado ? 'inline-flex' : 'none';
         }
       });
   }
@@ -573,14 +561,12 @@ document.getElementById('btnEliminarMovimiento').addEventListener('click', async
   cargarSaldoActual();
 });
 
-document.getElementById('btnBloquearMovimiento').addEventListener('click', async () => {
+document.getElementById('btnDesbloquearMovimiento').addEventListener('click', async () => {
   const id = document.getElementById('ccMovimientoId').value;
-  const estadoActual = document.getElementById('btnBloquearMovimiento').dataset.estadoActual;
-  const nuevoEstado = estadoActual === 'bloqueado' ? 'completo' : 'bloqueado';
   await fetch(`/administracion/control-caja/api/movimientos/${id}/`, {
     method: 'PUT',
     headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken()},
-    body: JSON.stringify({estado: nuevoEstado}),
+    body: JSON.stringify({estado: 'parcial'}),
   });
   document.getElementById('ccModalMovimiento').classList.remove('open');
   cargarMovimientos();
@@ -642,16 +628,29 @@ async function cargarCierres() {
     const difStr = c.diferencia !== null
       ? (c.diferencia > 0 ? `+${fmt(c.diferencia)}` : fmt(c.diferencia))
       : '—';
-    return `<tr class="${difClass}">
+    return `<tr class="${difClass}" data-fecha="${c.fecha}" data-id="${c.id}">
       <td>${fmtFecha(c.fecha)}</td>
       <td style="text-align:right">${fmt(c.saldo_teorico)}</td>
       <td style="text-align:right">${c.efectivo_contado !== null ? fmt(c.efectivo_contado) : '—'}</td>
       <td style="text-align:right;font-weight:700;color:${c.diferencia === 0 ? '#166534' : '#C0392B'}">${difStr}</td>
       <td>${c.responsable || '—'}</td>
       <td style="font-size:.8rem;color:var(--gray600)">${c.observaciones || '—'}</td>
-      <td><button class="cc-btn cc-btn-secondary cc-btn-sm btn-editar-cierre" data-id="${c.id}">✏</button></td>
+      <td>${CC_ES_ADMIN ? `<button class="cc-btn cc-btn-secondary cc-btn-sm btn-editar-cierre" data-id="${c.id}" data-fecha="${c.fecha}" data-efectivo="${c.efectivo_contado ?? ''}" data-responsable="${c.responsable || ''}" data-obs="${c.observaciones || ''}">✏</button>` : ''}</td>
     </tr>`;
   }).join('');
+
+  if (CC_ES_ADMIN) {
+    tbody.querySelectorAll('.btn-editar-cierre').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('cierreFecha').value = btn.dataset.fecha;
+        document.getElementById('cierreEfectivo').value = btn.dataset.efectivo;
+        document.getElementById('cierreResponsable').value = btn.dataset.responsable;
+        document.getElementById('cierreObservaciones').value = btn.dataset.obs;
+        document.getElementById('tab-cierre').scrollIntoView({behavior: 'smooth'});
+        document.getElementById('cierreEfectivo').focus();
+      });
+    });
+  }
 }
 
 document.getElementById('btnGuardarCierre').addEventListener('click', async () => {
@@ -815,13 +814,12 @@ function renderResumen(data) {
 }
 {% endif %}
 
-// Mover modales al body para evitar problemas de posicionamiento
+// ── INIT ───────────────────────────────────────────────────────────────────────
 document.body.appendChild(document.getElementById('ccModalMovimiento'));
 {% if es_admin %}
 document.body.appendChild(document.getElementById('ccModalSaldo'));
 {% endif %}
 
-// ── INIT ───────────────────────────────────────────────────────────────────────
 cargarSaldoActual();
 cargarMovimientos();
 cargarCierres();
