@@ -60,14 +60,13 @@
     </div>
     {% for item in familia_group.list %}
     <div class="producto-fila">
-        <div class="producto-info">
-          <div class="producto-info-top">
-            <span class="producto-nombre">{{ item.producto.nombre }} {{ item.producto.variedad.nombre }}</span>
-            <span class="producto-tamaño-badge" style="background: {{ item.tamaño_bg }}; color: {{ item.tamaño_color }};">{{ item.producto.tamaño.nombre }}</span>
-          </div>
+      <div class="producto-info">
+        <div class="producto-info-top">
+          <span class="producto-nombre">{{ item.producto.nombre }} {{ item.producto.variedad.nombre }}</span>
+          <span class="producto-tamaño-badge" style="background: {{ item.tamaño_bg }}; color: {{ item.tamaño_color }};">{{ item.producto.tamaño.nombre }}</span>
         </div>
-        <span class="producto-precio">${{ item.precio|floatformat:2 }}</span>
       </div>
+      <span class="producto-precio">${{ item.precio|floatformat:2 }}</span>
       <div class="producto-cantidad-ctrl">
         <input type="text" inputmode="numeric" pattern="[0-9]*" class="input-cantidad"
                id="cantidad-{{ item.producto.id }}"
