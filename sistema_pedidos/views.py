@@ -270,7 +270,7 @@ def confirmar_pedido_catalogo(request, token):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def ventas_xubio_15dias(request):
-    from .xubio import obtener_token, XUBIO_BASE
+    from .xubio import obtener_token, XUBIO_BASE, _paginar_comprobantes
     from datetime import date, timedelta
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -284,16 +284,13 @@ def ventas_xubio_15dias(request):
             'Accept': 'application/json',
         }
 
-        response = requests.get(
+        comprobantes = _paginar_comprobantes(
             f'{XUBIO_BASE}/comprobanteVentaBean',
-            params={
-                'fechaDesde': fecha_desde.strftime('%Y-%m-%d'),
-                'fechaHasta': fecha_hasta.strftime('%Y-%m-%d'),
-            },
-            headers=headers,
+            fecha_desde.strftime('%Y-%m-%d'),
+            fecha_hasta.strftime('%Y-%m-%d'),
+            headers,
         )
 
-        comprobantes = response.json()
         ventas = {}
 
         def traer_detalle(transaccion_id):
