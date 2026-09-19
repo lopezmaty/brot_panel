@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<style>
+  @page {
+    size: A4;
+    margin: 2.5cm 2.5cm 3cm;
+    @bottom-center {
+      content: "Brot Panes — Documento interno de Recursos Humanos";
+      font-family: 'DejaVu Sans', sans-serif;
+      font-size: 8pt;
+      color: #8a8a8a;
+    }
+  }
+  body { font-family: 'DejaVu Sans', sans-serif; font-size: 11.5pt; color: #262220; line-height: 1.65; }
+
+  .encabezado { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 2px solid #262220; margin-bottom: 6px; }
+  .encabezado img { height: 46px; }
+  .encabezado .marca-texto { font-size: 15pt; font-weight: bold; letter-spacing: 0.5px; }
+  .encabezado .meta { text-align: right; font-size: 9pt; color: #6b6058; }
+  .encabezado .meta strong { color: #262220; font-size: 10pt; }
+
+  .franja { font-size: 8.5pt; text-transform: uppercase; letter-spacing: 1.2px; color: #8a8a8a; text-align: right; margin-bottom: 34px; }
+
+  .titulo { text-align: center; font-size: 14pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 28px; }
+
+  .cuerpo p { text-align: justify; margin: 0 0 14px; }
+  .cuerpo strong { font-weight: bold; }
+
+  .cierre { margin-top: 24px; margin-bottom: 70px; }
+
+  .firmas { display: flex; justify-content: space-between; gap: 40px; }
+  .firma-box { width: 45%; }
+  .firma-linea { border-top: 1px solid #262220; margin-bottom: 6px; }
+  .firma-box .rol { font-size: 9.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 14px; }
+  .firma-box .campo { font-size: 9.5pt; color: #4a423c; margin-bottom: 10px; }
+  .firma-box .campo .raya { display: inline-block; border-bottom: 1px solid #b8afa6; min-width: 140px; margin-left: 4px; }
+</style>
+</head>
+<body>
+
+  <div class="encabezado">
+    {% if logo_base64 %}
+      <img src="data:image/png;base64,{{ logo_base64 }}" alt="Brot Panes">
+    {% else %}
+      <div class="marca-texto">Brot Panes</div>
+    {% endif %}
+    <div class="meta">
+      <strong>Documento N.° {{ doc.id }}</strong><br>
+      Córdoba, {{ doc.fecha|date:"d \d\e F \d\e Y" }}
+    </div>
+  </div>
+
+  <div class="franja">Recursos Humanos · Documentación interna</div>
+
+  <div class="titulo">{{ doc.get_tipo_display }}</div>
+
+  <div class="cuerpo">
+    <p>
+      Por medio de la presente se deja constancia de lo siguiente respecto de
+      <strong>{{ doc.empleado.nombre_completo }}</strong>, DNI {{ doc.empleado.dni }}, quien se desempeña
+      en el puesto de {{ doc.empleado.puesto }} desde el {{ doc.empleado.fecha_ingreso|date:"d/m/Y" }}:
+    </p>
+
+    {% if doc.tipo == "cambio_domicilio" %}
+    <p>El/la empleado/a informa el siguiente cambio de domicilio: <strong>{{ doc.domicilio_nuevo }}</strong>.</p>
+    {% endif %}
+
+    {% if doc.motivo %}
+    <p>{{ doc.motivo|linebreaksbr }}</p>
+    {% endif %}
+  </div>
+
+  <div class="cierre">
+    <p>Se deja constancia de la recepción y notificación del presente documento mediante la firma de ambas partes.</p>
+  </div>
+
+  <div class="firmas">
+    <div class="firma-box">
+      <div class="firma-linea"></div>
+      <div class="rol">Empleado/a</div>
+      <div class="campo">Aclaración: <span class="raya"></span></div>
+      <div class="campo">DNI: <span class="raya"></span></div>
+    </div>
+    <div class="firma-box">
+      <div class="firma-linea"></div>
+      <div class="rol">Por Brot Panes</div>
+      <div class="campo">Aclaración: <span class="raya"></span></div>
+      <div class="campo">Cargo: <span class="raya"></span></div>
+    </div>
+  </div>
+
+</body>
+</html>

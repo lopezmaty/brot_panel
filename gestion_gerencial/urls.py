@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, views_flujo
 
 urlpatterns = [
     # --- Mapa Económico ---
@@ -41,4 +41,12 @@ urlpatterns = [
     path('eerr/asignar-mapeo-producto-costeo/', views.asignar_mapeo_producto_costeo, name='asignar_mapeo_producto_costeo'),
     path('eerr/calcular/', views.calcular_eerr_mes, name='calcular_eerr_mes'),
     path('eerr/historico/', views.historico_eerr, name='historico_eerr'),
+
+    # --- Flujo de fondos ---
+    path('flujo-fondos/resumen/', views_flujo.ff_resumen, name='ff_resumen'),
+    path('flujo-fondos/cuentas/', views_flujo.ff_cuentas, name='ff_cuentas'),
+    path('flujo-fondos/cuentas/<int:pk>/', views_flujo.ff_cuenta_detalle, name='ff_cuenta_detalle'),
+    path('flujo-fondos/cuentas/<int:pk>/saldar/', views_flujo.ff_cuenta_saldar, name='ff_cuenta_saldar'),
+    path('flujo-fondos/saldos/', views_flujo.ff_saldos, name='ff_saldos'),
+    path('flujo-fondos/saldos/<int:pk>/', views_flujo.ff_saldo_detalle, name='ff_saldo_detalle'),
 ]

@@ -1,0 +1,687 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Flujo de fondos · Brot Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+.ff-wrap { font-family: 'DM Sans', sans-serif; color: var(--text-primary); font-size: 14px; }
+.ff-nav-btn { display: flex; align-items: center; gap: 10px; width: 100%; background: transparent; border: none; color: var(--gray400); text-align: left; padding: 11px 20px; cursor: pointer; font-family: inherit; font-size: .83rem; font-weight: 500; position: relative; }
+.ff-nav-btn:hover { background: rgba(255,255,255,.05); color: #fff; }
+.ff-nav-btn.active { background: rgba(58,175,228,.15); color: #fff; }
+.ff-nav-btn.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--orange); }
+.ff-tab { display: none; }
+.ff-tab.active { display: block; }
+
+.ff-sub { color: var(--text-muted); margin: -16px 0 20px; font-size: 13px; max-width: 780px; }
+.ff-kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 22px; }
+.ff-kpi { padding: 18px 20px; }
+.ff-kpi .label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.ff-kpi .valor { font-family: 'DM Serif Display', serif; font-size: 26px; margin-top: 6px; }
+.ff-kpi .nota { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.ff-section-title { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 18px; margin: 26px 0 4px; }
+.ff-section-hint { font-size: 13px; color: var(--text-muted); margin: 0 0 12px; }
+.ff-scroll { overflow-x: auto; }
+.ff-scroll table { white-space: nowrap; }
+.ff-num { text-align: right; font-variant-numeric: tabular-nums; }
+.ff-neg { color: #C0392B; }
+.ff-muted { color: var(--text-muted); }
+.ff-small { font-size: 12px; }
+.ff-total td { font-weight: 700; border-top: 2px solid var(--border); }
+.ff-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.ff-badge.ok { background: #E8F6EC; color: #166534; }
+.ff-badge.warn { background: #FDF3E0; color: #B5750B; }
+.ff-badge.bad { background: #FDEDED; color: #C0392B; }
+.ff-badge.gray { background: var(--gray100); color: var(--gray600); }
+.ff-empty { text-align: center; padding: 40px; color: var(--gray400); }
+.ff-select { border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; font-family: inherit; font-size: 14px; background: #fff; }
+.ff-hint { font-size: 12px; color: var(--text-muted); background: var(--gray100); border-radius: 8px; padding: 8px 12px; grid-column: 1 / -1; }
+.ff-reglas td:first-child { font-weight: 600; width: 260px; }
+.ff-reglas td { white-space: normal; vertical-align: top; }
+.ff-totales { display: flex; gap: 24px; margin: 0 0 12px; font-size: 13px; color: var(--text-muted); }
+.ff-totales strong { color: var(--text-primary); }
+.ff-saldos-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 22px; }
+.ff-saldo-card { padding: 18px 20px; }
+.ff-saldo-card .valor { font-family: 'DM Serif Display', serif; font-size: 24px; margin: 6px 0 2px; }
+@media (max-width: 900px) { .ff-kpis, .ff-saldos-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+</style>
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-nav">
+  <div class="sidebar-category-title">Flujo de fondos</div>
+  <nav id="ffNav">
+    <button class="ff-nav-btn active" data-tab="resumen">Posición financiera</button>
+    <button class="ff-nav-btn" data-tab="cuentas">Cuentas corrientes</button>
+    <button class="ff-nav-btn" data-tab="saldos">Saldos bancarios</button>
+  </nav>
+</div>
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<div class="ff-wrap">
+
+<!-- ══ TAB POSICIÓN FINANCIERA ══ -->
+<div class="ff-tab active" id="tab-resumen">
+
+  <span class="page-eyebrow">Gestión gerencial</span>
+  <h1 class="page-title">Flujo de fondos</h1>
+  <p class="ff-sub">Dónde está la plata y qué cobros y pagos vienen, a 30, 60 y 90 días. Está pensado para mirar hacia adelante: una cuenta corriente que ya se cobró o se pagó deja de figurar también en cortes anteriores.</p>
+
+  <div class="toolbar">
+    <div class="toolbar-left" style="gap:12px; align-items:center;">
+      <label for="ffMes" style="font-weight:600; font-size:13px;">Mes de corte</label>
+      <select id="ffMes" class="ff-select"></select>
+      <span class="ff-muted" style="font-size:13px;" id="ffCorteTxt"></span>
+    </div>
+  </div>
+
+  <div class="ff-kpis">
+    <div class="card ff-kpi">
+      <div class="label">Disponibilidad al corte</div>
+      <div class="valor" id="ffKpiDisp">—</div>
+      <div class="nota">Efectivo + BBVA + Mercado Pago</div>
+    </div>
+    <div class="card ff-kpi">
+      <div class="label">Posición a 30 días</div>
+      <div class="valor" id="ffKpiPos30">—</div>
+      <div class="nota">Saldo + cobros − pagos</div>
+    </div>
+    <div class="card ff-kpi">
+      <div class="label">Cobros proyectados 90d</div>
+      <div class="valor" id="ffKpiCobros">—</div>
+      <div class="nota" id="ffKpiCobrosNota"></div>
+    </div>
+    <div class="card ff-kpi">
+      <div class="label">Pagos proyectados 90d</div>
+      <div class="valor" id="ffKpiPagos">—</div>
+      <div class="nota" id="ffKpiPagosNota"></div>
+    </div>
+  </div>
+
+  <h2 class="ff-section-title">Mapa de dinero</h2>
+  <p class="ff-section-hint">Saldo al corte y posición acumulada a 30, 60 y 90 días. En las cuentas corrientes, el saldo al corte es lo que ya venció y sigue impago.</p>
+  <div class="card ff-scroll" style="padding:0;">
+    <table>
+      <thead>
+        <tr>
+          <th>Caja / cuenta</th><th>Origen del dato</th><th class="ff-num">Saldo al corte</th>
+          <th class="ff-num">Cobros 0-30</th><th class="ff-num">Pagos 0-30</th><th class="ff-num">Posición 30d</th>
+          <th class="ff-num">Cobros 31-60</th><th class="ff-num">Pagos 31-60</th><th class="ff-num">Posición 60d</th>
+          <th class="ff-num">Cobros 61-90</th><th class="ff-num">Pagos 61-90</th><th class="ff-num">Posición 90d</th>
+        </tr>
+      </thead>
+      <tbody id="ffBodyMatriz"><tr><td colspan="12" class="ff-empty">Cargando...</td></tr></tbody>
+    </table>
+  </div>
+
+  <h2 class="ff-section-title">Flujo semanal proyectado</h2>
+  <p class="ff-section-hint">13 semanas desde el día siguiente al corte. La posición acumulada arranca desde el saldo total al corte.</p>
+  <div class="card ff-scroll" style="padding:0;">
+    <table>
+      <thead>
+        <tr>
+          <th>Semana</th><th>Desde</th><th>Hasta</th>
+          <th class="ff-num">Cobros proyectados</th><th class="ff-num">Pagos proyectados</th>
+          <th class="ff-num">Flujo neto</th><th class="ff-num">Posición acumulada</th><th>Lectura</th>
+        </tr>
+      </thead>
+      <tbody id="ffBodySemanas"><tr><td colspan="8" class="ff-empty">Cargando...</td></tr></tbody>
+    </table>
+  </div>
+
+  <h2 class="ff-section-title">De dónde sale cada dato</h2>
+  <div class="card ff-scroll" style="padding:0; margin-bottom:30px;">
+    <table class="ff-reglas">
+      <thead><tr><th>Dato</th><th>Cómo se carga</th></tr></thead>
+      <tbody>
+        <tr><td>Efectivo</td><td>Se toma solo de Control de caja: saldo inicial más los movimientos completos hasta el corte.</td></tr>
+        <tr><td>BBVA y Mercado Pago</td><td>Cargá el saldo en "Saldos bancarios" cada vez que quieras actualizarlo. Para cada corte se usa el último saldo cargado hasta esa fecha.</td></tr>
+        <tr><td>Venta a cuenta corriente</td><td>Cargá el comprobante impago como Cliente, con su fecha de vencimiento. Se proyecta en Cobros según esa fecha.</td></tr>
+        <tr><td>Compra a proveedor pendiente</td><td>Cargá el comprobante impago como Proveedor, con su fecha de vencimiento. Se proyecta en Pagos.</td></tr>
+        <tr><td>Cobro o pago</td><td>Usá "Registrar cobro" o "Registrar pago" en la fila. Si es parcial, queda el resto pendiente.</td></tr>
+        <tr><td>Vencidos</td><td>Lo que venció hasta el corte y sigue impago entra en el saldo al corte, asumiendo que se cobra o se paga.</td></tr>
+        <tr><td>Lectura 30/60/90</td><td>Saldo al corte + cobros futuros − pagos futuros, acumulado por horizonte.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+<!-- /tab-resumen -->
+
+<!-- ══ TAB CUENTAS CORRIENTES ══ -->
+<div class="ff-tab" id="tab-cuentas">
+
+  <span class="page-eyebrow">Flujo de fondos</span>
+  <h1 class="page-title">Cuentas corrientes</h1>
+  <p class="ff-sub">Cargá solo los comprobantes impagos, cada uno con su vencimiento. El importe es lo que falta cobrar o pagar.</p>
+
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <input type="text" id="ffBuscar" class="input-buscar" placeholder="Buscar por cliente, proveedor o comprobante">
+      <div class="filtro-icono-wrap">
+        <button class="filtro-icono-btn" id="ffBtnFiltro"><i class="ti ti-filter"></i></button>
+        <div class="filtro-desplegable" id="ffFiltroPanel">
+          <label>Tipo</label>
+          <select id="ffFiltroTipo">
+            <option value="">Clientes y proveedores</option>
+            <option value="cliente">Clientes (a cobrar)</option>
+            <option value="proveedor">Proveedores (a pagar)</option>
+          </select>
+          <label style="margin-top:10px;">Estado</label>
+          <select id="ffFiltroEstado">
+            <option value="pendiente">Pendientes</option>
+            <option value="cancelado">Cobrados / pagados</option>
+            <option value="">Todos</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="toolbar-right">
+      <button class="btn-primary" id="ffBtnNuevaCuenta"><i class="ti ti-plus"></i> Nuevo comprobante</button>
+    </div>
+  </div>
+
+  <div class="ff-totales">
+    <span>Pendiente de cobro: <strong id="ffTotCobrar">—</strong></span>
+    <span>Pendiente de pago: <strong id="ffTotPagar">—</strong></span>
+  </div>
+
+  <div class="card ff-scroll" style="padding:0;">
+    <table>
+      <thead>
+        <tr>
+          <th>Vencimiento</th><th>Tipo</th><th>Cliente / Proveedor</th><th>Comprobante</th>
+          <th>Emisión</th><th class="ff-num">Importe</th><th>Estado</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="ffBodyCuentas"><tr><td colspan="8" class="ff-empty">Cargando...</td></tr></tbody>
+    </table>
+  </div>
+
+</div>
+<!-- /tab-cuentas -->
+
+<!-- ══ TAB SALDOS BANCARIOS ══ -->
+<div class="ff-tab" id="tab-saldos">
+
+  <span class="page-eyebrow">Flujo de fondos</span>
+  <h1 class="page-title">Saldos bancarios</h1>
+  <p class="ff-sub">El efectivo viene solo de Control de caja. BBVA y Mercado Pago se cargan a mano: anotá el saldo con su fecha y el flujo usa el último hasta el corte.</p>
+
+  <div class="toolbar">
+    <div class="toolbar-left"></div>
+    <div class="toolbar-right">
+      <button class="btn-primary" id="ffBtnNuevoSaldo"><i class="ti ti-plus"></i> Cargar saldo</button>
+    </div>
+  </div>
+
+  <div class="ff-saldos-grid" id="ffSaldosCards"></div>
+
+  <h2 class="ff-section-title">Historial de saldos</h2>
+  <div class="card" style="padding:0; overflow:hidden; margin-top:10px;">
+    <table>
+      <thead><tr><th>Fecha</th><th>Cuenta</th><th class="ff-num">Saldo</th><th></th></tr></thead>
+      <tbody id="ffBodySaldos"><tr><td colspan="4" class="ff-empty">Cargando...</td></tr></tbody>
+    </table>
+  </div>
+
+</div>
+<!-- /tab-saldos -->
+
+</div>
+<!-- /ff-wrap -->
+
+<!-- ══ MODAL COMPROBANTE ══ -->
+<div class="modal-overlay" id="ffModalCuenta">
+  <div class="modal-box" style="max-width:600px;">
+    <h2 class="modal-title" id="ffCuentaTitulo">Nuevo comprobante</h2>
+    <input type="hidden" id="ffCuentaId">
+    <div class="form-grid">
+      <div>
+        <label>Tipo</label>
+        <select id="ffCuentaTipo">
+          <option value="cliente">Cliente (a cobrar)</option>
+          <option value="proveedor">Proveedor (a pagar)</option>
+        </select>
+      </div>
+      <div>
+        <label>Importe pendiente</label>
+        <input type="number" id="ffCuentaImporte" min="0" step="0.01">
+      </div>
+      <div style="grid-column:1/-1;">
+        <label id="ffCuentaContraLabel">Cliente</label>
+        <input type="text" id="ffCuentaContraparte">
+      </div>
+      <div>
+        <label>Comprobante</label>
+        <input type="text" id="ffCuentaComprobante" placeholder="Ej: 0001-00002520">
+      </div>
+      <div>
+        <label>Fecha de emisión</label>
+        <input type="text" id="ffCuentaEmision" placeholder="Opcional" maxlength="10">
+      </div>
+      <div>
+        <label>Fecha de vencimiento</label>
+        <input type="text" id="ffCuentaVencimiento" placeholder="dd/mm/yyyy" maxlength="10">
+      </div>
+      <div>
+        <label>Observaciones</label>
+        <input type="text" id="ffCuentaObs" placeholder="Opcional">
+      </div>
+    </div>
+    <div id="ffCuentaMsg" style="margin-top:10px;"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="ffCuentaCancelar">Cancelar</button>
+      <button class="btn-primary" id="ffCuentaGuardar">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL REGISTRAR COBRO / PAGO ══ -->
+<div class="modal-overlay" id="ffModalSaldar">
+  <div class="modal-box" style="max-width:460px;">
+    <h2 class="modal-title" id="ffSaldarTitulo">Registrar cobro</h2>
+    <input type="hidden" id="ffSaldarId">
+    <p class="ff-muted" id="ffSaldarDetalle" style="margin:0 0 14px;"></p>
+    <div class="form-grid">
+      <div>
+        <label>Fecha</label>
+        <input type="text" id="ffSaldarFecha" placeholder="dd/mm/yyyy" maxlength="10">
+      </div>
+      <div>
+        <label>Monto</label>
+        <input type="number" id="ffSaldarMonto" min="0" step="0.01">
+      </div>
+      <div class="ff-hint">Si el monto es menor al importe pendiente, el resto queda pendiente.</div>
+    </div>
+    <div id="ffSaldarMsg" style="margin-top:10px;"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="ffSaldarCancelar">Cancelar</button>
+      <button class="btn-primary" id="ffSaldarGuardar">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL SALDO BANCARIO ══ -->
+<div class="modal-overlay" id="ffModalSaldo">
+  <div class="modal-box" style="max-width:480px;">
+    <h2 class="modal-title">Cargar saldo</h2>
+    <div class="form-grid">
+      <div style="grid-column:1/-1;">
+        <label>Cuenta</label>
+        <select id="ffSaldoCuenta">
+          <option value="bbva">BBVA</option>
+          <option value="mercado_pago">Mercado Pago</option>
+        </select>
+      </div>
+      <div>
+        <label>Fecha del saldo</label>
+        <input type="text" id="ffSaldoFecha" placeholder="dd/mm/yyyy" maxlength="10">
+      </div>
+      <div>
+        <label>Saldo</label>
+        <input type="number" id="ffSaldoMonto" step="0.01">
+      </div>
+      <div class="ff-hint">Si ya cargaste un saldo de esa cuenta en esa fecha, se reemplaza.</div>
+    </div>
+    <div id="ffSaldoMsg" style="margin-top:10px;"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="ffSaldoCancelar">Cancelar</button>
+      <button class="btn-primary" id="ffSaldoGuardar">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const FF_API = '/api/gestion_gerencial/flujo-fondos/';
+const $ = (id) => document.getElementById(id);
+const ffPesos = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+
+function ffCsrf() {
+  const el = document.querySelector('[name=csrfmiddlewaretoken]');
+  return el ? el.value : '';
+}
+function ffEsc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function ffMoney(n, guionEnCero = true) {
+  if (guionEnCero && Math.abs(n) < 0.005) return '<span class="ff-muted">—</span>';
+  return `<span class="${n < 0 ? 'ff-neg' : ''}">${ffPesos.format(n)}</span>`;
+}
+function ffFmtFecha(s) {
+  if (!s) return '—';
+  const [y, m, d] = s.split('-');
+  return `${d}/${m}/${y}`;
+}
+function ffParseFecha(s) {
+  if (!s) return null;
+  const p = s.split('/');
+  if (p.length !== 3 || !p[0] || !p[1] || p[2].length !== 4) return null;
+  return `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`;
+}
+function ffHoyISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function ffAutoFormatFecha(input) {
+  input.addEventListener('input', function () {
+    let v = this.value.replace(/\D/g, '');
+    if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
+    if (v.length >= 6) v = v.slice(0, 5) + '/' + v.slice(5);
+    this.value = v.slice(0, 10);
+  });
+}
+['ffCuentaEmision', 'ffCuentaVencimiento', 'ffSaldarFecha', 'ffSaldoFecha'].forEach((id) => ffAutoFormatFecha($(id)));
+
+function ffMsg(elId, texto) {
+  $(elId).innerHTML = texto
+    ? `<div style="padding:10px 14px;border-radius:8px;background:#FDEDED;color:#C0392B;">${ffEsc(texto)}</div>`
+    : '';
+}
+
+async function ffApi(path, { method = 'GET', body = null } = {}) {
+  const headers = { 'X-CSRFToken': ffCsrf() };
+  if (body) headers['Content-Type'] = 'application/json';
+  const r = await fetch(FF_API + path, { method, headers, body: body ? JSON.stringify(body) : null, cache: 'no-store' });
+  const data = await r.json().catch(() => ({}));
+  return { ok: r.ok, data };
+}
+
+// ── NAVEGACIÓN ENTRE TABS ────────────────────────────────────────────────────
+document.querySelectorAll('#ffNav .ff-nav-btn').forEach((btn) => {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('#ffNav .ff-nav-btn').forEach((b) => b.classList.remove('active'));
+    document.querySelectorAll('.ff-tab').forEach((t) => t.classList.remove('active'));
+    this.classList.add('active');
+    $(`tab-${this.dataset.tab}`).classList.add('active');
+    if (this.dataset.tab === 'resumen') ffCargarResumen();
+    if (this.dataset.tab === 'cuentas') ffCargarCuentas();
+    if (this.dataset.tab === 'saldos') ffCargarSaldos();
+  });
+});
+
+// ── RESUMEN ──────────────────────────────────────────────────────────────────
+function ffPoblarMeses() {
+  const hoy = new Date();
+  let html = '';
+  for (let off = -12; off <= 12; off++) {
+    const d = new Date(hoy.getFullYear(), hoy.getMonth() + off, 1);
+    const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    let txt = d.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
+    txt = txt.charAt(0).toUpperCase() + txt.slice(1);
+    html += `<option value="${val}"${off === 0 ? ' selected' : ''}>${txt}</option>`;
+  }
+  $('ffMes').innerHTML = html;
+}
+
+const FF_LECTURA_SEMANA = { ok: ['ok', 'OK'], negativa: ['warn', 'Semana negativa'], deficit: ['bad', 'Déficit'] };
+
+async function ffCargarResumen() {
+  const { ok, data } = await ffApi(`resumen/?mes=${$('ffMes').value}`);
+  if (!ok) {
+    $('ffBodyMatriz').innerHTML = `<tr><td colspan="12" class="ff-empty">${ffEsc(data.error || 'No se pudo cargar')}</td></tr>`;
+    return;
+  }
+  $('ffCorteTxt').textContent = `Fecha de corte: ${ffFmtFecha(data.corte)}`;
+
+  const k = data.kpis;
+  $('ffKpiDisp').innerHTML = ffMoney(k.disponibilidad, false);
+  $('ffKpiPos30').innerHTML = ffMoney(k.posicion_30, false);
+  $('ffKpiCobros').innerHTML = ffMoney(k.cobros_90, false);
+  $('ffKpiPagos').innerHTML = ffMoney(k.pagos_90, false);
+  $('ffKpiCobrosNota').textContent = k.vencido_cobrar
+    ? `Vencido impago: ${ffPesos.format(k.vencido_cobrar)} (${k.vencidos_cobrar_n} comprobantes)` : 'Sin vencidos impagos';
+  $('ffKpiPagosNota').textContent = k.vencido_pagar
+    ? `Vencido impago: ${ffPesos.format(k.vencido_pagar)} (${k.vencidos_pagar_n} comprobantes)` : 'Sin vencidos impagos';
+
+  ffRenderMatriz(data.matriz);
+  ffRenderSemanas(data.semanas);
+}
+
+function ffRenderMatriz(filas) {
+  const cols = ['saldo', 'cobros_30', 'pagos_30', 'pos_30', 'cobros_60', 'pagos_60', 'pos_60', 'cobros_90', 'pagos_90', 'pos_90'];
+  const negritas = new Set(['saldo', 'pos_30', 'pos_60', 'pos_90']);
+  const tot = Object.fromEntries(cols.map((c) => [c, 0]));
+
+  let html = filas.map((f) => {
+    cols.forEach((c) => { tot[c] += f[c]; });
+    return `<tr>
+      <td style="font-weight:600;">${ffEsc(f.nombre)}</td>
+      <td class="ff-muted ff-small">${ffEsc(f.nota)}</td>
+      ${cols.map((c) => `<td class="ff-num"${negritas.has(c) ? ' style="font-weight:600;"' : ''}>${ffMoney(f[c], c !== 'saldo')}</td>`).join('')}
+    </tr>`;
+  }).join('');
+
+  html += `<tr class="ff-total"><td>Total</td><td></td>
+    ${cols.map((c) => `<td class="ff-num">${ffMoney(tot[c], false)}</td>`).join('')}</tr>`;
+  $('ffBodyMatriz').innerHTML = html;
+}
+
+function ffRenderSemanas(semanas) {
+  $('ffBodySemanas').innerHTML = semanas.map((s) => {
+    const [cls, txt] = FF_LECTURA_SEMANA[s.lectura];
+    return `<tr>
+      <td>${s.n}</td>
+      <td>${ffFmtFecha(s.desde)}</td>
+      <td>${ffFmtFecha(s.hasta)}</td>
+      <td class="ff-num">${ffMoney(s.cobros)}</td>
+      <td class="ff-num">${ffMoney(s.pagos)}</td>
+      <td class="ff-num">${ffMoney(s.neto)}</td>
+      <td class="ff-num" style="font-weight:600;">${ffMoney(s.acumulada, false)}</td>
+      <td><span class="ff-badge ${cls}">${txt}</span></td>
+    </tr>`;
+  }).join('');
+}
+$('ffMes').addEventListener('change', ffCargarResumen);
+
+// ── CUENTAS CORRIENTES ───────────────────────────────────────────────────────
+let ffCuentas = [];
+
+async function ffCargarCuentas() {
+  const p = new URLSearchParams();
+  const q = $('ffBuscar').value.trim();
+  if (q) p.set('q', q);
+  if ($('ffFiltroTipo').value) p.set('tipo', $('ffFiltroTipo').value);
+  if ($('ffFiltroEstado').value) p.set('estado', $('ffFiltroEstado').value);
+  const { data } = await ffApi(`cuentas/?${p.toString()}`);
+  ffCuentas = data.cuentas || [];
+  const t = data.totales || { cobrar: 0, pagar: 0 };
+  $('ffTotCobrar').textContent = ffPesos.format(t.cobrar);
+  $('ffTotPagar').textContent = ffPesos.format(t.pagar);
+  ffRenderCuentas();
+}
+
+function ffEstadoBadge(c) {
+  if (c.estado === 'cancelado') {
+    return `<span class="ff-badge gray">${c.tipo === 'cliente' ? 'Cobrado' : 'Pagado'} el ${ffFmtFecha(c.fecha_cancelacion)}</span>`;
+  }
+  const dias = Math.round((new Date(c.fecha_vencimiento + 'T00:00:00') - new Date(ffHoyISO() + 'T00:00:00')) / 86400000);
+  if (dias < 0) return `<span class="ff-badge bad">Vencido hace ${-dias} d</span>`;
+  if (dias <= 7) return `<span class="ff-badge warn">${dias === 0 ? 'Vence hoy' : `Vence en ${dias} d`}</span>`;
+  return '<span class="ff-badge ok">Pendiente</span>';
+}
+
+function ffRenderCuentas() {
+  const tbody = $('ffBodyCuentas');
+  if (!ffCuentas.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="ff-empty">No hay comprobantes para mostrar. Cargá el primero con "Nuevo comprobante".</td></tr>';
+    return;
+  }
+  tbody.innerHTML = ffCuentas.map((c) => `
+    <tr>
+      <td>${ffFmtFecha(c.fecha_vencimiento)}</td>
+      <td><span class="ff-badge ${c.tipo === 'cliente' ? 'ok' : 'gray'}">${c.tipo === 'cliente' ? 'Cliente' : 'Proveedor'}</span></td>
+      <td style="font-weight:600;">${ffEsc(c.contraparte)}</td>
+      <td>${ffEsc(c.comprobante) || '—'}</td>
+      <td>${ffFmtFecha(c.fecha_emision)}</td>
+      <td class="ff-num" style="font-weight:600;">${ffPesos.format(c.importe)}</td>
+      <td>${ffEstadoBadge(c)}</td>
+      <td style="white-space:nowrap;">
+        ${c.estado === 'pendiente' ? `<button class="btn-secondary ff-saldar" data-id="${c.id}">${c.tipo === 'cliente' ? 'Registrar cobro' : 'Registrar pago'}</button>` : ''}
+        <button class="btn-icon ff-editar" data-id="${c.id}" aria-label="Editar"><i class="ti ti-pencil"></i></button>
+        <button class="btn-icon ff-borrar" data-id="${c.id}" aria-label="Eliminar"><i class="ti ti-trash"></i></button>
+      </td>
+    </tr>
+  `).join('');
+  const buscar = (b) => ffCuentas.find((c) => c.id === +b.dataset.id);
+  tbody.querySelectorAll('.ff-saldar').forEach((b) => b.addEventListener('click', () => ffAbrirSaldar(buscar(b))));
+  tbody.querySelectorAll('.ff-editar').forEach((b) => b.addEventListener('click', () => ffAbrirCuenta(buscar(b))));
+  tbody.querySelectorAll('.ff-borrar').forEach((b) => b.addEventListener('click', () => ffBorrarCuenta(buscar(b))));
+}
+
+$('ffBuscar').addEventListener('input', () => {
+  clearTimeout(window._ffBuscarTimeout);
+  window._ffBuscarTimeout = setTimeout(ffCargarCuentas, 300);
+});
+['ffFiltroTipo', 'ffFiltroEstado'].forEach((id) => $(id).addEventListener('change', ffCargarCuentas));
+$('ffBtnFiltro').addEventListener('click', () => $('ffFiltroPanel').classList.toggle('open'));
+document.addEventListener('click', (e) => {
+  if (!$('ffBtnFiltro').parentElement.contains(e.target)) $('ffFiltroPanel').classList.remove('open');
+});
+
+$('ffCuentaTipo').addEventListener('change', function () {
+  $('ffCuentaContraLabel').textContent = this.value === 'cliente' ? 'Cliente' : 'Proveedor';
+});
+
+function ffAbrirCuenta(c) {
+  ffMsg('ffCuentaMsg', '');
+  $('ffCuentaTitulo').textContent = c ? 'Editar comprobante' : 'Nuevo comprobante';
+  $('ffCuentaId').value = c ? c.id : '';
+  $('ffCuentaTipo').value = c ? c.tipo : 'cliente';
+  $('ffCuentaContraLabel').textContent = (c ? c.tipo : 'cliente') === 'cliente' ? 'Cliente' : 'Proveedor';
+  $('ffCuentaImporte').value = c ? c.importe : '';
+  $('ffCuentaContraparte').value = c ? c.contraparte : '';
+  $('ffCuentaComprobante').value = c ? c.comprobante : '';
+  $('ffCuentaEmision').value = c && c.fecha_emision ? ffFmtFecha(c.fecha_emision) : '';
+  $('ffCuentaVencimiento').value = c ? ffFmtFecha(c.fecha_vencimiento) : '';
+  $('ffCuentaObs').value = c ? c.observaciones : '';
+  $('ffModalCuenta').classList.add('open');
+}
+$('ffBtnNuevaCuenta').addEventListener('click', () => ffAbrirCuenta(null));
+$('ffCuentaCancelar').addEventListener('click', () => $('ffModalCuenta').classList.remove('open'));
+
+$('ffCuentaGuardar').addEventListener('click', async () => {
+  const btn = $('ffCuentaGuardar');
+  if (btn.disabled) return;
+  const vencimiento = ffParseFecha($('ffCuentaVencimiento').value);
+  if (!vencimiento) return ffMsg('ffCuentaMsg', 'Completá la fecha de vencimiento (dd/mm/yyyy).');
+  if ($('ffCuentaEmision').value && !ffParseFecha($('ffCuentaEmision').value)) {
+    return ffMsg('ffCuentaMsg', 'La fecha de emisión tiene que ser dd/mm/yyyy.');
+  }
+  const id = $('ffCuentaId').value;
+  const body = {
+    tipo: $('ffCuentaTipo').value,
+    contraparte: $('ffCuentaContraparte').value.trim(),
+    comprobante: $('ffCuentaComprobante').value.trim(),
+    fecha_emision: ffParseFecha($('ffCuentaEmision').value),
+    fecha_vencimiento: vencimiento,
+    importe: $('ffCuentaImporte').value,
+    observaciones: $('ffCuentaObs').value.trim(),
+  };
+  btn.disabled = true;
+  const { ok, data } = await ffApi(id ? `cuentas/${id}/` : 'cuentas/', { method: id ? 'PUT' : 'POST', body });
+  btn.disabled = false;
+  if (!ok) return ffMsg('ffCuentaMsg', data.error || 'Error al guardar');
+  $('ffModalCuenta').classList.remove('open');
+  ffCargarCuentas();
+});
+
+async function ffBorrarCuenta(c) {
+  const ok = await confirmarAccion(`¿Eliminar el comprobante ${c.comprobante || ''} de ${c.contraparte}? Esta acción no se puede deshacer.`);
+  if (!ok) return;
+  await ffApi(`cuentas/${c.id}/`, { method: 'DELETE' });
+  ffCargarCuentas();
+}
+
+function ffAbrirSaldar(c) {
+  ffMsg('ffSaldarMsg', '');
+  $('ffSaldarTitulo').textContent = c.tipo === 'cliente' ? 'Registrar cobro' : 'Registrar pago';
+  $('ffSaldarId').value = c.id;
+  $('ffSaldarDetalle').textContent = `${c.contraparte} · ${c.comprobante || 'sin comprobante'} · pendiente ${ffPesos.format(c.importe)}`;
+  $('ffSaldarFecha').value = ffFmtFecha(ffHoyISO());
+  $('ffSaldarMonto').value = c.importe;
+  $('ffModalSaldar').classList.add('open');
+}
+$('ffSaldarCancelar').addEventListener('click', () => $('ffModalSaldar').classList.remove('open'));
+$('ffSaldarGuardar').addEventListener('click', async () => {
+  const btn = $('ffSaldarGuardar');
+  if (btn.disabled) return;
+  const fecha = ffParseFecha($('ffSaldarFecha').value);
+  if (!fecha) return ffMsg('ffSaldarMsg', 'Completá la fecha (dd/mm/yyyy).');
+  btn.disabled = true;
+  const { ok, data } = await ffApi(`cuentas/${$('ffSaldarId').value}/saldar/`, {
+    method: 'POST', body: { fecha, monto: $('ffSaldarMonto').value },
+  });
+  btn.disabled = false;
+  if (!ok) return ffMsg('ffSaldarMsg', data.error || 'Error al registrar');
+  $('ffModalSaldar').classList.remove('open');
+  ffCargarCuentas();
+});
+
+// ── SALDOS BANCARIOS ─────────────────────────────────────────────────────────
+async function ffCargarSaldos() {
+  const { data } = await ffApi('saldos/');
+  const cuentas = [['bbva', 'BBVA'], ['mercado_pago', 'Mercado Pago']];
+  $('ffSaldosCards').innerHTML = cuentas.map(([clave, nombre]) => {
+    const s = data.ultimos && data.ultimos[clave];
+    return `<div class="card ff-saldo-card">
+      <div class="ff-muted" style="font-size:12px; font-weight:600;">${nombre}</div>
+      <div class="valor">${s ? ffMoney(s.monto, false) : '—'}</div>
+      <div class="ff-muted ff-small">${s ? `Saldo al ${ffFmtFecha(s.fecha)}` : 'Sin saldo cargado'}</div>
+    </div>`;
+  }).join('') + `<div class="card ff-saldo-card">
+      <div class="ff-muted" style="font-size:12px; font-weight:600;">Efectivo</div>
+      <div class="valor" style="font-size:16px; padding-top:8px;">Se toma de Control de caja</div>
+      <div class="ff-muted ff-small">No se carga acá</div>
+    </div>`;
+
+  const lista = data.saldos || [];
+  $('ffBodySaldos').innerHTML = lista.length ? lista.map((s) => `
+    <tr>
+      <td>${ffFmtFecha(s.fecha)}</td>
+      <td>${ffEsc(s.cuenta_label)}</td>
+      <td class="ff-num" style="font-weight:600;">${ffMoney(s.monto, false)}</td>
+      <td><button class="btn-icon ff-borrar-saldo" data-id="${s.id}" aria-label="Eliminar"><i class="ti ti-trash"></i></button></td>
+    </tr>`).join('') : '<tr><td colspan="4" class="ff-empty">Todavía no cargaste saldos. Usá "Cargar saldo".</td></tr>';
+  $('ffBodySaldos').querySelectorAll('.ff-borrar-saldo').forEach((b) => b.addEventListener('click', async () => {
+    const ok = await confirmarAccion('¿Eliminar este saldo?');
+    if (!ok) return;
+    await ffApi(`saldos/${b.dataset.id}/`, { method: 'DELETE' });
+    ffCargarSaldos();
+  }));
+}
+
+$('ffBtnNuevoSaldo').addEventListener('click', () => {
+  ffMsg('ffSaldoMsg', '');
+  $('ffSaldoCuenta').value = 'bbva';
+  $('ffSaldoFecha').value = ffFmtFecha(ffHoyISO());
+  $('ffSaldoMonto').value = '';
+  $('ffModalSaldo').classList.add('open');
+});
+$('ffSaldoCancelar').addEventListener('click', () => $('ffModalSaldo').classList.remove('open'));
+$('ffSaldoGuardar').addEventListener('click', async () => {
+  const btn = $('ffSaldoGuardar');
+  if (btn.disabled) return;
+  const fecha = ffParseFecha($('ffSaldoFecha').value);
+  if (!fecha) return ffMsg('ffSaldoMsg', 'Completá la fecha (dd/mm/yyyy).');
+  if ($('ffSaldoMonto').value === '') return ffMsg('ffSaldoMsg', 'Completá el saldo.');
+  btn.disabled = true;
+  const { ok, data } = await ffApi('saldos/', {
+    method: 'POST', body: { cuenta: $('ffSaldoCuenta').value, fecha, monto: $('ffSaldoMonto').value },
+  });
+  btn.disabled = false;
+  if (!ok) return ffMsg('ffSaldoMsg', data.error || 'Error al guardar');
+  $('ffModalSaldo').classList.remove('open');
+  ffCargarSaldos();
+});
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+// Los modales van al final del body, mismo criterio que legajos y control_caja.
+['ffModalCuenta', 'ffModalSaldar', 'ffModalSaldo'].forEach((id) => document.body.appendChild($(id)));
+
+ffPoblarMeses();
+ffCargarResumen();
+</script>
+{% endblock %}

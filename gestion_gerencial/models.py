@@ -302,3 +302,61 @@ class XubioProductoCosteoMapeo(models.Model):
 
     def __str__(self):
         return f'{self.xubio_producto_nombre} → {self.producto_costeo.nombre}'
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# FLUJO DE FONDOS
+# ═══════════════════════════════════════════════════════════════════════════
+
+class CuentaCorrienteItem(models.Model):
+    """Un comprobante pendiente de cobro (cliente) o de pago (proveedor).
+    `importe` es el saldo que falta cobrar/pagar: si se cobra una parte, baja."""
+
+    TIPOS = [('cliente', 'Cliente (a cobrar)'), ('proveedor', 'Proveedor (a pagar)')]
+    ESTADOS = [('pendiente', 'Pendiente'), ('cancelado', 'Cobrado / pagado')]
+    ORIGENES = [('manual', 'Manual'), ('import', 'Importado'), ('xubio', 'Xubio')]
+
+    tipo = models.CharField(max_length=10, choices=TIPOS)
+    contraparte = models.CharField(max_length=150)  # nombre del cliente o proveedor
+    comprobante = models.CharField(max_length=60, blank=True)
+    fecha_emision = models.DateField(null=True, blank=True)
+    fecha_vencimiento = models.DateField(db_index=True)
+    importe = models.DecimalField(max_digits=14, decimal_places=2)
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='pendiente', db_index=True)
+    fecha_cancelacion = models.DateField(null=True, blank=True)
+    observaciones = models.CharField(max_length=300, blank=True)
+
+    # Cuando llegue la API de Xubio, el sync hace update_or_create(external_id=...)
+    # y no duplica lo que ya se cargó a mano con el mismo id.
+    origen = models.CharField(max_length=10, choices=ORIGENES, default='manual')
+    external_id = models.CharField(max_length=80, null=True, blank=True, unique=True)
+
+    creado_en = models.DateTimeField(auto_now_add=True)
+    modificado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['fecha_vencimiento', 'id']
+        verbose_name = 'Cuenta corriente (comprobante)'
+
+    def __str__(self):
+        return f'{self.tipo} | {self.contraparte} | {self.comprobante} | ${self.importe}'
+
+
+class SaldoBancario(models.Model):
+    """Saldo de una cuenta cargado a mano en una fecha. Para un corte se usa
+    el último saldo cargado hasta esa fecha."""
+
+    CUENTAS = [('bbva', 'BBVA'), ('mercado_pago', 'Mercado Pago')]
+
+    cuenta = models.CharField(max_length=20, choices=CUENTAS)
+    fecha = models.DateField()
+    monto = models.DecimalField(max_digits=14, decimal_places=2)  # puede ser negativo (descubierto)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-fecha', 'cuenta']
+        unique_together = [('cuenta', 'fecha')]
+        verbose_name = 'Saldo bancario'
+
+    def __str__(self):
+        return f'{self.cuenta} {self.fecha}: ${self.monto}'

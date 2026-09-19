@@ -1,0 +1,1236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+.lg-wrap { font-family: 'DM Sans', sans-serif; color: var(--text-primary); font-size: 14px; }
+.lg-nav-btn { display: flex; align-items: center; gap: 10px; width: 100%; background: transparent; border: none; color: var(--gray400); text-align: left; padding: 11px 20px; cursor: pointer; font-family: inherit; font-size: .83rem; font-weight: 500; position: relative; }
+.lg-nav-btn:hover { background: rgba(255,255,255,.05); color: #fff; }
+.lg-nav-btn.active { background: rgba(58,175,228,.15); color: #fff; }
+.lg-nav-btn.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--orange); }
+.lg-nav-btn.disabled { opacity: .4; cursor: default; }
+.lg-nav-btn.disabled:hover { background: transparent; color: var(--gray400); }
+.lg-nav-soon { font-size: .62rem; text-transform: uppercase; letter-spacing: .5px; margin-left: auto; }
+.lg-avatar { width: 38px; height: 38px; border-radius: 999px; background: var(--pale); color: var(--blue); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+.lg-avatar-lg { width: 48px; height: 48px; font-size: 16px; }
+.lg-empleado-cell { display: flex; align-items: center; gap: 12px; }
+.lg-dni { font-size: 12px; color: var(--text-muted); }
+.badge-estado.badge-activo { background: #E8F6EC; color: #166534; }
+.badge-estado.badge-inactivo { background: var(--gray100); color: var(--gray600); }
+.badge-estado.badge-firmado { background: #E8F6EC; color: #166534; }
+.badge-estado.badge-pendiente { background: #FDF3E0; color: #B5750B; }
+.badge-estado.badge-borrador { background: var(--gray100); color: var(--gray600); }
+.badge-estado.badge-vencido { background: #FDEDED; color: #C0392B; }
+.lg-empty { text-align: center; padding: 40px; color: var(--gray400); }
+.lg-ficha-header { background: var(--navy); color: #fff; padding: 24px 28px; margin: -28px -28px 20px; border-radius: 16px 16px 0 0; display: flex; align-items: center; justify-content: space-between; }
+.lg-ficha-header .sub { color: rgba(255,255,255,.6); font-size: 13px; margin-top: 2px; }
+.lg-historial-item { display: flex; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.lg-historial-item:last-child { border-bottom: none; }
+.lg-historial-fecha { font-size: 12px; color: var(--text-muted); width: 76px; flex-shrink: 0; padding-top: 2px; }
+.lg-historial-texto { flex: 1; font-size: 14px; }
+.lg-datos-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; margin-bottom: 20px; }
+.lg-datos-grid .label { font-size: 11px; text-transform: uppercase; letter-spacing: .03em; color: var(--text-muted); font-weight: 600; }
+.lg-datos-grid .valor { font-size: 14px; margin-top: 4px; }
+.lg-modal-ficha .modal-box { max-width: 760px; }
+.lg-tab { display: none; }
+.lg-tab.active { display: block; }
+.lg-novedad-card { display: flex; gap: 16px; align-items: flex-start; padding: 16px 20px; }
+.lg-novedad-fecha { font-size: 12px; color: var(--text-muted); width: 80px; flex-shrink: 0; padding-top: 2px; }
+.lg-cumple-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+.lg-cumple-card { display: flex; align-items: center; gap: 14px; padding: 18px; }
+@media (max-width: 900px) { .lg-cumple-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-nav">
+  <div class="sidebar-category-title">Recursos humanos</div>
+  <nav id="lgNav">
+    <button class="lg-nav-btn active" data-tab="legajos">Legajos</button>
+    <button class="lg-nav-btn" data-tab="documentacion">Documentación</button>
+    <button class="lg-nav-btn" data-tab="tramites">Trámites y firmas</button>
+    <button class="lg-nav-btn" data-tab="ausencias">Ausencias</button>
+    <button class="lg-nav-btn" data-tab="novedades">Novedades</button>
+    <button class="lg-nav-btn" data-tab="cumpleanios">Cumpleaños</button>
+  </nav>
+</div>
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<div class="lg-wrap">
+
+<!-- ══ TAB LEGAJOS ══ -->
+<div class="lg-tab active" id="tab-legajos">
+
+  <span class="page-eyebrow">Recursos humanos</span>
+  <h1 class="page-title">Legajos</h1>
+
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <input type="text" id="lgBuscar" class="input-buscar" placeholder="Buscar por nombre o DNI">
+      <div class="filtro-icono-wrap">
+        <button class="filtro-icono-btn" id="lgBtnFiltro"><i class="ti ti-filter"></i></button>
+        <div class="filtro-desplegable" id="lgFiltroPanel">
+          <label>Estado</label>
+          <select id="lgFiltroEstado">
+            <option value="">Todos</option>
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="toolbar-right">
+      {% if es_admin %}
+      <button class="btn-primary" id="lgBtnNuevo"><i class="ti ti-plus"></i> Nuevo empleado</button>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <table>
+      <thead>
+        <tr>
+          <th>Empleado</th>
+          <th>Puesto</th>
+          <th>Ingreso</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="lgBodyEmpleados">
+        <tr><td colspan="5" class="lg-empty">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+<!-- /tab-legajos -->
+
+<!-- ══ TAB DOCUMENTACIÓN ══ -->
+<div class="lg-tab" id="tab-documentacion">
+
+  <span class="page-eyebrow">Recursos humanos</span>
+  <h1 class="page-title">Documentación</h1>
+
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="filtro-icono-wrap">
+        <button class="filtro-icono-btn" id="lgDocBtnFiltro"><i class="ti ti-filter"></i></button>
+        <div class="filtro-desplegable" id="lgDocFiltroPanel">
+          <label>Estado</label>
+          <select id="lgDocFiltroEstado">
+            <option value="">Todos</option>
+            <option value="vigente">Vigente</option>
+            <option value="por_vencer">Por vencer</option>
+            <option value="vencido">Vencido</option>
+          </select>
+          <label style="margin-top:10px;">Empleado</label>
+          <select id="lgDocFiltroEmpleado">
+            <option value="">Todos</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="toolbar-right">
+      {% if es_admin %}
+      <button class="btn-primary" id="lgDocBtnNuevo"><i class="ti ti-plus"></i> Subir documento</button>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <table>
+      <thead>
+        <tr>
+          <th>Empleado</th>
+          <th>Documento</th>
+          <th>Emitido</th>
+          <th>Vencimiento</th>
+          <th>Estado</th>
+          <th>Archivo</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="lgBodyDocumentacion">
+        <tr><td colspan="7" class="lg-empty">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+<!-- /tab-documentacion -->
+
+<!-- ══ TAB TRÁMITES Y FIRMAS ══ -->
+<div class="lg-tab" id="tab-tramites">
+
+  <span class="page-eyebrow">Recursos humanos</span>
+  <h1 class="page-title">Trámites y firmas</h1>
+
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="filtro-icono-wrap">
+        <button class="filtro-icono-btn" id="lgTramBtnFiltro"><i class="ti ti-filter"></i></button>
+        <div class="filtro-desplegable" id="lgTramFiltroPanel">
+          <label>Empleado</label>
+          <select id="lgTramFiltroEmpleado">
+            <option value="">Todos</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="toolbar-right">
+      {% if es_admin %}
+      <button class="btn-primary" id="lgTramBtnNuevo"><i class="ti ti-plus"></i> Nuevo trámite</button>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <table>
+      <thead>
+        <tr>
+          <th>Empleado</th>
+          <th>Tipo</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="lgBodyTramites">
+        <tr><td colspan="5" class="lg-empty">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+<!-- /tab-tramites -->
+
+<!-- ══ TAB AUSENCIAS ══ -->
+<div class="lg-tab" id="tab-ausencias">
+
+  <span class="page-eyebrow">Recursos humanos</span>
+  <h1 class="page-title">Ausencias</h1>
+
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="filtro-icono-wrap">
+        <button class="filtro-icono-btn" id="lgAusBtnFiltro"><i class="ti ti-filter"></i></button>
+        <div class="filtro-desplegable" id="lgAusFiltroPanel">
+          <label>Empleado</label>
+          <select id="lgAusFiltroEmpleado">
+            <option value="">Todos</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="toolbar-right">
+      {% if es_admin %}
+      <button class="btn-primary" id="lgAusBtnNuevo"><i class="ti ti-plus"></i> Registrar ausencia</button>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <table>
+      <thead>
+        <tr>
+          <th>Empleado</th>
+          <th>Desde</th>
+          <th>Hasta</th>
+          <th>Tipo</th>
+          <th>Justificada</th>
+          <th>Certificado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="lgBodyAusencias">
+        <tr><td colspan="7" class="lg-empty">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+<!-- /tab-ausencias -->
+
+<!-- ══ TAB NOVEDADES ══ -->
+<div class="lg-tab" id="tab-novedades">
+
+  <span class="page-eyebrow">Recursos humanos</span>
+  <h1 class="page-title">Novedades</h1>
+
+  <div class="toolbar">
+    <div class="toolbar-left"></div>
+    <div class="toolbar-right">
+      {% if es_admin %}
+      <button class="btn-primary" id="lgNovBtnNuevo"><i class="ti ti-plus"></i> Nueva novedad</button>
+      {% endif %}
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:10px;" id="lgListaNovedades">
+    <div class="lg-empty">Cargando...</div>
+  </div>
+
+</div>
+<!-- /tab-novedades -->
+
+<!-- ══ TAB CUMPLEAÑOS ══ -->
+<div class="lg-tab" id="tab-cumpleanios">
+
+  <span class="page-eyebrow">Recursos humanos</span>
+  <h1 class="page-title">Cumpleaños</h1>
+  <p style="color:var(--text-muted); margin:-16px 0 20px; font-size:13px;">Se avisa por mail a administración 7 días antes y el día del cumpleaños.</p>
+
+  <div class="lg-cumple-grid" id="lgGridCumpleanios">
+    <div class="lg-empty">Cargando...</div>
+  </div>
+
+</div>
+<!-- /tab-cumpleanios -->
+
+</div>
+<!-- /lg-wrap -->
+
+<!-- ══ MODAL FICHA (ver legajo) ══ -->
+<div class="modal-overlay lg-modal-ficha" id="lgModalFicha">
+  <div class="modal-box">
+    <div class="lg-ficha-header">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div class="lg-avatar lg-avatar-lg" style="background:var(--orange); color:#fff;" id="lgFichaIniciales"></div>
+        <div>
+          <h2 style="margin:0; font-family:'DM Serif Display', serif; font-weight:400; font-size:19px;" id="lgFichaNombre"></h2>
+          <div class="sub" id="lgFichaSub"></div>
+        </div>
+      </div>
+      <button class="btn-icon" id="lgBtnCerrarFicha" aria-label="Cerrar"><i class="ti ti-x"></i></button>
+    </div>
+
+    <div class="lg-datos-grid">
+      <div><div class="label">DNI</div><div class="valor" id="lgFichaDni"></div></div>
+      <div><div class="label">Domicilio</div><div class="valor" id="lgFichaDomicilio"></div></div>
+      <div><div class="label">Estado</div><div class="valor"><span class="badge-estado" id="lgFichaEstado"></span></div></div>
+    </div>
+
+    <div class="label" style="margin-bottom:8px;">Historial</div>
+    <div id="lgFichaHistorial"></div>
+
+    <div class="modal-actions">
+      {% if es_admin %}
+      <button class="btn-danger" id="lgBtnBajaFicha" style="margin-right:auto;">Dar de baja</button>
+      <button class="btn-secondary" id="lgBtnEditarFicha">Editar</button>
+      {% endif %}
+      <button class="btn-primary" id="lgBtnCerrarFicha2">Listo</button>
+    </div>
+  </div>
+</div>
+
+{% if es_admin %}
+<!-- ══ MODAL FORM (alta / edición) ══ -->
+<div class="modal-overlay" id="lgModalForm">
+  <div class="modal-box" style="max-width:640px;">
+    <h2 class="modal-title" id="lgFormTitulo">Nuevo empleado</h2>
+    <input type="hidden" id="lgFormId">
+    <div class="form-grid">
+      <div><label>Nombre</label><input type="text" id="lgFormNombre"></div>
+      <div><label>Apellido</label><input type="text" id="lgFormApellido"></div>
+      <div><label>DNI</label><input type="text" id="lgFormDni"></div>
+      <div><label>CUIL</label><input type="text" id="lgFormCuil" placeholder="Opcional"></div>
+      <div><label>Fecha de nacimiento</label><input type="text" id="lgFormFechaNacimiento" placeholder="dd/mm/yyyy" maxlength="10"></div>
+      <div><label>Teléfono</label><input type="text" id="lgFormTelefono" placeholder="Opcional"></div>
+      <div style="grid-column:1/-1;"><label>Domicilio</label><input type="text" id="lgFormDomicilio"></div>
+      <div style="grid-column:1/-1;"><label>Email</label><input type="email" id="lgFormEmail" placeholder="Opcional"></div>
+      <div><label>Puesto</label><input type="text" id="lgFormPuesto"></div>
+      <div><label>Fecha de ingreso</label><input type="text" id="lgFormFechaIngreso" placeholder="dd/mm/yyyy" maxlength="10"></div>
+    </div>
+    <div id="lgFormMsg" style="margin-top:10px;"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="lgBtnCancelarForm">Cancelar</button>
+      <button class="btn-primary" id="lgBtnGuardarForm">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL DOCUMENTACIÓN (subir carnet / ART / otro) ══ -->
+<div class="modal-overlay" id="lgModalDoc">
+  <div class="modal-box" style="max-width:520px;">
+    <h2 class="modal-title">Subir documento</h2>
+    <div class="form-grid">
+      <div style="grid-column:1/-1;">
+        <label>Empleado</label>
+        <select id="lgDocFormEmpleado"></select>
+      </div>
+      <div>
+        <label>Tipo</label>
+        <select id="lgDocFormTipo">
+          <option value="carnet_manipulacion">Carnet de manipulación de alimentos</option>
+          <option value="credencial_art">Credencial ART</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <div id="lgDocFormOtroWrap" style="display:none;">
+        <label>Especificar</label>
+        <input type="text" id="lgDocFormOtroDetalle" placeholder="Ej: Libreta sanitaria">
+      </div>
+      <div>
+        <label>Fecha de emisión</label>
+        <input type="text" id="lgDocFormFechaEmision" placeholder="dd/mm/yyyy (opcional)" maxlength="10">
+      </div>
+      <div>
+        <label>Fecha de vencimiento</label>
+        <input type="text" id="lgDocFormFechaVencimiento" placeholder="dd/mm/yyyy (opcional)" maxlength="10">
+      </div>
+      <div style="grid-column:1/-1;">
+        <label>Archivo</label>
+        <input type="file" id="lgDocFormArchivo" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+    </div>
+    <div id="lgDocFormMsg" style="margin-top:10px;"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="lgDocBtnCancelarForm">Cancelar</button>
+      <button class="btn-primary" id="lgDocBtnGuardarForm">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL TRÁMITE (nuevo) ══ -->
+<div class="modal-overlay" id="lgModalTram">
+  <div class="modal-box" style="max-width:600px;">
+    <h2 class="modal-title">Generar trámite</h2>
+    <div class="form-grid">
+      <div>
+        <label>Tipo de trámite</label>
+        <select id="lgTramFormTipo">
+          <option value="apercibimiento">Apercibimiento</option>
+          <option value="cambio_domicilio">Cambio de domicilio</option>
+          <option value="comunicado">Comunicado interno</option>
+          <option value="constancia_trabajo">Constancia de trabajo</option>
+          <option value="suspension">Suspensión</option>
+          <option value="legajo_inicial">Legajo inicial</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <div>
+        <label>Empleado</label>
+        <select id="lgTramFormEmpleado"></select>
+      </div>
+      <div id="lgTramFormDomicilioWrap" style="display:none; grid-column:1/-1;">
+        <label>Domicilio nuevo</label>
+        <input type="text" id="lgTramFormDomicilioNuevo">
+      </div>
+      <div style="grid-column:1/-1;">
+        <label>Motivo / detalle</label>
+        <textarea id="lgTramFormMotivo" rows="4" placeholder="Se completa acá y el sistema arma el texto formal con estos datos" style="width:100%; box-sizing:border-box; border:1px solid var(--border); border-radius:10px; padding:9px 12px; font-family:inherit; font-size:14px; resize:vertical;"></textarea>
+      </div>
+    </div>
+    <div id="lgTramFormMsg" style="margin-top:10px;"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="lgTramBtnCancelarForm">Cancelar</button>
+      <button class="btn-primary" id="lgTramBtnGuardarForm">Generar PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL TRÁMITE (subir firmado) ══ -->
+<div class="modal-overlay" id="lgModalTramFirmar">
+  <div class="modal-box" style="max-width:460px;">
+    <h2 class="modal-title">Subir firmado</h2>
+    <input type="hidden" id="lgTramFirmarId">
+    <div class="form-grid">
+      <div style="grid-column:1/-1;">
+        <label>Archivo (foto o escaneo firmado)</label>
+        <input type="file" id="lgTramFirmarArchivo" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+    </div>
+    <div id="lgTramFirmarMsg" style="margin-top:10px;"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="lgTramFirmarCancelar">Cancelar</button>
+      <button class="btn-primary" id="lgTramFirmarGuardar">Subir</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL AUSENCIA (nueva) ══ -->
+<div class="modal-overlay" id="lgModalAus">
+  <div class="modal-box" style="max-width:560px;">
+    <h2 class="modal-title">Registrar ausencia</h2>
+    <div class="form-grid">
+      <div style="grid-column:1/-1;">
+        <label>Empleado</label>
+        <select id="lgAusFormEmpleado"></select>
+      </div>
+      <div>
+        <label>Desde</label>
+        <input type="text" id="lgAusFormDesde" placeholder="dd/mm/yyyy" maxlength="10">
+      </div>
+      <div>
+        <label>Hasta</label>
+        <input type="text" id="lgAusFormHasta" placeholder="dd/mm/yyyy" maxlength="10">
+      </div>
+      <div>
+        <label>Tipo</label>
+        <select id="lgAusFormTipo">
+          <option value="enfermedad">Enfermedad</option>
+          <option value="personal">Personal</option>
+          <option value="injustificada">Injustificada</option>
+          <option value="vacaciones">Vacaciones</option>
+          <option value="art">Accidente / ART</option>
+          <option value="otra">Otra</option>
+        </select>
+      </div>
+      <div style="display:flex; align-items:flex-end; padding-bottom:9px;">
+        <label style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:13px; color:var(--text-secondary); cursor:pointer; margin:0;">
+          <input type="checkbox" id="lgAusFormJustificada" style="width:auto;"> Justificada
+        </label>
+      </div>
+      <div style="grid-column:1/-1;">
+        <label>Certificado <span style="font-weight:400; text-transform:none;">(opcional)</span></label>
+        <input type="file" id="lgAusFormCertificado" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+      <div style="grid-column:1/-1;">
+        <label>Observaciones</label>
+        <input type="text" id="lgAusFormObservaciones" placeholder="Opcional">
+      </div>
+    </div>
+    <div id="lgAusFormMsg" style="margin-top:10px;"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="lgAusBtnCancelarForm">Cancelar</button>
+      <button class="btn-primary" id="lgAusBtnGuardarForm">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL NOVEDAD (nueva) ══ -->
+<div class="modal-overlay" id="lgModalNov">
+  <div class="modal-box" style="max-width:520px;">
+    <h2 class="modal-title">Nueva novedad</h2>
+    <div class="form-grid">
+      <div>
+        <label>Destinatario</label>
+        <select id="lgNovFormEmpleado">
+          <option value="">General (todo el equipo)</option>
+        </select>
+      </div>
+      <div>
+        <label>Tipo</label>
+        <select id="lgNovFormTipo">
+          <option value="aviso">Aviso</option>
+          <option value="cambio">Cambio</option>
+          <option value="felicitacion">Felicitación</option>
+          <option value="otra">Otra</option>
+        </select>
+      </div>
+      <div style="grid-column:1/-1;">
+        <label>Texto</label>
+        <textarea id="lgNovFormTexto" rows="4" style="width:100%; box-sizing:border-box; border:1px solid var(--border); border-radius:10px; padding:9px 12px; font-family:inherit; font-size:14px; resize:vertical;"></textarea>
+      </div>
+    </div>
+    <div id="lgNovFormMsg" style="margin-top:10px;"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="lgNovBtnCancelarForm">Cancelar</button>
+      <button class="btn-primary" id="lgNovBtnGuardarForm">Guardar</button>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<script>
+const LG_ES_ADMIN = {{ es_admin|lower }};
+
+function lgCsrf() {
+  const el = document.querySelector('[name=csrfmiddlewaretoken]');
+  return el ? el.value : '';
+}
+
+function lgParseFecha(s) {
+  if (!s) return null;
+  const partes = s.split('/');
+  if (partes.length !== 3) return null;
+  const [d, m, y] = partes;
+  if (!d || !m || y.length !== 4) return null;
+  return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+}
+
+function lgFmtFecha(s) {
+  if (!s) return '—';
+  const [y, m, d] = s.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function lgAutoFormatFecha(input) {
+  input.addEventListener('input', function () {
+    let v = this.value.replace(/\D/g, '');
+    if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
+    if (v.length >= 6) v = v.slice(0, 5) + '/' + v.slice(5);
+    this.value = v.slice(0, 10);
+  });
+}
+document.querySelectorAll('#lgFormFechaNacimiento, #lgFormFechaIngreso').forEach(lgAutoFormatFecha);
+
+// ── NAVEGACIÓN ENTRE TABS ────────────────────────────────────────────────────
+document.querySelectorAll('#lgNav .lg-nav-btn:not(.disabled)').forEach(btn => {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('#lgNav .lg-nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.lg-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById(`tab-${this.dataset.tab}`).classList.add('active');
+    if (this.dataset.tab === 'documentacion') lgCargarDocumentacion();
+  });
+});
+
+// ── LISTADO EMPLEADOS ────────────────────────────────────────────────────────
+let lgEmpleadosActivos = [];
+
+async function lgCargarEmpleados() {
+  const params = new URLSearchParams();
+  const q = document.getElementById('lgBuscar').value.trim();
+  const estado = document.getElementById('lgFiltroEstado').value;
+  if (q) params.set('q', q);
+  if (estado) params.set('estado', estado);
+
+  const r = await fetch(`/legajos/api/empleados/?${params.toString()}`, { cache: 'no-store' });
+  const data = await r.json();
+  lgRenderEmpleados(data.empleados);
+
+  if (!q && !estado) {
+    lgEmpleadosActivos = data.empleados.filter(e => e.estado === 'activo');
+    lgPoblarSelectsEmpleado();
+  }
+}
+
+function lgPoblarSelectsEmpleado() {
+  const opciones = lgEmpleadosActivos.map(e => `<option value="${e.id}">${e.nombre_completo}</option>`).join('');
+  const selFiltro = document.getElementById('lgDocFiltroEmpleado');
+  if (selFiltro) selFiltro.innerHTML = '<option value="">Todos</option>' + opciones;
+  const selForm = document.getElementById('lgDocFormEmpleado');
+  if (selForm) selForm.innerHTML = opciones;
+}
+
+function lgRenderEmpleados(empleados) {
+  const tbody = document.getElementById('lgBodyEmpleados');
+  if (!empleados.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="lg-empty">No se encontraron empleados.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = empleados.map(e => `
+    <tr>
+      <td>
+        <div class="lg-empleado-cell">
+          <div class="lg-avatar">${e.iniciales}</div>
+          <div>
+            <div style="font-weight:600;">${e.nombre_completo}</div>
+            <div class="lg-dni">DNI ${e.dni}</div>
+          </div>
+        </div>
+      </td>
+      <td>${e.puesto || '—'}</td>
+      <td>${lgFmtFecha(e.fecha_ingreso)}</td>
+      <td><span class="badge-estado badge-${e.estado}">${e.estado === 'activo' ? 'Activo' : 'Inactivo'}</span></td>
+      <td><button class="btn-secondary btn-ver-legajo" data-id="${e.id}">Ver legajo</button></td>
+    </tr>
+  `).join('');
+  tbody.querySelectorAll('.btn-ver-legajo').forEach(btn => {
+    btn.addEventListener('click', () => lgAbrirFicha(parseInt(btn.dataset.id)));
+  });
+}
+
+document.getElementById('lgBuscar').addEventListener('input', () => {
+  clearTimeout(window._lgBuscarTimeout);
+  window._lgBuscarTimeout = setTimeout(lgCargarEmpleados, 300);
+});
+document.getElementById('lgFiltroEstado').addEventListener('change', lgCargarEmpleados);
+document.getElementById('lgBtnFiltro').addEventListener('click', () => {
+  document.getElementById('lgFiltroPanel').classList.toggle('open');
+});
+document.addEventListener('click', (e) => {
+  const wrap = document.getElementById('lgBtnFiltro').parentElement;
+  if (!wrap.contains(e.target)) document.getElementById('lgFiltroPanel').classList.remove('open');
+});
+
+// ── FICHA ──────────────────────────────────────────────────────────────────
+let lgEmpleadoActual = null;
+
+async function lgAbrirFicha(id) {
+  const r = await fetch(`/legajos/api/empleados/${id}/`, { cache: 'no-store' });
+  const emp = await r.json();
+  lgEmpleadoActual = emp;
+
+  document.getElementById('lgFichaIniciales').textContent = emp.iniciales;
+  document.getElementById('lgFichaNombre').textContent = emp.nombre_completo;
+  document.getElementById('lgFichaSub').textContent = `${emp.puesto || 'Sin puesto'} · Ingresó ${lgFmtFecha(emp.fecha_ingreso)}`;
+  document.getElementById('lgFichaDni').textContent = emp.dni;
+  document.getElementById('lgFichaDomicilio').textContent = emp.domicilio || '—';
+  const estadoEl = document.getElementById('lgFichaEstado');
+  estadoEl.textContent = emp.estado === 'activo' ? 'Activo' : 'Inactivo';
+  estadoEl.className = `badge-estado badge-${emp.estado}`;
+
+  const hist = document.getElementById('lgFichaHistorial');
+  hist.innerHTML = emp.historial.length
+    ? emp.historial.map(h => `
+        <div class="lg-historial-item">
+          <div class="lg-historial-fecha">${lgFmtFecha(h.fecha)}</div>
+          <div class="lg-historial-texto">${h.texto}</div>
+          <span class="badge-estado badge-${h.badge}">${h.badge_label}</span>
+        </div>
+      `).join('')
+    : '<p class="lg-empty">Sin movimientos registrados todavía.</p>';
+
+  if (LG_ES_ADMIN) {
+    document.getElementById('lgBtnBajaFicha').style.display = emp.estado === 'activo' ? 'inline-flex' : 'none';
+  }
+  document.getElementById('lgModalFicha').classList.add('open');
+}
+
+['lgBtnCerrarFicha', 'lgBtnCerrarFicha2'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () => {
+    document.getElementById('lgModalFicha').classList.remove('open');
+  });
+});
+
+if (LG_ES_ADMIN) {
+  document.getElementById('lgBtnBajaFicha').addEventListener('click', async () => {
+    const ok = await confirmarAccion(`¿Dar de baja a ${lgEmpleadoActual.nombre_completo}? Se guarda como inactivo, no se borra el legajo.`);
+    if (!ok) return;
+    await fetch(`/legajos/api/empleados/${lgEmpleadoActual.id}/`, {
+      method: 'DELETE',
+      headers: { 'X-CSRFToken': lgCsrf() },
+    });
+    document.getElementById('lgModalFicha').classList.remove('open');
+    lgCargarEmpleados();
+  });
+
+  document.getElementById('lgBtnEditarFicha').addEventListener('click', () => {
+    document.getElementById('lgModalFicha').classList.remove('open');
+    lgAbrirForm(lgEmpleadoActual);
+  });
+}
+
+// ── FORM (alta / edición) ─────────────────────────────────────────────────
+if (LG_ES_ADMIN) {
+  function lgAbrirForm(emp) {
+    document.getElementById('lgFormMsg').innerHTML = '';
+    document.getElementById('lgFormTitulo').textContent = emp ? 'Editar empleado' : 'Nuevo empleado';
+    document.getElementById('lgFormId').value = emp ? emp.id : '';
+    document.getElementById('lgFormNombre').value = emp ? emp.nombre : '';
+    document.getElementById('lgFormApellido').value = emp ? emp.apellido : '';
+    document.getElementById('lgFormDni').value = emp ? emp.dni : '';
+    document.getElementById('lgFormCuil').value = emp ? emp.cuil : '';
+    document.getElementById('lgFormFechaNacimiento').value = emp && emp.fecha_nacimiento ? lgFmtFecha(emp.fecha_nacimiento) : '';
+    document.getElementById('lgFormTelefono').value = emp ? emp.telefono : '';
+    document.getElementById('lgFormDomicilio').value = emp ? emp.domicilio : '';
+    document.getElementById('lgFormEmail').value = emp ? emp.email : '';
+    document.getElementById('lgFormPuesto').value = emp ? emp.puesto : '';
+    document.getElementById('lgFormFechaIngreso').value = emp ? lgFmtFecha(emp.fecha_ingreso) : '';
+    document.getElementById('lgModalForm').classList.add('open');
+  }
+
+  document.getElementById('lgBtnNuevo').addEventListener('click', () => lgAbrirForm(null));
+  document.getElementById('lgBtnCancelarForm').addEventListener('click', () => {
+    document.getElementById('lgModalForm').classList.remove('open');
+  });
+
+  document.getElementById('lgBtnGuardarForm').addEventListener('click', async () => {
+    const btnGuardar = document.getElementById('lgBtnGuardarForm');
+    if (btnGuardar.disabled) return; // evita doble envío por doble clic
+    btnGuardar.disabled = true;
+    const id = document.getElementById('lgFormId').value;
+    const payload = {
+      nombre: document.getElementById('lgFormNombre').value.trim(),
+      apellido: document.getElementById('lgFormApellido').value.trim(),
+      dni: document.getElementById('lgFormDni').value.trim(),
+      cuil: document.getElementById('lgFormCuil').value.trim(),
+      fecha_nacimiento: lgParseFecha(document.getElementById('lgFormFechaNacimiento').value),
+      telefono: document.getElementById('lgFormTelefono').value.trim(),
+      domicilio: document.getElementById('lgFormDomicilio').value.trim(),
+      email: document.getElementById('lgFormEmail').value.trim(),
+      puesto: document.getElementById('lgFormPuesto').value.trim(),
+      fecha_ingreso: lgParseFecha(document.getElementById('lgFormFechaIngreso').value),
+    };
+    const url = id ? `/legajos/api/empleados/${id}/` : '/legajos/api/empleados/';
+    const method = id ? 'PUT' : 'POST';
+    const r = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': lgCsrf() },
+      body: JSON.stringify(payload),
+    });
+    if (r.ok) {
+      document.getElementById('lgModalForm').classList.remove('open');
+      lgCargarEmpleados();
+    } else {
+      const err = await r.json();
+      document.getElementById('lgFormMsg').innerHTML = `<div class="cc-alert error" style="padding:10px 14px;border-radius:8px;background:#FDEDED;color:#C0392B;">${err.error || 'Error al guardar'}</div>`;
+    }
+    btnGuardar.disabled = false;
+  });
+}
+
+// ── DOCUMENTACIÓN ────────────────────────────────────────────────────────────
+async function lgCargarDocumentacion() {
+  const params = new URLSearchParams();
+  const estado = document.getElementById('lgDocFiltroEstado').value;
+  const empleado = document.getElementById('lgDocFiltroEmpleado').value;
+  if (estado) params.set('estado', estado);
+  if (empleado) params.set('empleado', empleado);
+
+  const r = await fetch(`/legajos/api/documentacion/?${params.toString()}`, { cache: 'no-store' });
+  const data = await r.json();
+  lgRenderDocumentacion(data.documentacion);
+}
+
+function lgRenderDocumentacion(items) {
+  const tbody = document.getElementById('lgBodyDocumentacion');
+  if (!items.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="lg-empty">No hay documentación cargada.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(d => `
+    <tr>
+      <td style="font-weight:600;">${d.empleado_nombre}</td>
+      <td>${d.tipo_label}</td>
+      <td>${lgFmtFecha(d.fecha_emision)}</td>
+      <td>${lgFmtFecha(d.fecha_vencimiento)}</td>
+      <td><span class="badge-estado badge-${d.badge}">${d.badge_label}</span></td>
+      <td>${d.archivo_url ? `<a href="${d.archivo_url}" target="_blank" rel="noopener">Ver archivo</a>` : '—'}</td>
+      <td>${LG_ES_ADMIN ? `<button class="btn-icon btn-eliminar-doc" data-id="${d.id}" aria-label="Eliminar"><i class="ti ti-trash"></i></button>` : ''}</td>
+    </tr>
+  `).join('');
+  tbody.querySelectorAll('.btn-eliminar-doc').forEach(btn => {
+    btn.addEventListener('click', () => lgEliminarDocumentacion(parseInt(btn.dataset.id)));
+  });
+}
+
+document.getElementById('lgDocFiltroEstado').addEventListener('change', lgCargarDocumentacion);
+document.getElementById('lgDocFiltroEmpleado').addEventListener('change', lgCargarDocumentacion);
+document.getElementById('lgDocBtnFiltro').addEventListener('click', () => {
+  document.getElementById('lgDocFiltroPanel').classList.toggle('open');
+});
+document.addEventListener('click', (e) => {
+  const wrap = document.getElementById('lgDocBtnFiltro').parentElement;
+  if (!wrap.contains(e.target)) document.getElementById('lgDocFiltroPanel').classList.remove('open');
+});
+
+async function lgEliminarDocumentacion(id) {
+  const ok = await confirmarAccion('¿Eliminar este documento? Esta acción no se puede deshacer.');
+  if (!ok) return;
+  await fetch(`/legajos/api/documentacion/${id}/`, { method: 'DELETE', headers: { 'X-CSRFToken': lgCsrf() } });
+  lgCargarDocumentacion();
+}
+
+{% if es_admin %}
+document.getElementById('lgDocFormTipo').addEventListener('change', function () {
+  document.getElementById('lgDocFormOtroWrap').style.display = this.value === 'otro' ? 'block' : 'none';
+});
+document.querySelectorAll('#lgDocFormFechaEmision, #lgDocFormFechaVencimiento').forEach(lgAutoFormatFecha);
+
+document.getElementById('lgDocBtnNuevo').addEventListener('click', () => {
+  document.getElementById('lgDocFormMsg').innerHTML = '';
+  document.getElementById('lgDocFormTipo').value = 'carnet_manipulacion';
+  document.getElementById('lgDocFormOtroWrap').style.display = 'none';
+  document.getElementById('lgDocFormOtroDetalle').value = '';
+  document.getElementById('lgDocFormFechaEmision').value = '';
+  document.getElementById('lgDocFormFechaVencimiento').value = '';
+  document.getElementById('lgDocFormArchivo').value = '';
+  lgPoblarSelectsEmpleado();
+  document.getElementById('lgModalDoc').classList.add('open');
+});
+document.getElementById('lgDocBtnCancelarForm').addEventListener('click', () => {
+  document.getElementById('lgModalDoc').classList.remove('open');
+});
+
+document.getElementById('lgDocBtnGuardarForm').addEventListener('click', async () => {
+  const btn = document.getElementById('lgDocBtnGuardarForm');
+  if (btn.disabled) return;
+
+  const empleado = document.getElementById('lgDocFormEmpleado').value;
+  const archivo = document.getElementById('lgDocFormArchivo').files[0];
+  if (!empleado || !archivo) {
+    document.getElementById('lgDocFormMsg').innerHTML = '<div style="padding:10px 14px;border-radius:8px;background:#FDEDED;color:#C0392B;">Elegí un empleado y un archivo.</div>';
+    return;
+  }
+
+  const form = new FormData();
+  form.append('empleado', empleado);
+  form.append('tipo', document.getElementById('lgDocFormTipo').value);
+  form.append('tipo_otro_detalle', document.getElementById('lgDocFormOtroDetalle').value);
+  form.append('fecha_emision', lgParseFecha(document.getElementById('lgDocFormFechaEmision').value) || '');
+  form.append('fecha_vencimiento', lgParseFecha(document.getElementById('lgDocFormFechaVencimiento').value) || '');
+  form.append('archivo', archivo);
+
+  btn.disabled = true;
+  const r = await fetch('/legajos/api/documentacion/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': lgCsrf() },
+    body: form,
+  });
+  if (r.ok) {
+    document.getElementById('lgModalDoc').classList.remove('open');
+    lgCargarDocumentacion();
+  } else {
+    const err = await r.json();
+    document.getElementById('lgDocFormMsg').innerHTML = `<div style="padding:10px 14px;border-radius:8px;background:#FDEDED;color:#C0392B;">${err.error || 'Error al guardar'}</div>`;
+  }
+  btn.disabled = false;
+});
+{% endif %}
+
+// ── TRÁMITES Y FIRMAS ────────────────────────────────────────────────────────
+async function lgCargarTramites() {
+  const params = new URLSearchParams();
+  const empleado = document.getElementById('lgTramFiltroEmpleado').value;
+  if (empleado) params.set('empleado', empleado);
+  const r = await fetch(`/legajos/api/documentos/?${params.toString()}`, { cache: 'no-store' });
+  const data = await r.json();
+  lgRenderTramites(data.documentos);
+}
+
+function lgRenderTramites(items) {
+  const tbody = document.getElementById('lgBodyTramites');
+  if (!items.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="lg-empty">No hay trámites cargados.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(d => `
+    <tr>
+      <td style="font-weight:600;">${d.empleado_nombre}</td>
+      <td>${d.tipo_label}</td>
+      <td>${lgFmtFecha(d.fecha)}</td>
+      <td><span class="badge-estado badge-${d.badge}">${d.badge_label}</span></td>
+      <td>
+        <div style="display:flex; gap:8px;">
+          ${d.pdf_url ? `<a href="${d.pdf_url}" target="_blank" rel="noopener">Ver PDF</a>` : ''}
+          ${LG_ES_ADMIN && d.estado !== 'firmado' ? `<a href="#" class="lg-subir-firmado" data-id="${d.id}">Subir firmado</a>` : ''}
+          ${d.firmado_url ? `<a href="${d.firmado_url}" target="_blank" rel="noopener">Ver firmado</a>` : ''}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+  tbody.querySelectorAll('.lg-subir-firmado').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('lgTramFirmarId').value = a.dataset.id;
+      document.getElementById('lgTramFirmarArchivo').value = '';
+      document.getElementById('lgTramFirmarMsg').innerHTML = '';
+      document.getElementById('lgModalTramFirmar').classList.add('open');
+    });
+  });
+}
+
+document.getElementById('lgTramFiltroEmpleado').addEventListener('change', lgCargarTramites);
+document.getElementById('lgTramBtnFiltro').addEventListener('click', () => {
+  document.getElementById('lgTramFiltroPanel').classList.toggle('open');
+});
+document.addEventListener('click', (e) => {
+  const wrap = document.getElementById('lgTramBtnFiltro').parentElement;
+  if (!wrap.contains(e.target)) document.getElementById('lgTramFiltroPanel').classList.remove('open');
+});
+
+{% if es_admin %}
+document.getElementById('lgTramFormTipo').addEventListener('change', function () {
+  document.getElementById('lgTramFormDomicilioWrap').style.display = this.value === 'cambio_domicilio' ? 'block' : 'none';
+});
+
+document.getElementById('lgTramBtnNuevo').addEventListener('click', () => {
+  document.getElementById('lgTramFormMsg').innerHTML = '';
+  document.getElementById('lgTramFormTipo').value = 'apercibimiento';
+  document.getElementById('lgTramFormDomicilioWrap').style.display = 'none';
+  document.getElementById('lgTramFormDomicilioNuevo').value = '';
+  document.getElementById('lgTramFormMotivo').value = '';
+  document.getElementById('lgTramFormEmpleado').innerHTML = lgEmpleadosActivos.map(e => `<option value="${e.id}">${e.nombre_completo}</option>`).join('');
+  document.getElementById('lgModalTram').classList.add('open');
+});
+document.getElementById('lgTramBtnCancelarForm').addEventListener('click', () => {
+  document.getElementById('lgModalTram').classList.remove('open');
+});
+
+document.getElementById('lgTramBtnGuardarForm').addEventListener('click', async () => {
+  const btn = document.getElementById('lgTramBtnGuardarForm');
+  if (btn.disabled) return;
+  const payload = {
+    empleado: document.getElementById('lgTramFormEmpleado').value,
+    tipo: document.getElementById('lgTramFormTipo').value,
+    motivo: document.getElementById('lgTramFormMotivo').value.trim(),
+    domicilio_nuevo: document.getElementById('lgTramFormDomicilioNuevo').value.trim(),
+  };
+  btn.disabled = true;
+  const r = await fetch('/legajos/api/documentos/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': lgCsrf() },
+    body: JSON.stringify(payload),
+  });
+  if (r.ok) {
+    document.getElementById('lgModalTram').classList.remove('open');
+    lgCargarTramites();
+  } else {
+    const err = await r.json();
+    document.getElementById('lgTramFormMsg').innerHTML = `<div style="padding:10px 14px;border-radius:8px;background:#FDEDED;color:#C0392B;">${err.error || 'Error al generar'}</div>`;
+  }
+  btn.disabled = false;
+});
+
+document.getElementById('lgTramFirmarCancelar').addEventListener('click', () => {
+  document.getElementById('lgModalTramFirmar').classList.remove('open');
+});
+document.getElementById('lgTramFirmarGuardar').addEventListener('click', async () => {
+  const btn = document.getElementById('lgTramFirmarGuardar');
+  if (btn.disabled) return;
+  const id = document.getElementById('lgTramFirmarId').value;
+  const archivo = document.getElementById('lgTramFirmarArchivo').files[0];
+  if (!archivo) {
+    document.getElementById('lgTramFirmarMsg').innerHTML = '<div style="padding:10px 14px;border-radius:8px;background:#FDEDED;color:#C0392B;">Elegí un archivo.</div>';
+    return;
+  }
+  const form = new FormData();
+  form.append('archivo_firmado', archivo);
+  btn.disabled = true;
+  const r = await fetch(`/legajos/api/documentos/${id}/firmar/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': lgCsrf() },
+    body: form,
+  });
+  if (r.ok) {
+    document.getElementById('lgModalTramFirmar').classList.remove('open');
+    lgCargarTramites();
+  } else {
+    const err = await r.json();
+    document.getElementById('lgTramFirmarMsg').innerHTML = `<div style="padding:10px 14px;border-radius:8px;background:#FDEDED;color:#C0392B;">${err.error || 'Error al subir'}</div>`;
+  }
+  btn.disabled = false;
+});
+{% endif %}
+
+// ── AUSENCIAS ────────────────────────────────────────────────────────────────
+async function lgCargarAusencias() {
+  const params = new URLSearchParams();
+  const empleado = document.getElementById('lgAusFiltroEmpleado').value;
+  if (empleado) params.set('empleado', empleado);
+  const r = await fetch(`/legajos/api/ausencias/?${params.toString()}`, { cache: 'no-store' });
+  const data = await r.json();
+  lgRenderAusencias(data.ausencias);
+}
+
+function lgRenderAusencias(items) {
+  const tbody = document.getElementById('lgBodyAusencias');
+  if (!items.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="lg-empty">No hay ausencias registradas.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(a => `
+    <tr>
+      <td style="font-weight:600;">${a.empleado_nombre}</td>
+      <td>${lgFmtFecha(a.fecha_desde)}</td>
+      <td>${lgFmtFecha(a.fecha_hasta)}</td>
+      <td>${a.tipo_label}</td>
+      <td><span class="badge-estado badge-${a.justificada ? 'firmado' : 'vencido'}">${a.justificada ? 'Justificada' : 'Injustificada'}</span></td>
+      <td>${a.certificado_url ? `<a href="${a.certificado_url}" target="_blank" rel="noopener">Ver</a>` : '—'}</td>
+      <td>${LG_ES_ADMIN ? `<button class="btn-icon btn-eliminar-aus" data-id="${a.id}" aria-label="Eliminar"><i class="ti ti-trash"></i></button>` : ''}</td>
+    </tr>
+  `).join('');
+  tbody.querySelectorAll('.btn-eliminar-aus').forEach(btn => {
+    btn.addEventListener('click', () => lgEliminarAusencia(parseInt(btn.dataset.id)));
+  });
+}
+
+document.getElementById('lgAusFiltroEmpleado').addEventListener('change', lgCargarAusencias);
+document.getElementById('lgAusBtnFiltro').addEventListener('click', () => {
+  document.getElementById('lgAusFiltroPanel').classList.toggle('open');
+});
+document.addEventListener('click', (e) => {
+  const wrap = document.getElementById('lgAusBtnFiltro').parentElement;
+  if (!wrap.contains(e.target)) document.getElementById('lgAusFiltroPanel').classList.remove('open');
+});
+
+async function lgEliminarAusencia(id) {
+  const ok = await confirmarAccion('¿Eliminar esta ausencia?');
+  if (!ok) return;
+  await fetch(`/legajos/api/ausencias/${id}/`, { method: 'DELETE', headers: { 'X-CSRFToken': lgCsrf() } });
+  lgCargarAusencias();
+}
+
+{% if es_admin %}
+document.querySelectorAll('#lgAusFormDesde, #lgAusFormHasta').forEach(lgAutoFormatFecha);
+
+document.getElementById('lgAusBtnNuevo').addEventListener('click', () => {
+  document.getElementById('lgAusFormMsg').innerHTML = '';
+  document.getElementById('lgAusFormEmpleado').innerHTML = lgEmpleadosActivos.map(e => `<option value="${e.id}">${e.nombre_completo}</option>`).join('');
+  document.getElementById('lgAusFormDesde').value = '';
+  document.getElementById('lgAusFormHasta').value = '';
+  document.getElementById('lgAusFormTipo').value = 'enfermedad';
+  document.getElementById('lgAusFormJustificada').checked = false;
+  document.getElementById('lgAusFormCertificado').value = '';
+  document.getElementById('lgAusFormObservaciones').value = '';
+  document.getElementById('lgModalAus').classList.add('open');
+});
+document.getElementById('lgAusBtnCancelarForm').addEventListener('click', () => {
+  document.getElementById('lgModalAus').classList.remove('open');
+});
+
+document.getElementById('lgAusBtnGuardarForm').addEventListener('click', async () => {
+  const btn = document.getElementById('lgAusBtnGuardarForm');
+  if (btn.disabled) return;
+  const desde = lgParseFecha(document.getElementById('lgAusFormDesde').value);
+  const hasta = lgParseFecha(document.getElementById('lgAusFormHasta').value);
+  if (!desde || !hasta) {
+    document.getElementById('lgAusFormMsg').innerHTML = '<div style="padding:10px 14px;border-radius:8px;background:#FDEDED;color:#C0392B;">Completá las dos fechas (dd/mm/yyyy).</div>';
+    return;
+  }
+  const form = new FormData();
+  form.append('empleado', document.getElementById('lgAusFormEmpleado').value);
+  form.append('fecha_desde', desde);
+  form.append('fecha_hasta', hasta);
+  form.append('tipo', document.getElementById('lgAusFormTipo').value);
+  form.append('justificada', document.getElementById('lgAusFormJustificada').checked ? 'true' : 'false');
+  form.append('observaciones', document.getElementById('lgAusFormObservaciones').value.trim());
+  const certificado = document.getElementById('lgAusFormCertificado').files[0];
+  if (certificado) form.append('certificado', certificado);
+
+  btn.disabled = true;
+  const r = await fetch('/legajos/api/ausencias/', { method: 'POST', headers: { 'X-CSRFToken': lgCsrf() }, body: form });
+  if (r.ok) {
+    document.getElementById('lgModalAus').classList.remove('open');
+    lgCargarAusencias();
+  } else {
+    const err = await r.json();
+    document.getElementById('lgAusFormMsg').innerHTML = `<div style="padding:10px 14px;border-radius:8px;background:#FDEDED;color:#C0392B;">${err.error || 'Error al guardar'}</div>`;
+  }
+  btn.disabled = false;
+});
+{% endif %}
+
+// ── NOVEDADES ────────────────────────────────────────────────────────────────
+async function lgCargarNovedades() {
+  const r = await fetch('/legajos/api/novedades/', { cache: 'no-store' });
+  const data = await r.json();
+  lgRenderNovedades(data.novedades);
+}
+
+function lgRenderNovedades(items) {
+  const cont = document.getElementById('lgListaNovedades');
+  if (!items.length) {
+    cont.innerHTML = '<div class="lg-empty">No hay novedades cargadas.</div>';
+    return;
+  }
+  cont.innerHTML = items.map(n => `
+    <div class="card lg-novedad-card">
+      <div class="lg-novedad-fecha">${lgFmtFecha(n.fecha)}</div>
+      <div style="flex:1;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+          <span class="badge-estado badge-borrador">${n.tipo_label}</span>
+          <span style="font-size:13px; font-weight:600; color:var(--text-muted);">${n.empleado_nombre}</span>
+        </div>
+        <div>${n.texto}</div>
+      </div>
+      ${LG_ES_ADMIN ? `<button class="btn-icon btn-eliminar-nov" data-id="${n.id}" aria-label="Eliminar"><i class="ti ti-trash"></i></button>` : ''}
+    </div>
+  `).join('');
+  cont.querySelectorAll('.btn-eliminar-nov').forEach(btn => {
+    btn.addEventListener('click', () => lgEliminarNovedad(parseInt(btn.dataset.id)));
+  });
+}
+
+async function lgEliminarNovedad(id) {
+  const ok = await confirmarAccion('¿Eliminar esta novedad?');
+  if (!ok) return;
+  await fetch(`/legajos/api/novedades/${id}/`, { method: 'DELETE', headers: { 'X-CSRFToken': lgCsrf() } });
+  lgCargarNovedades();
+}
+
+{% if es_admin %}
+document.getElementById('lgNovBtnNuevo').addEventListener('click', () => {
+  document.getElementById('lgNovFormMsg').innerHTML = '';
+  document.getElementById('lgNovFormEmpleado').innerHTML = '<option value="">General (todo el equipo)</option>' + lgEmpleadosActivos.map(e => `<option value="${e.id}">${e.nombre_completo}</option>`).join('');
+  document.getElementById('lgNovFormTipo').value = 'aviso';
+  document.getElementById('lgNovFormTexto').value = '';
+  document.getElementById('lgModalNov').classList.add('open');
+});
+document.getElementById('lgNovBtnCancelarForm').addEventListener('click', () => {
+  document.getElementById('lgModalNov').classList.remove('open');
+});
+
+document.getElementById('lgNovBtnGuardarForm').addEventListener('click', async () => {
+  const btn = document.getElementById('lgNovBtnGuardarForm');
+  if (btn.disabled) return;
+  const texto = document.getElementById('lgNovFormTexto').value.trim();
+  if (!texto) {
+    document.getElementById('lgNovFormMsg').innerHTML = '<div style="padding:10px 14px;border-radius:8px;background:#FDEDED;color:#C0392B;">El texto es obligatorio.</div>';
+    return;
+  }
+  const payload = {
+    empleado: document.getElementById('lgNovFormEmpleado').value || null,
+    tipo: document.getElementById('lgNovFormTipo').value,
+    texto,
+  };
+  btn.disabled = true;
+  const r = await fetch('/legajos/api/novedades/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': lgCsrf() },
+    body: JSON.stringify(payload),
+  });
+  if (r.ok) {
+    document.getElementById('lgModalNov').classList.remove('open');
+    lgCargarNovedades();
+  } else {
+    const err = await r.json();
+    document.getElementById('lgNovFormMsg').innerHTML = `<div style="padding:10px 14px;border-radius:8px;background:#FDEDED;color:#C0392B;">${err.error || 'Error al guardar'}</div>`;
+  }
+  btn.disabled = false;
+});
+{% endif %}
+
+// ── CUMPLEAÑOS ─────────────────────────────────────────────────────────────
+async function lgCargarCumpleanios() {
+  const r = await fetch('/legajos/api/cumpleanios/', { cache: 'no-store' });
+  const data = await r.json();
+  const cont = document.getElementById('lgGridCumpleanios');
+  if (!data.cumpleanios.length) {
+    cont.innerHTML = '<div class="lg-empty">No hay empleados con fecha de nacimiento cargada.</div>';
+    return;
+  }
+  cont.innerHTML = data.cumpleanios.map(c => `
+    <div class="card lg-cumple-card">
+      <div class="lg-avatar" style="width:44px; height:44px; font-size:14px;">${c.iniciales}</div>
+      <div style="flex:1;">
+        <div style="font-weight:600; font-size:14px;">${c.nombre_completo}</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${lgFmtFecha(c.fecha)}</div>
+      </div>
+      <span class="badge-estado badge-${c.badge}">${c.badge_label}</span>
+    </div>
+  `).join('');
+}
+
+// ── POBLAR LOS DEMÁS SELECTS DE EMPLEADO CUANDO YA HAY LISTA ────────────────
+const _lgPoblarSelectsEmpleadoOriginal = lgPoblarSelectsEmpleado;
+lgPoblarSelectsEmpleado = function () {
+  _lgPoblarSelectsEmpleadoOriginal();
+  const opciones = lgEmpleadosActivos.map(e => `<option value="${e.id}">${e.nombre_completo}</option>`).join('');
+  const selTram = document.getElementById('lgTramFiltroEmpleado');
+  if (selTram) selTram.innerHTML = '<option value="">Todos</option>' + opciones;
+  const selAus = document.getElementById('lgAusFiltroEmpleado');
+  if (selAus) selAus.innerHTML = '<option value="">Todos</option>' + opciones;
+};
+
+// Cargar cada pestaña la primera vez que se abre.
+document.querySelectorAll('#lgNav .lg-nav-btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const tab = this.dataset.tab;
+    if (tab === 'tramites') lgCargarTramites();
+    if (tab === 'ausencias') lgCargarAusencias();
+    if (tab === 'novedades') lgCargarNovedades();
+    if (tab === 'cumpleanios') lgCargarCumpleanios();
+  });
+});
+
+// Mover los modales al final del body, mismo criterio que control_caja.
+document.body.appendChild(document.getElementById('lgModalFicha'));
+{% if es_admin %}
+document.body.appendChild(document.getElementById('lgModalForm'));
+document.body.appendChild(document.getElementById('lgModalDoc'));
+document.body.appendChild(document.getElementById('lgModalTram'));
+document.body.appendChild(document.getElementById('lgModalTramFirmar'));
+document.body.appendChild(document.getElementById('lgModalAus'));
+document.body.appendChild(document.getElementById('lgModalNov'));
+{% endif %}
+
+lgCargarEmpleados();
+</script>
+{% endblock %}
