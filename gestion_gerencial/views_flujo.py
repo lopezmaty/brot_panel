@@ -2,7 +2,7 @@ from datetime import date
 from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Sum
+from django.db.models import Max, Q, Sum
 from django.shortcuts import redirect, render
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -10,7 +10,8 @@ from rest_framework.response import Response
 from users.permissions import EsAdmin
 
 from . import models
-from .services_flujo import calcular_flujo, ultimo_dia_del_mes
+from .importador_xubio import ErrorImportacion, aplicar, leer_excel, planificar
+from .services_flujo import DIAS_MAX_VENCIDO_CLIENTES, calcular_flujo, ultimo_dia_del_mes
 
 
 # ── Página ──────────────────────────────────────────────────────────────────
@@ -126,9 +127,16 @@ def ff_cuentas(request):
             qs = qs.filter(fecha_vencimiento__lte=p['hasta'])
         tot = {t['tipo']: float(t['s']) for t in
                qs.filter(estado='pendiente').order_by().values('tipo').annotate(s=Sum('importe'))}
+        ultima = {
+            t['tipo']: t['m'].isoformat()
+            for t in models.CuentaCorrienteItem.objects.filter(origen='import')
+            .order_by().values('tipo').annotate(m=Max('modificado_en'))
+        }
         return Response({
             'cuentas': [_item_dict(i) for i in qs[:500]],
             'totales': {'cobrar': tot.get('cliente', 0), 'pagar': tot.get('proveedor', 0)},
+            'ultima_importacion': {'cliente': ultima.get('cliente'), 'proveedor': ultima.get('proveedor')},
+            'dias_max_vencido_clientes': DIAS_MAX_VENCIDO_CLIENTES,
         })
     try:
         item = _aplicar_campos(models.CuentaCorrienteItem(), request.data)
@@ -173,6 +181,36 @@ def ff_cuenta_saldar(request, pk):
         item.estado, item.fecha_cancelacion = 'cancelado', fecha
     item.save()
     return Response(_item_dict(item))
+
+
+# ── Importar reportes de Xubio (Excel) ──────────────────────────────────────
+TAMANIO_MAX_EXCEL = 5 * 1024 * 1024   # 5 MB
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def ff_importar(request):
+    """
+    Recibe el Excel de "Cuentas a cobrar" o "Cuentas a pagar" de Xubio.
+    confirmar=false (o ausente): solo devuelve el resumen de lo que pasaría.
+    confirmar=true: aplica los cambios.
+    """
+    archivo = request.FILES.get('archivo')
+    if archivo is None:
+        return Response({'error': 'Elegí un archivo.'}, status=400)
+    if not archivo.name.lower().endswith('.xlsx'):
+        return Response({'error': 'El archivo tiene que ser un Excel (.xlsx) exportado de Xubio.'}, status=400)
+    if archivo.size > TAMANIO_MAX_EXCEL:
+        return Response({'error': 'El archivo es demasiado grande (máximo 5 MB).'}, status=400)
+
+    try:
+        tipo, filas = leer_excel(archivo)
+        plan = planificar(tipo, filas)
+        confirmar = str(request.data.get('confirmar', '')).lower() == 'true'
+        resumen = aplicar(plan) if confirmar else plan['resumen']
+    except ErrorImportacion as e:
+        return Response({'error': str(e)}, status=400)
+    return Response({'aplicado': confirmar, 'resumen': resumen})
 
 
 # ── Saldos bancarios (BBVA / Mercado Pago) ──────────────────────────────────

@@ -138,10 +138,9 @@
       <tbody>
         <tr><td>Efectivo</td><td>Se toma solo de Control de caja: saldo inicial más los movimientos completos hasta el corte.</td></tr>
         <tr><td>BBVA y Mercado Pago</td><td>Cargá el saldo en "Saldos bancarios" cada vez que quieras actualizarlo. Para cada corte se usa el último saldo cargado hasta esa fecha.</td></tr>
-        <tr><td>Venta a cuenta corriente</td><td>Cargá el comprobante impago como Cliente, con su fecha de vencimiento. Se proyecta en Cobros según esa fecha.</td></tr>
-        <tr><td>Compra a proveedor pendiente</td><td>Cargá el comprobante impago como Proveedor, con su fecha de vencimiento. Se proyecta en Pagos.</td></tr>
-        <tr><td>Cobro o pago</td><td>Usá "Registrar cobro" o "Registrar pago" en la fila. Si es parcial, queda el resto pendiente.</td></tr>
-        <tr><td>Vencidos</td><td>Lo que venció hasta el corte y sigue impago entra en el saldo al corte, asumiendo que se cobra o se paga.</td></tr>
+        <tr><td>Cuentas a cobrar y a pagar</td><td>En "Cuentas corrientes", subí los reportes de Xubio ("Cuentas a cobrar" y "Cuentas a pagar"). Lo que ya no figura en el reporte se marca como cobrado o pagado. Se proyecta en Cobros o Pagos según la fecha de vencimiento.</td></tr>
+        <tr><td>Comprobante a mano</td><td>También podés cargarlo con "Nuevo comprobante" y registrar su cobro o pago en la fila. Lo cargado a mano nunca se cierra solo al subir un reporte.</td></tr>
+        <tr><td>Vencidos</td><td>Lo que venció hasta el corte y sigue impago entra en el saldo al corte, asumiendo que se cobra o se paga. Excepción: una factura de cliente vencida hace más de 30 días se considera incobrable y no se cuenta.</td></tr>
         <tr><td>Lectura 30/60/90</td><td>Saldo al corte + cobros futuros − pagos futuros, acumulado por horizonte.</td></tr>
       </tbody>
     </table>
@@ -155,7 +154,8 @@
 
   <span class="page-eyebrow">Flujo de fondos</span>
   <h1 class="page-title">Cuentas corrientes</h1>
-  <p class="ff-sub">Cargá solo los comprobantes impagos, cada uno con su vencimiento. El importe es lo que falta cobrar o pagar.</p>
+  <p class="ff-sub">Subí el reporte "Cuentas a cobrar" y el de "Cuentas a pagar" de Xubio (en Xubio: Acciones, exportar a Excel) y esta lista se actualiza sola. Al exportar, dejá "Factura desde" lo más atrás posible. También podés cargar un comprobante a mano.</p>
+  <p class="ff-muted ff-small" id="ffUltimaImportacion" style="margin:-8px 0 16px;"></p>
 
   <div class="toolbar">
     <div class="toolbar-left">
@@ -179,7 +179,8 @@
       </div>
     </div>
     <div class="toolbar-right">
-      <button class="btn-primary" id="ffBtnNuevaCuenta"><i class="ti ti-plus"></i> Nuevo comprobante</button>
+      <button class="btn-primary" id="ffBtnSubirReporte"><i class="ti ti-upload"></i> Subir reporte de Xubio</button>
+      <button class="btn-secondary" id="ffBtnNuevaCuenta"><i class="ti ti-plus"></i> Nuevo comprobante</button>
     </div>
   </div>
 
@@ -304,6 +305,21 @@
   </div>
 </div>
 
+<!-- ══ MODAL SUBIR REPORTE DE XUBIO ══ -->
+<div class="modal-overlay" id="ffModalReporte">
+  <div class="modal-box" style="max-width:560px;">
+    <h2 class="modal-title">Subir reporte de Xubio</h2>
+    <p class="ff-muted" style="margin:0 0 14px;">Elegí el Excel de "Cuentas a cobrar" o de "Cuentas a pagar". El sistema detecta cuál es y te muestra qué va a cambiar antes de guardar.</p>
+    <input type="file" id="ffReporteArchivo" accept=".xlsx">
+    <div id="ffReporteResumen" style="margin-top:14px;"></div>
+    <div id="ffReporteMsg" style="margin-top:10px;"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="ffReporteCancelar">Cancelar</button>
+      <button class="btn-primary" id="ffReporteConfirmar" disabled>Confirmar y actualizar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ MODAL SALDO BANCARIO ══ -->
 <div class="modal-overlay" id="ffModalSaldo">
   <div class="modal-box" style="max-width:480px;">
@@ -383,8 +399,14 @@ function ffMsg(elId, texto) {
 
 async function ffApi(path, { method = 'GET', body = null } = {}) {
   const headers = { 'X-CSRFToken': ffCsrf() };
-  if (body) headers['Content-Type'] = 'application/json';
-  const r = await fetch(FF_API + path, { method, headers, body: body ? JSON.stringify(body) : null, cache: 'no-store' });
+  let payload = null;
+  if (body instanceof FormData) {
+    payload = body;                       // el navegador arma el Content-Type con el archivo
+  } else if (body) {
+    headers['Content-Type'] = 'application/json';
+    payload = JSON.stringify(body);
+  }
+  const r = await fetch(FF_API + path, { method, headers, body: payload, cache: 'no-store' });
   const data = await r.json().catch(() => ({}));
   return { ok: r.ok, data };
 }
@@ -431,8 +453,11 @@ async function ffCargarResumen() {
   $('ffKpiPos30').innerHTML = ffMoney(k.posicion_30, false);
   $('ffKpiCobros').innerHTML = ffMoney(k.cobros_90, false);
   $('ffKpiPagos').innerHTML = ffMoney(k.pagos_90, false);
-  $('ffKpiCobrosNota').textContent = k.vencido_cobrar
-    ? `Vencido impago: ${ffPesos.format(k.vencido_cobrar)} (${k.vencidos_cobrar_n} comprobantes)` : 'Sin vencidos impagos';
+  $('ffKpiCobrosNota').textContent = (k.vencido_cobrar
+    ? `Vencido impago: ${ffPesos.format(k.vencido_cobrar)} (${k.vencidos_cobrar_n} comprobantes)` : 'Sin vencidos impagos')
+    + (k.excluido_cobrar
+      ? ` · No cuenta (incobrable): ${ffPesos.format(k.excluido_cobrar)} vencido hace más de ${ffDiasMax} días (${k.excluidos_cobrar_n})`
+      : '');
   $('ffKpiPagosNota').textContent = k.vencido_pagar
     ? `Vencido impago: ${ffPesos.format(k.vencido_pagar)} (${k.vencidos_pagar_n} comprobantes)` : 'Sin vencidos impagos';
 
@@ -478,6 +503,7 @@ $('ffMes').addEventListener('change', ffCargarResumen);
 
 // ── CUENTAS CORRIENTES ───────────────────────────────────────────────────────
 let ffCuentas = [];
+let ffDiasMax = 30;   // plazo de incobrables; el servidor lo informa al cargar la lista
 
 async function ffCargarCuentas() {
   const p = new URLSearchParams();
@@ -490,6 +516,12 @@ async function ffCargarCuentas() {
   const t = data.totales || { cobrar: 0, pagar: 0 };
   $('ffTotCobrar').textContent = ffPesos.format(t.cobrar);
   $('ffTotPagar').textContent = ffPesos.format(t.pagar);
+  ffDiasMax = data.dias_max_vencido_clientes || ffDiasMax;
+  const fmtUlt = (iso) => (iso
+    ? new Date(iso).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+    : 'nunca');
+  const u = data.ultima_importacion || {};
+  $('ffUltimaImportacion').textContent = `Último reporte subido: clientes ${fmtUlt(u.cliente)} · proveedores ${fmtUlt(u.proveedor)}`;
   ffRenderCuentas();
 }
 
@@ -498,7 +530,12 @@ function ffEstadoBadge(c) {
     return `<span class="ff-badge gray">${c.tipo === 'cliente' ? 'Cobrado' : 'Pagado'} el ${ffFmtFecha(c.fecha_cancelacion)}</span>`;
   }
   const dias = Math.round((new Date(c.fecha_vencimiento + 'T00:00:00') - new Date(ffHoyISO() + 'T00:00:00')) / 86400000);
-  if (dias < 0) return `<span class="ff-badge bad">Vencido hace ${-dias} d</span>`;
+  if (dias < 0) {
+    if (c.tipo === 'cliente' && -dias > ffDiasMax) {
+      return `<span class="ff-badge gray" title="Vencida hace más de ${ffDiasMax} días: no se suma en el flujo">Vencido hace ${-dias} d · no cuenta</span>`;
+    }
+    return `<span class="ff-badge bad">Vencido hace ${-dias} d</span>`;
+  }
   if (dias <= 7) return `<span class="ff-badge warn">${dias === 0 ? 'Vence hoy' : `Vence en ${dias} d`}</span>`;
   return '<span class="ff-badge ok">Pendiente</span>';
 }
@@ -620,6 +657,74 @@ $('ffSaldarGuardar').addEventListener('click', async () => {
   ffCargarCuentas();
 });
 
+// ── SUBIR REPORTE DE XUBIO ───────────────────────────────────────────────────
+const FF_TIPO_REPORTE = { cliente: 'Cuentas a cobrar (clientes)', proveedor: 'Cuentas a pagar (proveedores)' };
+
+function ffEnviarReporte(confirmar) {
+  const fd = new FormData();
+  fd.append('archivo', $('ffReporteArchivo').files[0]);
+  fd.append('confirmar', confirmar ? 'true' : 'false');
+  return ffApi('importar/', { method: 'POST', body: fd });
+}
+
+function ffMostrarResumenReporte(r) {
+  const cerrados = r.tipo === 'cliente' ? 'cobrados' : 'pagados';
+  const filas = [
+    ['Comprobantes en el reporte', r.filas],
+    ['Nuevos', r.nuevos],
+    ['Cambiaron (importe o vencimiento)', r.actualizados],
+    ['Sin cambios', r.sin_cambios],
+    [`Se marcan como ${cerrados} (ya no figuran en el reporte)`, r.cerrados],
+  ];
+  let html = `<div style="font-weight:600; margin-bottom:8px;">${FF_TIPO_REPORTE[r.tipo]}</div>
+    <table><tbody>${filas.map(([a, b]) => `<tr><td>${ffEsc(a)}</td><td class="ff-num" style="font-weight:600;">${b}</td></tr>`).join('')}</tbody></table>
+    <div class="ff-small ff-muted" style="margin-top:8px;">Total del reporte: ${ffPesos.format(r.total_archivo)} · vencido: ${ffPesos.format(r.vencido_archivo)}</div>`;
+  if (r.manuales_no_incluidos) {
+    html += `<div class="ff-small ff-muted" style="margin-top:4px;">${r.manuales_no_incluidos} comprobantes cargados a mano no figuran en el reporte: no se tocan.</div>`;
+  }
+  (r.advertencias || []).forEach((a) => {
+    html += `<div style="margin-top:10px;padding:10px 14px;border-radius:8px;background:#FDF3E0;color:#B5750B;">${ffEsc(a)}</div>`;
+  });
+  $('ffReporteResumen').innerHTML = html;
+}
+
+$('ffBtnSubirReporte').addEventListener('click', () => {
+  $('ffReporteArchivo').value = '';
+  $('ffReporteResumen').innerHTML = '';
+  ffMsg('ffReporteMsg', '');
+  $('ffReporteConfirmar').disabled = true;
+  $('ffModalReporte').classList.add('open');
+});
+$('ffReporteCancelar').addEventListener('click', () => $('ffModalReporte').classList.remove('open'));
+
+// Al elegir el archivo se muestra la vista previa: todavía no se guarda nada.
+$('ffReporteArchivo').addEventListener('change', async () => {
+  $('ffReporteResumen').innerHTML = '';
+  ffMsg('ffReporteMsg', '');
+  $('ffReporteConfirmar').disabled = true;
+  if (!$('ffReporteArchivo').files[0]) return;
+  $('ffReporteResumen').innerHTML = '<span class="ff-muted">Leyendo el archivo...</span>';
+  const { ok, data } = await ffEnviarReporte(false);
+  $('ffReporteResumen').innerHTML = '';
+  if (!ok) return ffMsg('ffReporteMsg', data.error || 'No se pudo leer el archivo');
+  ffMostrarResumenReporte(data.resumen);
+  $('ffReporteConfirmar').disabled = false;
+});
+
+$('ffReporteConfirmar').addEventListener('click', async () => {
+  const btn = $('ffReporteConfirmar');
+  if (btn.disabled) return;
+  btn.disabled = true;
+  const { ok, data } = await ffEnviarReporte(true);
+  if (!ok) {
+    btn.disabled = false;
+    return ffMsg('ffReporteMsg', data.error || 'Error al actualizar');
+  }
+  $('ffModalReporte').classList.remove('open');
+  ffCargarCuentas();
+  ffCargarResumen();
+});
+
 // ── SALDOS BANCARIOS ─────────────────────────────────────────────────────────
 async function ffCargarSaldos() {
   const { data } = await ffApi('saldos/');
@@ -679,7 +784,7 @@ $('ffSaldoGuardar').addEventListener('click', async () => {
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 // Los modales van al final del body, mismo criterio que legajos y control_caja.
-['ffModalCuenta', 'ffModalSaldar', 'ffModalSaldo'].forEach((id) => document.body.appendChild($(id)));
+['ffModalCuenta', 'ffModalSaldar', 'ffModalSaldo', 'ffModalReporte'].forEach((id) => document.body.appendChild($(id)));
 
 ffPoblarMeses();
 ffCargarResumen();

@@ -47,6 +47,7 @@ urlpatterns = [
     path('flujo-fondos/cuentas/', views_flujo.ff_cuentas, name='ff_cuentas'),
     path('flujo-fondos/cuentas/<int:pk>/', views_flujo.ff_cuenta_detalle, name='ff_cuenta_detalle'),
     path('flujo-fondos/cuentas/<int:pk>/saldar/', views_flujo.ff_cuenta_saldar, name='ff_cuenta_saldar'),
+    path('flujo-fondos/importar/', views_flujo.ff_importar, name='ff_importar'),
     path('flujo-fondos/saldos/', views_flujo.ff_saldos, name='ff_saldos'),
     path('flujo-fondos/saldos/<int:pk>/', views_flujo.ff_saldo_detalle, name='ff_saldo_detalle'),
 ]

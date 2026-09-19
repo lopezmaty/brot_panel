@@ -8,6 +8,10 @@ from .models import CuentaCorrienteItem, SaldoBancario
 
 CERO = Decimal('0')
 
+# Cuentas a cobrar: una factura vencida hace MÁS de estos días se considera incobrable y no se
+# cuenta en el flujo (sí sigue figurando en la lista de Cuentas corrientes). Solo aplica a clientes.
+DIAS_MAX_VENCIDO_CLIENTES = 30
+
 
 def ultimo_dia_del_mes(mes: str) -> date:
     """'2026-09' -> date(2026, 9, 30)"""
@@ -56,15 +60,22 @@ def calcular_flujo(corte: date) -> dict:
 
     # ── Cuentas corrientes: una query, agrupada por tipo ────────────────────
     pendientes = CuentaCorrienteItem.objects.filter(estado='pendiente')
+    # "Viejo" = vencido hace más de DIAS_MAX_VENCIDO_CLIENTES días a la fecha de corte.
+    viejo = Q(fecha_vencimiento__lt=corte - timedelta(days=DIAS_MAX_VENCIDO_CLIENTES))
     agg = {
         f['tipo']: f
         for f in pendientes.order_by().values('tipo').annotate(
             venc=_suma(hasta=corte), n_venc=Count('id', filter=Q(fecha_vencimiento__lte=corte)),
+            viejo=Sum('importe', filter=viejo), n_viejo=Count('id', filter=viejo),
             v30=_suma(corte, d30), v60=_suma(d30, d60), v90=_suma(d60, d90),
         )
     }
     cli, pro = agg.get('cliente', {}), agg.get('proveedor', {})
     g = lambda d, k: d.get(k) or CERO  # noqa: E731  (None -> 0)
+
+    # Clientes: lo vencido hace más de 30 días no se cuenta. Proveedores: se cuenta todo lo que se debe.
+    cli_vencido = g(cli, 'venc') - g(cli, 'viejo')
+    cli_vencido_n = cli.get('n_venc', 0) - cli.get('n_viejo', 0)
 
     # ── Filas del mapa de dinero ────────────────────────────────────────────
     matriz = [_fila('Efectivo', 'disponible', 'Control de caja', _efectivo_al(corte))]
@@ -73,7 +84,8 @@ def calcular_flujo(corte: date) -> dict:
         nota = f'Saldo cargado al {fecha.strftime("%d/%m/%Y")}' if fecha else 'Sin saldo cargado'
         matriz.append(_fila(etiqueta, 'disponible', nota, monto))
     matriz.append(_fila(
-        'Cuenta corriente clientes', 'cobrar', 'Vencido al corte + cobros por vencimiento', g(cli, 'venc'),
+        'Cuenta corriente clientes', 'cobrar',
+        f'Vencido hasta {DIAS_MAX_VENCIDO_CLIENTES} días + cobros por vencimiento', cli_vencido,
         cobros=(g(cli, 'v30'), g(cli, 'v60'), g(cli, 'v90'))))
     matriz.append(_fila(
         'Cuenta corriente proveedores', 'pagar', 'Vencido al corte + pagos por vencimiento', -g(pro, 'venc'),
@@ -82,10 +94,12 @@ def calcular_flujo(corte: date) -> dict:
     posicion_corte = sum((m['saldo'] for m in matriz), CERO)
     kpis = {
         'disponibilidad': sum((m['saldo'] for m in matriz if m['grupo'] == 'disponible'), CERO),
-        'vencido_cobrar': g(cli, 'venc'),
+        'vencido_cobrar': cli_vencido,
         'vencido_pagar': g(pro, 'venc'),
-        'vencidos_cobrar_n': cli.get('n_venc', 0),
+        'vencidos_cobrar_n': cli_vencido_n,
         'vencidos_pagar_n': pro.get('n_venc', 0),
+        'excluido_cobrar': g(cli, 'viejo'),          # incobrable: no cuenta en el flujo
+        'excluidos_cobrar_n': cli.get('n_viejo', 0),
         'posicion_corte': posicion_corte,
         'posicion_30': sum((m['pos_30'] for m in matriz), CERO),
         'cobros_90': g(cli, 'v30') + g(cli, 'v60') + g(cli, 'v90'),
