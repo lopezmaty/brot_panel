@@ -89,12 +89,12 @@
       <span class="qc-btn">Ir al EERR <i class="ti ti-arrow-right"></i></span>
     </a>
 
-    <div class="quick-card qc-disabled">
+    <a href="{% url 'flujo_fondos' %}" class="quick-card">
       <div class="qc-badge"><i class="ti ti-chart-line"></i></div>
-      <h3 class="qc-title">Cashflow</h3>
-      <p class="qc-desc">Seguimiento del flujo de caja del negocio.</p>
-      <span class="qc-btn-disabled">Próximamente</span>
-    </div>
+      <h3 class="qc-title">Flujo de fondos</h3>
+      <p class="qc-desc">Cobros y pagos proyectados a 30, 60 y 90 días.</p>
+      <span class="qc-btn">Ir al flujo <i class="ti ti-arrow-right"></i></span>
+    </a>
   </div>
 </section>
 
@@ -107,6 +107,13 @@
       <h3 class="qc-title">Control Horario</h3>
       <p class="qc-desc">Importá fichadas del reloj biométrico y calculá horas del equipo.</p>
       <span class="qc-btn">Ir al horario <i class="ti ti-arrow-right"></i></span>
+    </a>
+
+    <a href="{% url 'legajos' %}" class="quick-card">
+      <div class="qc-badge"><i class="ti ti-address-book"></i></div>
+      <h3 class="qc-title">Legajos</h3>
+      <p class="qc-desc">Legajos, documentación, trámites, ausencias y cumpleaños del equipo.</p>
+      <span class="qc-btn">Ir a legajos <i class="ti ti-arrow-right"></i></span>
     </a>
     {% endif %}
   </div>

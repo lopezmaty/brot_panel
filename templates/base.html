@@ -53,7 +53,7 @@
           <a href="{% url 'mapa_economico' %}">Mapa Económico</a>
           <a href="{% url 'costeo_precios' %}">Centro de Costos</a>
           <a href="{% url 'estado_resultados' %}">Estado de Resultados</a>
-          <span class="topnav-dropdown-disabled">Cashflow</span>
+          <a href="{% url 'flujo_fondos' %}">Flujo de fondos</a>
         </div>
       </div>
 
@@ -62,6 +62,7 @@
         <div class="topnav-dropdown-menu">
           {% if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab' %}
           <a href="{% url 'control_horario' %}">Control Horario</a>
+          <a href="{% url 'legajos' %}">Legajos</a>
           {% endif %}
         </div>
       </div>
