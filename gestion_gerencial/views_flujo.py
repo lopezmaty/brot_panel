@@ -68,15 +68,10 @@ def _saldo_dict(s):
 @api_view(['GET'])
 @permission_classes([EsAdmin])
 def ff_resumen(request):
-    # La fecha de corte puede venir como fecha exacta (corte=YYYY-MM-DD, por ejemplo hoy)
-    # o como mes (mes=YYYY-MM), que toma el último día de ese mes.
     try:
-        if request.GET.get('corte'):
-            corte = date.fromisoformat(request.GET['corte'])
-        else:
-            corte = ultimo_dia_del_mes(request.GET.get('mes', ''))
+        corte = ultimo_dia_del_mes(request.GET.get('mes', ''))
     except (ValueError, TypeError):
-        return Response({'error': 'Fecha de corte inválida.'}, status=400)
+        return Response({'error': 'Mes inválido, usá YYYY-MM.'}, status=400)
 
     r = calcular_flujo(corte)
     for m in r['matriz']:
