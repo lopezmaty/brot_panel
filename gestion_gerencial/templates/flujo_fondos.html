@@ -71,7 +71,7 @@
 
   <div class="toolbar">
     <div class="toolbar-left" style="gap:12px; align-items:center;">
-      <label for="ffMes" style="font-weight:600; font-size:13px;">Fecha de corte</label>
+      <label for="ffMes" style="font-weight:600; font-size:13px;">Mes de corte</label>
       <select id="ffMes" class="ff-select"></select>
       <span class="ff-muted" style="font-size:13px;" id="ffCorteTxt"></span>
     </div>
@@ -396,14 +396,13 @@ document.querySelectorAll('#ffNav .ff-nav-btn').forEach((btn) => {
 // ── RESUMEN ──────────────────────────────────────────────────────────────────
 function ffPoblarMeses() {
   const hoy = new Date();
-  // "Hoy" es lo normal para mirar hacia adelante; los fines de mes sirven para cierres.
-  let html = `<option value="hoy" selected>Hoy (${ffFmtFecha(ffHoyISO())})</option>`;
+  let html = '';
   for (let off = -12; off <= 12; off++) {
     const d = new Date(hoy.getFullYear(), hoy.getMonth() + off, 1);
     const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     let txt = d.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
     txt = txt.charAt(0).toUpperCase() + txt.slice(1);
-    html += `<option value="${val}">Fin de ${txt.toLowerCase()}</option>`;
+    html += `<option value="${val}"${off === 0 ? ' selected' : ''}>${txt}</option>`;
   }
   $('ffMes').innerHTML = html;
 }
@@ -411,8 +410,7 @@ function ffPoblarMeses() {
 const FF_LECTURA_SEMANA = { ok: ['ok', 'OK'], negativa: ['warn', 'Semana negativa'], deficit: ['bad', 'Déficit'] };
 
 async function ffCargarResumen() {
-  const sel = $('ffMes').value;
-  const { ok, data } = await ffApi(`resumen/?${sel === 'hoy' ? `corte=${ffHoyISO()}` : `mes=${sel}`}`);
+  const { ok, data } = await ffApi(`resumen/?mes=${$('ffMes').value}`);
   if (!ok) {
     $('ffBodyMatriz').innerHTML = `<tr><td colspan="12" class="ff-empty">${ffEsc(data.error || 'No se pudo cargar')}</td></tr>`;
     return;
