@@ -71,7 +71,7 @@
 
   <div class="toolbar">
     <div class="toolbar-left" style="gap:12px; align-items:center;">
-      <label for="ffMes" style="font-weight:600; font-size:13px;">Mes de corte</label>
+      <label for="ffMes" style="font-weight:600; font-size:13px;">Fecha de corte</label>
       <select id="ffMes" class="ff-select"></select>
       <span class="ff-muted" style="font-size:13px;" id="ffCorteTxt"></span>
     </div>
@@ -138,8 +138,8 @@
       <tbody>
         <tr><td>Efectivo</td><td>Se toma solo de Control de caja: saldo inicial más los movimientos completos hasta el corte.</td></tr>
         <tr><td>BBVA y Mercado Pago</td><td>Cargá el saldo en "Saldos bancarios" cada vez que quieras actualizarlo. Para cada corte se usa el último saldo cargado hasta esa fecha.</td></tr>
-        <tr><td>Cuentas a cobrar y a pagar</td><td>En "Cuentas corrientes", subí los reportes de Xubio ("Cuentas a cobrar" y "Cuentas a pagar"). Lo que ya no figura en el reporte se marca como cobrado o pagado. Se proyecta en Cobros o Pagos según la fecha de vencimiento.</td></tr>
-        <tr><td>Comprobante a mano</td><td>También podés cargarlo con "Nuevo comprobante" y registrar su cobro o pago en la fila. Lo cargado a mano nunca se cierra solo al subir un reporte.</td></tr>
+        <tr><td>Cuentas a cobrar y a pagar</td><td>En "Cuentas corrientes", subí los reportes de Xubio ("Cuentas a cobrar" y "Cuentas a pagar"). Cada reporte reemplaza todo lo anterior de ese tipo: lo que ya no figura (cobrado o pagado) desaparece y lo nuevo se agrega. Se proyecta en Cobros o Pagos según la fecha de vencimiento.</td></tr>
+        <tr><td>Comprobante a mano</td><td>Podés cargar uno con "Nuevo comprobante" para verlo en el flujo, pero desaparece la próxima vez que subas el reporte de ese tipo.</td></tr>
         <tr><td>Vencidos</td><td>Lo que venció hasta el corte y sigue impago entra en el saldo al corte, asumiendo que se cobra o se paga. Excepción: una factura de cliente vencida hace más de 30 días se considera incobrable y no se cuenta.</td></tr>
         <tr><td>Lectura 30/60/90</td><td>Saldo al corte + cobros futuros − pagos futuros, acumulado por horizonte.</td></tr>
       </tbody>
@@ -154,7 +154,7 @@
 
   <span class="page-eyebrow">Flujo de fondos</span>
   <h1 class="page-title">Cuentas corrientes</h1>
-  <p class="ff-sub">Subí el reporte "Cuentas a cobrar" y el de "Cuentas a pagar" de Xubio (en Xubio: Acciones, exportar a Excel) y esta lista se actualiza sola. Al exportar, dejá "Factura desde" lo más atrás posible. También podés cargar un comprobante a mano.</p>
+  <p class="ff-sub">Subí el reporte "Cuentas a cobrar" y el de "Cuentas a pagar" de Xubio (en Xubio: Acciones, exportar a Excel) y esta lista se actualiza sola. Cada reporte que subís reemplaza todo lo anterior de ese tipo: lo que ya no figura (cobrado o pagado) desaparece y lo nuevo se agrega. Al exportar, dejá "Factura desde" lo más atrás posible.</p>
   <p class="ff-muted ff-small" id="ffUltimaImportacion" style="margin:-8px 0 16px;"></p>
 
   <div class="toolbar">
@@ -168,12 +168,6 @@
             <option value="">Clientes y proveedores</option>
             <option value="cliente">Clientes (a cobrar)</option>
             <option value="proveedor">Proveedores (a pagar)</option>
-          </select>
-          <label style="margin-top:10px;">Estado</label>
-          <select id="ffFiltroEstado">
-            <option value="pendiente">Pendientes</option>
-            <option value="cancelado">Cobrados / pagados</option>
-            <option value="">Todos</option>
           </select>
         </div>
       </div>
@@ -280,36 +274,11 @@
   </div>
 </div>
 
-<!-- ══ MODAL REGISTRAR COBRO / PAGO ══ -->
-<div class="modal-overlay" id="ffModalSaldar">
-  <div class="modal-box" style="max-width:460px;">
-    <h2 class="modal-title" id="ffSaldarTitulo">Registrar cobro</h2>
-    <input type="hidden" id="ffSaldarId">
-    <p class="ff-muted" id="ffSaldarDetalle" style="margin:0 0 14px;"></p>
-    <div class="form-grid">
-      <div>
-        <label>Fecha</label>
-        <input type="text" id="ffSaldarFecha" placeholder="dd/mm/yyyy" maxlength="10">
-      </div>
-      <div>
-        <label>Monto</label>
-        <input type="number" id="ffSaldarMonto" min="0" step="0.01">
-      </div>
-      <div class="ff-hint">Si el monto es menor al importe pendiente, el resto queda pendiente.</div>
-    </div>
-    <div id="ffSaldarMsg" style="margin-top:10px;"></div>
-    <div class="modal-actions">
-      <button class="btn-secondary" id="ffSaldarCancelar">Cancelar</button>
-      <button class="btn-primary" id="ffSaldarGuardar">Registrar</button>
-    </div>
-  </div>
-</div>
-
 <!-- ══ MODAL SUBIR REPORTE DE XUBIO ══ -->
 <div class="modal-overlay" id="ffModalReporte">
   <div class="modal-box" style="max-width:560px;">
     <h2 class="modal-title">Subir reporte de Xubio</h2>
-    <p class="ff-muted" style="margin:0 0 14px;">Elegí el Excel de "Cuentas a cobrar" o de "Cuentas a pagar". El sistema detecta cuál es y te muestra qué va a cambiar antes de guardar.</p>
+    <p class="ff-muted" style="margin:0 0 14px;">Elegí el Excel de "Cuentas a cobrar" o de "Cuentas a pagar". El sistema detecta cuál es y te muestra qué va a cambiar antes de guardar. Reemplaza todo lo anterior de ese tipo.</p>
     <input type="file" id="ffReporteArchivo" accept=".xlsx">
     <div id="ffReporteResumen" style="margin-top:14px;"></div>
     <div id="ffReporteMsg" style="margin-top:10px;"></div>
@@ -389,7 +358,7 @@ function ffAutoFormatFecha(input) {
     this.value = v.slice(0, 10);
   });
 }
-['ffCuentaEmision', 'ffCuentaVencimiento', 'ffSaldarFecha', 'ffSaldoFecha'].forEach((id) => ffAutoFormatFecha($(id)));
+['ffCuentaEmision', 'ffCuentaVencimiento', 'ffSaldoFecha'].forEach((id) => ffAutoFormatFecha($(id)));
 
 function ffMsg(elId, texto) {
   $(elId).innerHTML = texto
@@ -427,13 +396,14 @@ document.querySelectorAll('#ffNav .ff-nav-btn').forEach((btn) => {
 // ── RESUMEN ──────────────────────────────────────────────────────────────────
 function ffPoblarMeses() {
   const hoy = new Date();
-  let html = '';
+  // "Hoy" es lo normal para mirar hacia adelante; los fines de mes sirven para cierres.
+  let html = `<option value="hoy" selected>Hoy (${ffFmtFecha(ffHoyISO())})</option>`;
   for (let off = -12; off <= 12; off++) {
     const d = new Date(hoy.getFullYear(), hoy.getMonth() + off, 1);
     const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     let txt = d.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
     txt = txt.charAt(0).toUpperCase() + txt.slice(1);
-    html += `<option value="${val}"${off === 0 ? ' selected' : ''}>${txt}</option>`;
+    html += `<option value="${val}">Fin de ${txt.toLowerCase()}</option>`;
   }
   $('ffMes').innerHTML = html;
 }
@@ -441,7 +411,8 @@ function ffPoblarMeses() {
 const FF_LECTURA_SEMANA = { ok: ['ok', 'OK'], negativa: ['warn', 'Semana negativa'], deficit: ['bad', 'Déficit'] };
 
 async function ffCargarResumen() {
-  const { ok, data } = await ffApi(`resumen/?mes=${$('ffMes').value}`);
+  const sel = $('ffMes').value;
+  const { ok, data } = await ffApi(`resumen/?${sel === 'hoy' ? `corte=${ffHoyISO()}` : `mes=${sel}`}`);
   if (!ok) {
     $('ffBodyMatriz').innerHTML = `<tr><td colspan="12" class="ff-empty">${ffEsc(data.error || 'No se pudo cargar')}</td></tr>`;
     return;
@@ -510,7 +481,7 @@ async function ffCargarCuentas() {
   const q = $('ffBuscar').value.trim();
   if (q) p.set('q', q);
   if ($('ffFiltroTipo').value) p.set('tipo', $('ffFiltroTipo').value);
-  if ($('ffFiltroEstado').value) p.set('estado', $('ffFiltroEstado').value);
+  p.set('estado', 'pendiente');
   const { data } = await ffApi(`cuentas/?${p.toString()}`);
   ffCuentas = data.cuentas || [];
   const t = data.totales || { cobrar: 0, pagar: 0 };
@@ -526,9 +497,6 @@ async function ffCargarCuentas() {
 }
 
 function ffEstadoBadge(c) {
-  if (c.estado === 'cancelado') {
-    return `<span class="ff-badge gray">${c.tipo === 'cliente' ? 'Cobrado' : 'Pagado'} el ${ffFmtFecha(c.fecha_cancelacion)}</span>`;
-  }
   const dias = Math.round((new Date(c.fecha_vencimiento + 'T00:00:00') - new Date(ffHoyISO() + 'T00:00:00')) / 86400000);
   if (dias < 0) {
     if (c.tipo === 'cliente' && -dias > ffDiasMax) {
@@ -556,14 +524,12 @@ function ffRenderCuentas() {
       <td class="ff-num" style="font-weight:600;">${ffPesos.format(c.importe)}</td>
       <td>${ffEstadoBadge(c)}</td>
       <td style="white-space:nowrap;">
-        ${c.estado === 'pendiente' ? `<button class="btn-secondary ff-saldar" data-id="${c.id}">${c.tipo === 'cliente' ? 'Registrar cobro' : 'Registrar pago'}</button>` : ''}
         <button class="btn-icon ff-editar" data-id="${c.id}" aria-label="Editar"><i class="ti ti-pencil"></i></button>
         <button class="btn-icon ff-borrar" data-id="${c.id}" aria-label="Eliminar"><i class="ti ti-trash"></i></button>
       </td>
     </tr>
   `).join('');
   const buscar = (b) => ffCuentas.find((c) => c.id === +b.dataset.id);
-  tbody.querySelectorAll('.ff-saldar').forEach((b) => b.addEventListener('click', () => ffAbrirSaldar(buscar(b))));
   tbody.querySelectorAll('.ff-editar').forEach((b) => b.addEventListener('click', () => ffAbrirCuenta(buscar(b))));
   tbody.querySelectorAll('.ff-borrar').forEach((b) => b.addEventListener('click', () => ffBorrarCuenta(buscar(b))));
 }
@@ -572,7 +538,7 @@ $('ffBuscar').addEventListener('input', () => {
   clearTimeout(window._ffBuscarTimeout);
   window._ffBuscarTimeout = setTimeout(ffCargarCuentas, 300);
 });
-['ffFiltroTipo', 'ffFiltroEstado'].forEach((id) => $(id).addEventListener('change', ffCargarCuentas));
+$('ffFiltroTipo').addEventListener('change', ffCargarCuentas);
 $('ffBtnFiltro').addEventListener('click', () => $('ffFiltroPanel').classList.toggle('open'));
 document.addEventListener('click', (e) => {
   if (!$('ffBtnFiltro').parentElement.contains(e.target)) $('ffFiltroPanel').classList.remove('open');
@@ -632,31 +598,6 @@ async function ffBorrarCuenta(c) {
   ffCargarCuentas();
 }
 
-function ffAbrirSaldar(c) {
-  ffMsg('ffSaldarMsg', '');
-  $('ffSaldarTitulo').textContent = c.tipo === 'cliente' ? 'Registrar cobro' : 'Registrar pago';
-  $('ffSaldarId').value = c.id;
-  $('ffSaldarDetalle').textContent = `${c.contraparte} · ${c.comprobante || 'sin comprobante'} · pendiente ${ffPesos.format(c.importe)}`;
-  $('ffSaldarFecha').value = ffFmtFecha(ffHoyISO());
-  $('ffSaldarMonto').value = c.importe;
-  $('ffModalSaldar').classList.add('open');
-}
-$('ffSaldarCancelar').addEventListener('click', () => $('ffModalSaldar').classList.remove('open'));
-$('ffSaldarGuardar').addEventListener('click', async () => {
-  const btn = $('ffSaldarGuardar');
-  if (btn.disabled) return;
-  const fecha = ffParseFecha($('ffSaldarFecha').value);
-  if (!fecha) return ffMsg('ffSaldarMsg', 'Completá la fecha (dd/mm/yyyy).');
-  btn.disabled = true;
-  const { ok, data } = await ffApi(`cuentas/${$('ffSaldarId').value}/saldar/`, {
-    method: 'POST', body: { fecha, monto: $('ffSaldarMonto').value },
-  });
-  btn.disabled = false;
-  if (!ok) return ffMsg('ffSaldarMsg', data.error || 'Error al registrar');
-  $('ffModalSaldar').classList.remove('open');
-  ffCargarCuentas();
-});
-
 // ── SUBIR REPORTE DE XUBIO ───────────────────────────────────────────────────
 const FF_TIPO_REPORTE = { cliente: 'Cuentas a cobrar (clientes)', proveedor: 'Cuentas a pagar (proveedores)' };
 
@@ -668,19 +609,18 @@ function ffEnviarReporte(confirmar) {
 }
 
 function ffMostrarResumenReporte(r) {
-  const cerrados = r.tipo === 'cliente' ? 'cobrados' : 'pagados';
   const filas = [
     ['Comprobantes en el reporte', r.filas],
     ['Nuevos', r.nuevos],
     ['Cambiaron (importe o vencimiento)', r.actualizados],
     ['Sin cambios', r.sin_cambios],
-    [`Se marcan como ${cerrados} (ya no figuran en el reporte)`, r.cerrados],
+    ['Desaparecen (ya no figuran en el reporte)', r.cerrados],
   ];
   let html = `<div style="font-weight:600; margin-bottom:8px;">${FF_TIPO_REPORTE[r.tipo]}</div>
     <table><tbody>${filas.map(([a, b]) => `<tr><td>${ffEsc(a)}</td><td class="ff-num" style="font-weight:600;">${b}</td></tr>`).join('')}</tbody></table>
     <div class="ff-small ff-muted" style="margin-top:8px;">Total del reporte: ${ffPesos.format(r.total_archivo)} · vencido: ${ffPesos.format(r.vencido_archivo)}</div>`;
-  if (r.manuales_no_incluidos) {
-    html += `<div class="ff-small ff-muted" style="margin-top:4px;">${r.manuales_no_incluidos} comprobantes cargados a mano no figuran en el reporte: no se tocan.</div>`;
+  if (r.manuales_reemplazados) {
+    html += `<div class="ff-small ff-muted" style="margin-top:4px;">${r.manuales_reemplazados} comprobantes cargados a mano no figuran en el reporte: también se eliminan.</div>`;
   }
   (r.advertencias || []).forEach((a) => {
     html += `<div style="margin-top:10px;padding:10px 14px;border-radius:8px;background:#FDF3E0;color:#B5750B;">${ffEsc(a)}</div>`;
@@ -784,7 +724,7 @@ $('ffSaldoGuardar').addEventListener('click', async () => {
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 // Los modales van al final del body, mismo criterio que legajos y control_caja.
-['ffModalCuenta', 'ffModalSaldar', 'ffModalSaldo', 'ffModalReporte'].forEach((id) => document.body.appendChild($(id)));
+['ffModalCuenta', 'ffModalSaldo', 'ffModalReporte'].forEach((id) => document.body.appendChild($(id)));
 
 ffPoblarMeses();
 ffCargarResumen();
