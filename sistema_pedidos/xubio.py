@@ -307,7 +307,11 @@ def obtener_compras_mes(fecha_desde, fecha_hasta):
             pass
         return None
 
-    ids = [c.get('transaccionid') for c in comprobantes if c.get('transaccionid')]
+    # dict.fromkeys en vez de un set: dedupea preservando orden. Sin esto, si
+    # 'comprobantes' trae el mismo transaccionid repetido (puede pasar en la
+    # respuesta de Xubio), se dispara traer_detalle() dos veces para la misma
+    # factura y sus ítems terminan agregados dos veces a 'lineas'.
+    ids = list(dict.fromkeys(c.get('transaccionid') for c in comprobantes if c.get('transaccionid')))
     lineas = []
 
     with ThreadPoolExecutor(max_workers=10) as executor:
@@ -362,7 +366,8 @@ def obtener_ventas_mes(fecha_desde, fecha_hasta):
             pass
         return None
 
-    ids = [c.get('transaccionid') for c in comprobantes if c.get('transaccionid')]
+    # Mismo fix que en obtener_compras_mes: dedupear antes de lanzar los fetches.
+    ids = list(dict.fromkeys(c.get('transaccionid') for c in comprobantes if c.get('transaccionid')))
 
     clientes_agg = {}
     productos_agg = {}
@@ -465,7 +470,8 @@ def obtener_ventas_diarias_producto(fecha_desde, fecha_hasta):
             pass
         return None
 
-    ids = [c.get('transaccionid') for c in comprobantes if c.get('transaccionid')]
+    # Mismo fix que en obtener_compras_mes: dedupear antes de lanzar los fetches.
+    ids = list(dict.fromkeys(c.get('transaccionid') for c in comprobantes if c.get('transaccionid')))
     diario_agg = {}
 
     with ThreadPoolExecutor(max_workers=10) as executor:
