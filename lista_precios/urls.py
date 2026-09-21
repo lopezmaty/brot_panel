@@ -15,4 +15,5 @@ router.register('historial-precios', views.HistorialPrecioViewset)
 urlpatterns = [
     path('guardar-lista-completa/', views.guardar_lista_completa, name='guardar-lista-completa'),
     path('lista_precios/<int:lista_id>/importar-precios-xubio/', views.importar_precios_xubio, name='importar-precios-xubio'),
+    path('actualizaciones/<int:actualizacion_id>/cancelar/', views.cancelar_actualizacion, name='cancelar-actualizacion'),
 ] + router.urls

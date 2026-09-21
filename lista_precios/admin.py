@@ -40,3 +40,16 @@ class AdminHistorialPrecio(admin.ModelAdmin):
     readonly_fields = ['fecha']
     list_display = ['producto', 'lista_precio', 'precio', 'fecha']
     search_fields = ['producto__nombre']
+
+class ItemActualizacionInline(admin.TabularInline):
+    model = models.ItemActualizacionPrecios
+    extra = 0
+    can_delete = False
+    readonly_fields = ('producto', 'precio_anterior', 'precio_nuevo')
+
+
+@admin.register(models.ActualizacionPrecios)
+class ActualizacionPreciosAdmin(admin.ModelAdmin):
+    list_display = ('lista_precio', 'vigente_desde', 'estado', 'creada', 'creada_por')
+    list_filter = ('estado', 'lista_precio')
+    inlines = [ItemActualizacionInline]

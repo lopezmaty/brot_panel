@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.db import models
+from django.db.models import Q
 
 # Create your models here.
 
@@ -82,3 +84,50 @@ class HistorialPrecio(models.Model):
 
     def __str__(self):
         return f"{self.producto} - {self.precio} ({self.fecha:%d/%m/%Y})"
+
+
+class ActualizacionPrecios(models.Model):
+    ESTADOS = [
+        ('programada', 'Programada'),
+        ('aplicada', 'Aplicada'),
+        ('cancelada', 'Cancelada'),
+    ]
+
+    lista_precio = models.ForeignKey(
+        ListaPrecios, on_delete=models.CASCADE, related_name='actualizaciones'
+    )
+    vigente_desde = models.DateTimeField()
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='programada')
+    creada = models.DateTimeField(auto_now_add=True)
+    creada_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    aplicada_en = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-vigente_desde']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['lista_precio'],
+                condition=Q(estado='programada'),
+                name='una_programada_por_lista',
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.lista_precio} desde {self.vigente_desde:%d/%m/%Y} ({self.estado})"
+
+
+class ItemActualizacionPrecios(models.Model):
+    actualizacion = models.ForeignKey(
+        ActualizacionPrecios, on_delete=models.CASCADE, related_name='items'
+    )
+    producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
+    precio_anterior = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    precio_nuevo = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        unique_together = ('actualizacion', 'producto')
+
+    def __str__(self):
+        return f"{self.producto}: {self.precio_anterior} → {self.precio_nuevo}"
