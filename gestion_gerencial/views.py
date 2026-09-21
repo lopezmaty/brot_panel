@@ -60,28 +60,27 @@ def importar_compras_xubio(request):
     except Exception as e:
         return Response({'error': f'Error consultando Xubio: {e}'}, status=500)
 
-    importadas = 0
     sin_categorizar = 0
+    nuevas = []
     for linea in lineas:
         rubro = resolver_rubro(linea['proveedor'], linea['producto'])
         if rubro == models.SIN_CATEGORIZAR:
             sin_categorizar += 1
-        models.CompraMapa.objects.update_or_create(
+        nuevas.append(models.CompraMapa(
             mes=mes,
             xubio_transaccion_id=linea['transaccion_id'],
             xubio_item_id=linea['item_id'],
-            defaults={
-                'fecha': linea['fecha'] or None,
-                'documento': linea['documento'] or '',
-                'proveedor': linea['proveedor'],
-                'producto': linea['producto'],
-                'descripcion': linea['descripcion'] or '',
-                'importe': linea['importe'] or 0,
-                'rubro': rubro,
-            }
-        )
-        importadas += 1
-    return Response({'importadas': importadas, 'sin_categorizar': sin_categorizar})
+            fecha=linea['fecha'] or None,
+            documento=linea['documento'] or '',
+            proveedor=linea['proveedor'],
+            producto=linea['producto'],
+            descripcion=linea['descripcion'] or '',
+            importe=linea['importe'] or 0,
+            rubro=rubro,
+        ))
+    models.CompraMapa.objects.filter(mes=mes).delete()
+    models.CompraMapa.objects.bulk_create(nuevas)
+    return Response({'importadas': len(nuevas), 'sin_categorizar': sin_categorizar})
 
 
 @api_view(['POST'])
@@ -685,28 +684,27 @@ def importar_compras_eerr(request):
     except Exception as e:
         return Response({'error': f'Error consultando Xubio: {e}'}, status=500)
 
-    importadas = 0
     sin_categorizar = 0
+    nuevas = []
     for linea in lineas:
         cuenta = resolver_cuenta_eerr(linea['proveedor'], linea['producto'])
         if cuenta is None:
             sin_categorizar += 1
-        models.CompraEERR.objects.update_or_create(
+        nuevas.append(models.CompraEERR(
             mes=mes,
             xubio_transaccion_id=linea['transaccion_id'],
             xubio_item_id=linea['item_id'],
-            defaults={
-                'fecha': linea['fecha'] or None,
-                'documento': linea['documento'] or '',
-                'proveedor': linea['proveedor'],
-                'producto': linea['producto'],
-                'descripcion': linea['descripcion'] or '',
-                'importe': linea['importe'] or 0,
-                'cuenta': cuenta,
-            }
-        )
-        importadas += 1
-    return Response({'importadas': importadas, 'sin_categorizar': sin_categorizar})
+            fecha=linea['fecha'] or None,
+            documento=linea['documento'] or '',
+            proveedor=linea['proveedor'],
+            producto=linea['producto'],
+            descripcion=linea['descripcion'] or '',
+            importe=linea['importe'] or 0,
+            cuenta=cuenta,
+        ))
+    models.CompraEERR.objects.filter(mes=mes).delete()
+    models.CompraEERR.objects.bulk_create(nuevas)
+    return Response({'importadas': len(nuevas), 'sin_categorizar': sin_categorizar})
 
 
 @api_view(['POST'])
