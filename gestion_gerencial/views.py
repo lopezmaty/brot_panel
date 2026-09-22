@@ -530,44 +530,146 @@ def costeo_insumos(request):
 @api_view(['POST'])
 @permission_classes([EsAdmin])
 def costeo_insumos_bulk_update(request):
+    from decimal import Decimal, InvalidOperation
+
     from .models import InsumoCosteo, HistorialPrecioCosteo
+
     cambios = request.data.get('cambios', [])
-    for cambio in cambios:
-        insumo_id = cambio.get('id')
-        if insumo_id:
-            # Insumo existente — actualizar
-            try:
-                insumo = InsumoCosteo.objects.get(id=insumo_id)
-                nuevo = float(cambio['precio'])
-                if float(insumo.precio) != nuevo:
+
+    if not isinstance(cambios, list):
+        return Response({
+            'ok': False,
+            'error': 'El campo "cambios" debe ser una lista.',
+        }, status=400)
+
+    def convertir_precio(valor):
+        if valor in (None, ''):
+            return Decimal('0')
+
+        texto = str(valor).strip()
+        if ',' in texto:
+            texto = texto.replace('.', '').replace(',', '.')
+
+        try:
+            return Decimal(texto)
+        except (InvalidOperation, ValueError, TypeError):
+            raise ValueError(f'Precio inválido: {valor}')
+
+    creados = []
+    actualizados = []
+    errores = []
+
+    for indice, cambio in enumerate(cambios):
+        if not isinstance(cambio, dict):
+            errores.append({
+                'fila': indice,
+                'error': 'Los datos del insumo deben ser un objeto.',
+            })
+            continue
+
+        try:
+            insumo_id = cambio.get('id')
+
+            if insumo_id:
+                # Insumo existente — actualizar
+                try:
+                    insumo = InsumoCosteo.objects.get(id=insumo_id)
+                except (InsumoCosteo.DoesNotExist, ValueError, TypeError):
+                    errores.append({
+                        'fila': indice,
+                        'error': f'No existe el insumo con id {insumo_id}.',
+                    })
+                    continue
+
+                if 'nombre' in cambio:
+                    nombre = (cambio.get('nombre') or '').strip()
+                    if nombre:
+                        insumo.nombre = nombre
+
+                if 'precio' in cambio:
+                    nuevo_precio = convertir_precio(cambio.get('precio'))
+                    if insumo.precio != nuevo_precio:
+                        HistorialPrecioCosteo.objects.create(
+                            tipo='insumo',
+                            item=insumo.nombre,
+                            valor_anterior=insumo.precio,
+                            valor_nuevo=nuevo_precio,
+                        )
+                    insumo.precio = nuevo_precio
+
+                if 'unidad' in cambio:
+                    insumo.unidad = cambio.get('unidad') or ''
+
+                if 'comentario' in cambio:
+                    insumo.comentario = cambio.get('comentario') or ''
+
+                insumo.save()
+                actualizados.append({
+                    'id': insumo.id,
+                    'nombre': insumo.nombre,
+                })
+                continue
+
+            # Insumo nuevo — crear
+            nombre = (cambio.get('nombre') or '').strip()
+            if not nombre:
+                errores.append({
+                    'fila': indice,
+                    'error': 'El insumo nuevo no tiene nombre.',
+                })
+                continue
+
+            precio = convertir_precio(cambio.get('precio', 0))
+            insumo = InsumoCosteo.objects.filter(nombre__iexact=nombre).first()
+
+            if insumo is None:
+                insumo = InsumoCosteo.objects.create(
+                    nombre=nombre,
+                    unidad=cambio.get('unidad') or '',
+                    precio=precio,
+                    comentario=cambio.get('comentario') or '',
+                )
+                creados.append({
+                    'id': insumo.id,
+                    'nombre': insumo.nombre,
+                })
+            else:
+                if insumo.precio != precio:
                     HistorialPrecioCosteo.objects.create(
                         tipo='insumo',
                         item=insumo.nombre,
                         valor_anterior=insumo.precio,
-                        valor_nuevo=nuevo,
+                        valor_nuevo=precio,
                     )
-                insumo.precio = nuevo
-                if 'unidad' in cambio:
-                    insumo.unidad = cambio['unidad']
+
+                insumo.unidad = cambio.get('unidad') or insumo.unidad
+                insumo.precio = precio
                 if 'comentario' in cambio:
-                    insumo.comentario = cambio['comentario']
+                    insumo.comentario = cambio.get('comentario') or ''
                 insumo.save()
-            except InsumoCosteo.DoesNotExist:
-                pass
-        else:
-            # Insumo nuevo — crear
-            nombre = (cambio.get('nombre') or '').strip()
-            if not nombre:
-                continue
-            InsumoCosteo.objects.get_or_create(
-                nombre=nombre,
-                defaults={
-                    'unidad': cambio.get('unidad', ''),
-                    'precio': float(cambio.get('precio', 0)),
-                    'comentario': cambio.get('comentario', ''),
-                }
-            )
-    return Response({'ok': True})
+
+                actualizados.append({
+                    'id': insumo.id,
+                    'nombre': insumo.nombre,
+                })
+
+        except (ValueError, TypeError) as e:
+            errores.append({
+                'fila': indice,
+                'error': str(e),
+            })
+        except Exception as e:
+            errores.append({
+                'fila': indice,
+                'error': f'No se pudo guardar el insumo: {e}',
+            })
+
+    return Response({
+        'ok': len(errores) == 0,
+        'creados': creados,
+        'actualizados': actualizados,
+        'errores': errores,
+    }, status=200 if not errores else 400)
 
 
 @api_view(['GET', 'PATCH'])
