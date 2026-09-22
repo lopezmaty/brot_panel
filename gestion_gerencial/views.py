@@ -640,6 +640,34 @@ def costeo_mano_obra_bulk_update(request):
             pass
     return Response({'ok': True})
 
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def costeo_recetas_guardar(request):
+    from .models import ProductoCosteo, InsumoCosteo, RecetaLineaCosteo
+    codigo = request.data.get('codigo')
+    lineas = request.data.get('lineas', [])
+    if not codigo:
+        return Response({'error': 'Falta el código del producto.'}, status=400)
+    try:
+        producto = ProductoCosteo.objects.get(codigo=codigo)
+    except ProductoCosteo.DoesNotExist:
+        return Response({'error': 'Producto no encontrado.'}, status=404)
+    RecetaLineaCosteo.objects.filter(producto=producto).delete()
+    for linea in lineas:
+        try:
+            insumo = InsumoCosteo.objects.get(nombre=linea['insumo'])
+        except InsumoCosteo.DoesNotExist:
+            continue
+        RecetaLineaCosteo.objects.create(
+            producto=producto, insumo=insumo,
+            categoria=linea.get('categoria', ''),
+            unidad=linea.get('unidad', ''),
+            cantidad=linea.get('cantidad', 0),
+            merma=linea.get('merma', 0),
+        )
+    return Response({'ok': True})
+
 # ============================================================
 # ESTADO DE RESULTADOS (EERR) — vistas de API
 # ============================================================
