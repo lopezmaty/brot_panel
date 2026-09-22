@@ -322,8 +322,26 @@ async function guardarProductos(){
 }
 
 async function guardarInsumos(){
-  const cambios = STATE.insumos.filter(i=>i.id).map(i=>({ id:i.id, nombre:i.nombre, precio:i.precio }));
-  await apiFetch('insumos/bulk-update/', {method:'POST', body:JSON.stringify({cambios})});
+  const cambios = STATE.insumos.map(i => ({
+    id: i.id || null,
+    nombre: String(i.nombre || '').trim(),
+    unidad: i.unidad || '',
+    precio: Number(i.precio) || 0,
+    comentario: i.comentario || '',
+  }));
+
+  const sinNombre = cambios.findIndex(i => !i.nombre);
+
+  if(sinNombre !== -1){
+    throw new Error(
+      `El insumo de la fila ${sinNombre + 1} no tiene nombre.`
+    );
+  }
+
+  return apiFetch('insumos/bulk-update/', {
+    method: 'POST',
+    body: JSON.stringify({ cambios }),
+  });
 }
 
 async function guardarManoObra(){
