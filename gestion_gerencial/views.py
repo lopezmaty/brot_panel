@@ -533,20 +533,40 @@ def costeo_insumos_bulk_update(request):
     from .models import InsumoCosteo, HistorialPrecioCosteo
     cambios = request.data.get('cambios', [])
     for cambio in cambios:
-        try:
-            insumo = InsumoCosteo.objects.get(id=cambio['id'])
-            nuevo = float(cambio['precio'])
-            if float(insumo.precio) != nuevo:
-                HistorialPrecioCosteo.objects.create(
-                    tipo='insumo',
-                    item=insumo.nombre,
-                    valor_anterior=insumo.precio,
-                    valor_nuevo=nuevo,
-                )
-            insumo.precio = nuevo
-            insumo.save(update_fields=['precio'])
-        except InsumoCosteo.DoesNotExist:
-            pass
+        insumo_id = cambio.get('id')
+        if insumo_id:
+            # Insumo existente — actualizar
+            try:
+                insumo = InsumoCosteo.objects.get(id=insumo_id)
+                nuevo = float(cambio['precio'])
+                if float(insumo.precio) != nuevo:
+                    HistorialPrecioCosteo.objects.create(
+                        tipo='insumo',
+                        item=insumo.nombre,
+                        valor_anterior=insumo.precio,
+                        valor_nuevo=nuevo,
+                    )
+                insumo.precio = nuevo
+                if 'unidad' in cambio:
+                    insumo.unidad = cambio['unidad']
+                if 'comentario' in cambio:
+                    insumo.comentario = cambio['comentario']
+                insumo.save()
+            except InsumoCosteo.DoesNotExist:
+                pass
+        else:
+            # Insumo nuevo — crear
+            nombre = (cambio.get('nombre') or '').strip()
+            if not nombre:
+                continue
+            InsumoCosteo.objects.get_or_create(
+                nombre=nombre,
+                defaults={
+                    'unidad': cambio.get('unidad', ''),
+                    'precio': float(cambio.get('precio', 0)),
+                    'comentario': cambio.get('comentario', ''),
+                }
+            )
     return Response({'ok': True})
 
 
