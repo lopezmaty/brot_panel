@@ -6,7 +6,7 @@ import requests
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
-from sistema_pedidos.models import Cliente, TipoCliente, Pedido, ItemPedido
+from sistema_pedidos.models import Cliente, TipoCliente, Pedido, ItemPedido, Comunicacion, ComunicacionDestinatario
 from lista_precios.models import Variedad, Tamaño, Familia, ListaPrecios, Precio, Producto, ActualizacionPrecios
 from lista_precios.services import aplicar_actualizaciones_pendientes
 from django.utils import timezone
@@ -250,6 +250,40 @@ def lista_precios_detalle_view(request, lista_precios_id=None):
                 'precios_actuales': precios_actuales,
                 'actualizacion_pendiente': actualizacion_pendiente,
             })
+    else:
+        return redirect('dashboard')
+
+
+@login_required(login_url='login')
+def historico_comunicaciones_view(request):
+    if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
+        comunicaciones = Comunicacion.objects.select_related(
+            'actualizacion', 'actualizacion__lista_precio'
+        ).prefetch_related('destinatarios').order_by('-creada')
+
+        for c in comunicaciones:
+            destinatarios = list(c.destinatarios.all())
+            c.total_destinatarios = len(destinatarios)
+            c.total_leidos = sum(1 for d in destinatarios if d.leida_en)
+
+        return render(request, 'historico_comunicaciones.html', {
+            'comunicaciones': comunicaciones,
+        })
+    else:
+        return redirect('dashboard')
+
+
+@login_required(login_url='login')
+def historico_comunicacion_detalle_view(request, comunicacion_id):
+    if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab':
+        comunicacion = get_object_or_404(Comunicacion, pk=comunicacion_id)
+        destinatarios = comunicacion.destinatarios.select_related('cliente').order_by(
+            'cliente__nombre_comercio', 'cliente__razon_social'
+        )
+        return render(request, 'historico_comunicaciones_detalle.html', {
+            'comunicacion': comunicacion,
+            'destinatarios': destinatarios,
+        })
     else:
         return redirect('dashboard')
 

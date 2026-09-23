@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_class %}no-sidebar{% endblock %}
+
+{% block content %}
+
+<span class="page-eyebrow">Administración</span>
+<h1 class="page-title">Histórico de comunicaciones</h1>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Origen</th>
+        <th>Fecha</th>
+        <th>Destinatarios</th>
+        <th>Leídos</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for comunicacion in comunicaciones %}
+      <tr>
+        <td>
+          {{ comunicacion.titulo }}
+          {% if comunicacion.actualizacion %}
+          <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+            {{ comunicacion.actualizacion.lista_precio.nombre }} · vigente desde {{ comunicacion.actualizacion.vigente_desde|date:"d/m/Y" }}
+          </div>
+          {% endif %}
+        </td>
+        <td>{{ comunicacion.get_origen_display }}</td>
+        <td>{{ comunicacion.creada|date:"d/m/Y H:i" }}</td>
+        <td>{{ comunicacion.total_destinatarios }}</td>
+        <td>{{ comunicacion.total_leidos }} / {{ comunicacion.total_destinatarios }}</td>
+        <td style="text-align: right;">
+          <a href="{% url 'historico_comunicacion_detalle' comunicacion.id %}" class="btn-delete" style="color: var(--text-secondary);">
+            <i class="ti ti-eye"></i>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if not comunicaciones %}
+  <p style="color: var(--text-secondary); padding: 16px;">Todavía no se envió ninguna comunicación a clientes.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

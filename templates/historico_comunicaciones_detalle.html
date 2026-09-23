@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_class %}no-sidebar{% endblock %}
+
+{% block content %}
+
+<span class="page-eyebrow">Administración</span>
+<h1 class="page-title">{{ comunicacion.titulo }}</h1>
+
+<div class="card" style="margin-bottom: 16px;">
+  <div class="form-grid">
+    <div>
+      <label>Origen</label>
+      <p style="margin: 4px 0 0;">{{ comunicacion.get_origen_display }}</p>
+    </div>
+    <div>
+      <label>Fecha de envío</label>
+      <p style="margin: 4px 0 0;">{{ comunicacion.creada|date:"d/m/Y H:i" }}</p>
+    </div>
+    {% if comunicacion.actualizacion %}
+    <div>
+      <label>Lista de precios</label>
+      <p style="margin: 4px 0 0;">
+        {{ comunicacion.actualizacion.lista_precio.nombre }} · vigente desde {{ comunicacion.actualizacion.vigente_desde|date:"d/m/Y" }}
+      </p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div style="margin-top: 16px;">
+    <label>Mensaje</label>
+    <p style="margin: 4px 0 0; white-space: pre-line; color: var(--text-secondary);">{{ comunicacion.mensaje }}</p>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="font-size: 15px; font-weight: 700; margin-bottom: 16px;">Clientes notificados</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Mail</th>
+        <th>Lectura</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for destinatario in destinatarios %}
+      <tr>
+        <td>
+          <a href="{% url 'cliente_editar' destinatario.cliente.id %}" style="color: var(--text-heading); font-weight: 600; text-decoration: none;">
+            {{ destinatario.cliente.nombre_comercio|default:destinatario.cliente.razon_social }}
+          </a>
+        </td>
+        <td>
+          {% if destinatario.mail_enviado %}
+          <span style="color: var(--text-secondary);">Enviado</span>
+          {% elif destinatario.cliente.mail %}
+          <span style="color: var(--text-secondary);">No se pudo enviar</span>
+          {% else %}
+          <span style="color: var(--text-secondary);">Sin mail cargado</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if destinatario.leida_en %}
+          Leído el {{ destinatario.leida_en|date:"d/m/Y H:i" }}
+          {% else %}
+          <span style="color: var(--text-secondary);">No leído</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if not destinatarios %}
+  <p style="color: var(--text-secondary); padding: 16px;">Esta comunicación no tiene destinatarios.</p>
+  {% endif %}
+</div>
+
+{% endblock %}
