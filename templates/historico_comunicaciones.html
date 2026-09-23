@@ -8,6 +8,12 @@
 <span class="page-eyebrow">Administración</span>
 <h1 class="page-title">Histórico de comunicaciones</h1>
 
+<div class="usuarios-toolbar" style="justify-content: flex-end; margin-bottom: 16px;">
+  <button type="button" id="btnNuevaComunicacion" class="btn-primary">
+    <i class="ti ti-plus"></i> Nueva comunicación
+  </button>
+</div>
+
 <div class="card">
   <table>
     <thead>
@@ -50,4 +56,45 @@
   {% endif %}
 </div>
 
+<div class="modal-overlay" id="modalNuevaComunicacion" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center;">
+  <div class="modal-box" style="max-width:560px; width:92%; max-height:88vh; overflow-y:auto;">
+    {% csrf_token %}
+    <h2 class="modal-title">Nueva comunicación</h2>
+
+    <label for="inputTituloComunicacion">Título</label>
+    <input type="text" id="inputTituloComunicacion" maxlength="120" placeholder="Ej: Cambio de horarios de entrega" style="width:100%; margin-bottom:12px;">
+
+    <label for="inputMensajeComunicacion">Mensaje</label>
+    <textarea id="inputMensajeComunicacion" rows="5" placeholder="Escribí el mensaje para tus clientes" style="width:100%; margin-bottom:12px;"></textarea>
+
+    <label style="display:flex; align-items:center; gap:8px; margin-bottom:12px; cursor:pointer;">
+      <input type="checkbox" id="checkTodosClientes"> Enviar a todos los clientes activos
+    </label>
+
+    <div id="bloqueDestinatarios">
+      <label>Por lista de precios</label>
+      <div id="listasComunicacion" style="display:flex; flex-wrap:wrap; gap:6px 16px; margin: 4px 0 12px;"></div>
+
+      <label>Por tipo de cliente</label>
+      <div id="tiposComunicacion" style="display:flex; flex-wrap:wrap; gap:6px 16px; margin: 4px 0 12px;"></div>
+
+      <label>Clientes puntuales</label>
+      <input type="text" id="buscarClienteComunicacion" placeholder="Buscar cliente..." style="width:100%; margin: 4px 0 6px;">
+      <div id="clientesComunicacion" style="max-height:160px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:8px; margin-bottom:12px;"></div>
+    </div>
+
+    <p id="resumenDestinatariosComunicacion" style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;"></p>
+    <p id="errorComunicacion" style="font-size:13px; color:#c0392b; margin-bottom:8px; display:none;"></p>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="btnCancelarComunicacion" style="flex:1;">Cancelar</button>
+      <button type="button" class="btn-primary" id="btnEnviarComunicacion" style="flex:1;">Enviar</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/historico_comunicaciones.js' %}"></script>
 {% endblock %}

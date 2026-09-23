@@ -15,4 +15,6 @@ urlpatterns = [
     path('stock-productos/', views.stock_productos, name='stock_productos'),
     path('catalogo/<str:token>/comunicaciones/pendientes/', views.comunicaciones_pendientes_catalogo, name='comunicaciones_pendientes_catalogo'),
     path('catalogo/<str:token>/comunicaciones/<int:comunicacion_id>/confirmar/', views.confirmar_lectura_comunicacion, name='confirmar_lectura_comunicacion'),
+    path('comunicaciones/opciones/', views.comunicaciones_opciones, name='comunicaciones_opciones'),
+    path('comunicaciones/enviar/', views.comunicaciones_enviar, name='comunicaciones_enviar'),
 ] + router.urls

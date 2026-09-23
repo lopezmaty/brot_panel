@@ -116,7 +116,7 @@ def _texto_aviso_lista_precios(lista, vigente_desde):
     """Título, mensaje y HTML del mail para avisar que hay precios nuevos programados."""
     fecha_txt = timezone.localtime(vigente_desde).strftime('%d/%m/%Y')
 
-    titulo = f'Nueva lista de precios disponible ({lista.nombre})'
+    titulo = 'Nueva lista de precios disponible'
     mensaje = (
         f'Hay una lista de precios nueva disponible para descargar. '
         f'Entra en vigencia el {fecha_txt} a las 00:00 hs.'
@@ -173,6 +173,18 @@ def _avisar_clientes_lista_precios(lista, actualizacion, usuario):
                 pass  # el aviso ya quedó visible en el catálogo aunque el mail falle
 
     return comunicacion
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def listas_precio_xubio(request):
+    """Trae el listado de listas de precios cargadas en Xubio (id y nombre),
+    para elegir el código correcto sin tener que copiarlo a mano."""
+    try:
+        listas = xubio.obtener_listas_precio()
+    except requests.RequestException as e:
+        return Response({'error': f'No se pudo consultar Xubio: {e}'}, status=502)
+    return Response({'listas': listas})
 
 
 @api_view(['POST'])

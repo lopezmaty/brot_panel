@@ -399,3 +399,123 @@ def confirmar_lectura_comunicacion(request, token, comunicacion_id):
     destinatario.leida_en = timezone.now()
     destinatario.save(update_fields=['leida_en'])
     return Response({'ok': True})
+
+
+def _html_comunicacion_manual(titulo, mensaje):
+    """Mismo estilo Brot Panes que los otros mails del sistema, para una
+    comunicación general (no ligada a una lista de precios)."""
+    mensaje_html = mensaje.replace('\n', '<br>')
+    return f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;
+                padding: 32px; background: #ffffff;">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <h1 style="color: #1a1a1a; font-size: 24px; margin: 0;">Brot Panes</h1>
+        </div>
+        <div style="background: #f9f9f9; border-radius: 8px; padding: 32px;">
+            <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px 0;">{titulo}</h2>
+            <p style="color: #444; font-size: 15px; line-height: 1.6; margin: 0;">
+                {mensaje_html}
+            </p>
+        </div>
+        <p style="color: #aaa; font-size: 12px; text-align: center; margin-top: 24px;">
+            Brot Panes · Córdoba, Argentina
+        </p>
+    </div>
+    """
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def comunicaciones_opciones(request):
+    """Datos para armar el modal de "Nueva comunicación": listas de precios,
+    tipos de cliente, y cada cliente activo con su lista/tipo (para el
+    contador de destinatarios en vivo) y si tiene mail cargado."""
+    from lista_precios.models import ListaPrecios, TipoCliente
+
+    clientes = models.Cliente.objects.filter(activo=True).order_by('nombre_comercio', 'nombre')
+
+    return Response({
+        'listas': [{'id': l.id, 'nombre': l.nombre} for l in ListaPrecios.objects.order_by('nombre')],
+        'tipos': [{'id': t.id, 'nombre': t.nombre} for t in TipoCliente.objects.order_by('nombre')],
+        'clientes': [
+            {
+                'id': c.id,
+                'nombre': c.nombre_comercio or c.razon_social or c.nombre,
+                'lista_id': c.lista_precios_id,
+                'tipo_id': c.tipo_cliente_id,
+                'tiene_mail': bool(c.mail),
+            }
+            for c in clientes
+        ],
+    })
+
+
+def _ids(valor):
+    try:
+        return [int(x) for x in (valor or [])]
+    except (TypeError, ValueError):
+        return []
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def comunicaciones_enviar(request):
+    """Crea una Comunicacion general (origen='manual') y la manda por popup +
+    mail a los destinatarios elegidos. Los criterios se combinan (unión):
+    "todos" ignora el resto; si no, cliente puntual + lista + tipo se suman."""
+    from users.utils import enviar_email_resend
+    from django.db.models import Q
+
+    titulo = (request.data.get('titulo') or '').strip()
+    mensaje = (request.data.get('mensaje') or '').strip()
+    if not titulo or not mensaje:
+        return Response({'error': 'Completá el título y el mensaje.'}, status=400)
+    if len(titulo) > 120:
+        return Response({'error': 'El título es demasiado largo (máximo 120 caracteres).'}, status=400)
+
+    todos = bool(request.data.get('todos'))
+    lista_ids = _ids(request.data.get('listas'))
+    tipo_ids = _ids(request.data.get('tipos'))
+    cliente_ids = _ids(request.data.get('clientes'))
+
+    clientes_qs = models.Cliente.objects.filter(activo=True)
+    if not todos:
+        filtro = Q()
+        hay_criterio = False
+        if cliente_ids:
+            filtro |= Q(id__in=cliente_ids)
+            hay_criterio = True
+        if lista_ids:
+            filtro |= Q(lista_precios_id__in=lista_ids)
+            hay_criterio = True
+        if tipo_ids:
+            filtro |= Q(tipo_cliente_id__in=tipo_ids)
+            hay_criterio = True
+        if not hay_criterio:
+            return Response({'error': 'Elegí al menos un destinatario.'}, status=400)
+        clientes_qs = clientes_qs.filter(filtro)
+
+    if not clientes_qs.exists():
+        return Response({'error': 'No hay clientes activos que coincidan con lo elegido.'}, status=400)
+
+    comunicacion = models.Comunicacion.objects.create(
+        titulo=titulo, mensaje=mensaje, origen='manual', creada_por=request.user,
+    )
+    html = _html_comunicacion_manual(titulo, mensaje)
+
+    for cliente in clientes_qs.distinct():
+        destinatario = models.ComunicacionDestinatario.objects.create(
+            comunicacion=comunicacion, cliente=cliente,
+        )
+        if cliente.mail:
+            try:
+                enviar_email_resend(cliente.mail, f'{titulo} — Brot Panes', mensaje, html)
+                destinatario.mail_enviado = True
+                destinatario.save(update_fields=['mail_enviado'])
+            except Exception:
+                pass  # el aviso ya quedó visible en el catálogo aunque el mail falle
+
+    return Response({
+        'comunicacion_id': comunicacion.id,
+        'destinatarios': clientes_qs.distinct().count(),
+    }, status=201)
