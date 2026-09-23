@@ -22,7 +22,7 @@ class ClienteSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        validated_data['token'] = secrets.token_urlsafe(10)
+        validated_data['token'] = secrets.token_urlsafe(6)
         cliente = super().create(validated_data)
 
         try:
