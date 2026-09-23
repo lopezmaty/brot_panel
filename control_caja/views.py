@@ -4,6 +4,7 @@ from datetime import date
 
 import pandas as pd
 
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.db.models import Sum
@@ -15,6 +16,8 @@ from .models import (
     MovimientoCaja, CierreDiario, ConciliacionItem,
     SaldoInicial, TIPOS_INGRESO, TIPOS_EGRESO
 )
+
+MOVIMIENTOS_POR_PAGINA = 100
 
 
 def es_admin(user):
@@ -108,12 +111,26 @@ def api_movimientos(request):
     if request.method == 'GET':
         fecha_desde = request.GET.get('fecha_desde')
         fecha_hasta = request.GET.get('fecha_hasta')
-        qs = MovimientoCaja.objects.all()
+
+        qs = MovimientoCaja.objects.all().order_by('-fecha', '-id')
         if fecha_desde:
             qs = qs.filter(fecha__gte=fecha_desde)
         if fecha_hasta:
             qs = qs.filter(fecha__lte=fecha_hasta)
-        return JsonResponse({'movimientos': [_movimiento_a_dict(m) for m in qs]})
+
+        paginador = Paginator(qs, MOVIMIENTOS_POR_PAGINA)
+        try:
+            numero_pagina = int(request.GET.get('pagina', 1))
+        except (TypeError, ValueError):
+            numero_pagina = 1
+        pagina = paginador.page(min(max(numero_pagina, 1), paginador.num_pages) if paginador.num_pages else 1)
+
+        return JsonResponse({
+            'movimientos': [_movimiento_a_dict(m) for m in pagina.object_list],
+            'pagina': pagina.number,
+            'total_paginas': paginador.num_pages,
+            'total_movimientos': paginador.count,
+        })
 
     if not es_colab(request.user):
         return JsonResponse({'error': 'Sin permiso'}, status=403)
