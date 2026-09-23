@@ -1,8 +1,8 @@
 .env
+env/
 __pycache__/
 *.pyc
 *.pyo
 db.sqlite3
 media/
 staticfiles/
-brot_panel/.gitignore.env
