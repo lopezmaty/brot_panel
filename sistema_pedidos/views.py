@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from . import models, serializers
+from django.templatetags.static import static
 from lista_precios.services import aplicar_actualizaciones_pendientes
 from django.utils import timezone
 from users.permissions import EsAdmin, EsColab
@@ -43,6 +44,7 @@ class PedidoViewset(viewsets.ModelViewSet):
         if estado_anterior != estado_nuevo and pedido.cliente.mail:
 
             whatsapp = '+54 9 3513 24-3882'
+            logo_url = request.build_absolute_uri(static('img/logo.png'))
 
             def html_pedido(titulo, mensaje_principal, mostrar_deuda=False):
                 deuda_html = f"""
@@ -58,7 +60,7 @@ class PedidoViewset(viewsets.ModelViewSet):
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;
                             padding: 32px; background: #ffffff;">
                     <div style="text-align: center; margin-bottom: 32px;">
-                        <h1 style="color: #1a1a1a; font-size: 24px; margin: 0;">Brot Panes</h1>
+                        <img src="{logo_url}" alt="Brot Panes" style="height: 32px;">
                     </div>
                     <div style="background: #f9f9f9; border-radius: 8px; padding: 32px;">
                         <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px 0;">{titulo}</h2>
@@ -401,7 +403,7 @@ def confirmar_lectura_comunicacion(request, token, comunicacion_id):
     return Response({'ok': True})
 
 
-def _html_comunicacion_manual(titulo, mensaje):
+def _html_comunicacion_manual(titulo, mensaje, logo_url):
     """Mismo estilo Brot Panes que los otros mails del sistema, para una
     comunicación general (no ligada a una lista de precios)."""
     mensaje_html = mensaje.replace('\n', '<br>')
@@ -409,7 +411,7 @@ def _html_comunicacion_manual(titulo, mensaje):
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;
                 padding: 32px; background: #ffffff;">
         <div style="text-align: center; margin-bottom: 32px;">
-            <h1 style="color: #1a1a1a; font-size: 24px; margin: 0;">Brot Panes</h1>
+            <img src="{logo_url}" alt="Brot Panes" style="height: 32px;">
         </div>
         <div style="background: #f9f9f9; border-radius: 8px; padding: 32px;">
             <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px 0;">{titulo}</h2>
@@ -501,7 +503,8 @@ def comunicaciones_enviar(request):
     comunicacion = models.Comunicacion.objects.create(
         titulo=titulo, mensaje=mensaje, origen='manual', creada_por=request.user,
     )
-    html = _html_comunicacion_manual(titulo, mensaje)
+    logo_url = request.build_absolute_uri(static('img/logo.png'))
+    html = _html_comunicacion_manual(titulo, mensaje, logo_url)
 
     for cliente in clientes_qs.distinct():
         destinatario = models.ComunicacionDestinatario.objects.create(

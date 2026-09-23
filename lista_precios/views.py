@@ -1,5 +1,6 @@
 from datetime import datetime, time
 from decimal import Decimal, InvalidOperation
+from django.templatetags.static import static
 
 import requests
 from django.db import transaction
@@ -112,7 +113,7 @@ def guardar_lista_completa(request):
     return Response({'id': lista.id}, status=201)
 
 
-def _texto_aviso_lista_precios(lista, vigente_desde):
+def _texto_aviso_lista_precios(lista, vigente_desde, logo_url):
     """Título, mensaje y HTML del mail para avisar que hay precios nuevos programados."""
     fecha_txt = timezone.localtime(vigente_desde).strftime('%d/%m/%Y')
 
@@ -126,7 +127,7 @@ def _texto_aviso_lista_precios(lista, vigente_desde):
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;
                 padding: 32px; background: #ffffff;">
         <div style="text-align: center; margin-bottom: 32px;">
-            <h1 style="color: #1a1a1a; font-size: 24px; margin: 0;">Brot Panes</h1>
+            <img src="{logo_url}" alt="Brot Panes" style="height: 32px;">
         </div>
         <div style="background: #f9f9f9; border-radius: 8px; padding: 32px;">
             <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px 0;">{titulo}</h2>
@@ -145,11 +146,11 @@ def _texto_aviso_lista_precios(lista, vigente_desde):
     return titulo, mensaje, html
 
 
-def _avisar_clientes_lista_precios(lista, actualizacion, usuario):
+def _avisar_clientes_lista_precios(lista, actualizacion, usuario, logo_url):
     """Crea la Comunicacion, un ComunicacionDestinatario por cliente activo de
     la lista, y les manda el mail. Esto es lo que dispara el popup en el
     catálogo y queda en el histórico de comunicaciones."""
-    titulo, mensaje, html = _texto_aviso_lista_precios(lista, actualizacion.vigente_desde)
+    titulo, mensaje, html = _texto_aviso_lista_precios(lista, actualizacion.vigente_desde, logo_url)
 
     comunicacion = Comunicacion.objects.create(
         titulo=titulo,
@@ -284,7 +285,8 @@ def importar_precios_xubio(request, lista_id):
         ])
 
     # 6) Avisar a los clientes de esta lista: popup en el catálogo + mail
-    comunicacion = _avisar_clientes_lista_precios(lista, actualizacion, request.user)
+    logo_url = request.build_absolute_uri(static('img/logo.png'))
+    comunicacion = _avisar_clientes_lista_precios(lista, actualizacion, request.user, logo_url)
 
     return Response({
         'actualizacion_id': actualizacion.id,
