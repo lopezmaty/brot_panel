@@ -8,10 +8,12 @@ from django.utils import timezone
 from rest_framework import viewsets
 from . import serializers, models
 from users.permissions import EsAdmin, EsColab, EsLector
+from users.utils import enviar_email_resend
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from sistema_pedidos import xubio
+from sistema_pedidos.models import Cliente, Comunicacion, ComunicacionDestinatario
 
 # Create your views here.
 
@@ -110,11 +112,75 @@ def guardar_lista_completa(request):
     return Response({'id': lista.id}, status=201)
 
 
+def _texto_aviso_lista_precios(lista, vigente_desde):
+    """Título, mensaje y HTML del mail para avisar que hay precios nuevos programados."""
+    fecha_txt = timezone.localtime(vigente_desde).strftime('%d/%m/%Y')
+
+    titulo = f'Nueva lista de precios disponible ({lista.nombre})'
+    mensaje = (
+        f'Hay una lista de precios nueva disponible para descargar. '
+        f'Entra en vigencia el {fecha_txt} a las 00:00 hs.'
+    )
+
+    html = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;
+                padding: 32px; background: #ffffff;">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <h1 style="color: #1a1a1a; font-size: 24px; margin: 0;">Brot Panes</h1>
+        </div>
+        <div style="background: #f9f9f9; border-radius: 8px; padding: 32px;">
+            <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px 0;">{titulo}</h2>
+            <p style="color: #444; font-size: 15px; line-height: 1.6; margin: 0 0 16px 0;">
+                {mensaje}
+            </p>
+            <p style="color: #444; font-size: 15px; line-height: 1.6; margin: 0;">
+                Ya podés descargarla desde el botón "Lista de precios" en tu catálogo.
+            </p>
+        </div>
+        <p style="color: #aaa; font-size: 12px; text-align: center; margin-top: 24px;">
+            Brot Panes · Córdoba, Argentina
+        </p>
+    </div>
+    """
+    return titulo, mensaje, html
+
+
+def _avisar_clientes_lista_precios(lista, actualizacion, usuario):
+    """Crea la Comunicacion, un ComunicacionDestinatario por cliente activo de
+    la lista, y les manda el mail. Esto es lo que dispara el popup en el
+    catálogo y queda en el histórico de comunicaciones."""
+    titulo, mensaje, html = _texto_aviso_lista_precios(lista, actualizacion.vigente_desde)
+
+    comunicacion = Comunicacion.objects.create(
+        titulo=titulo,
+        mensaje=mensaje,
+        origen='lista_precios',
+        actualizacion=actualizacion,
+        creada_por=usuario,
+    )
+
+    clientes = Cliente.objects.filter(lista_precios=lista, activo=True)
+    for cliente in clientes:
+        destinatario = ComunicacionDestinatario.objects.create(
+            comunicacion=comunicacion, cliente=cliente,
+        )
+        if cliente.mail:
+            try:
+                enviar_email_resend(cliente.mail, f'{titulo} — Brot Panes', mensaje, html)
+                destinatario.mail_enviado = True
+                destinatario.save(update_fields=['mail_enviado'])
+            except Exception:
+                pass  # el aviso ya quedó visible en el catálogo aunque el mail falle
+
+    return comunicacion
+
+
 @api_view(['POST'])
 @permission_classes([EsAdmin])
 def importar_precios_xubio(request, lista_id):
     """Trae los precios de Xubio y los deja PROGRAMADOS para una fecha futura.
-    No modifica Precio: eso ocurre cuando llega la vigencia."""
+    No modifica Precio: eso ocurre cuando llega la vigencia. Avisa a los
+    clientes de esta lista apenas se programa (popup + mail)."""
     lista = get_object_or_404(models.ListaPrecios, pk=lista_id)
 
     if not lista.xubio_lista_precio_id:
@@ -205,10 +271,14 @@ def importar_precios_xubio(request, lista_id):
             for producto, anterior, nuevo in cambios
         ])
 
+    # 6) Avisar a los clientes de esta lista: popup en el catálogo + mail
+    comunicacion = _avisar_clientes_lista_precios(lista, actualizacion, request.user)
+
     return Response({
         'actualizacion_id': actualizacion.id,
         'vigente_desde': vigente_desde.isoformat(),
         'cantidad_cambios': len(cambios),
+        'clientes_avisados': comunicacion.destinatarios.count(),
         'sin_match': sin_match,
         'cambios': [
             {'producto': str(p), 'anterior': a, 'nuevo': n}

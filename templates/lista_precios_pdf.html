@@ -56,6 +56,11 @@
     letter-spacing: 0.1em;
     opacity: 0.6;
   }
+  .header-desde {
+    font-size: 8.5px;
+    font-weight: 700;
+    margin-top: 3px;
+  }
 
   .card {
     border: 1px solid #d8d4ce;
@@ -202,6 +207,9 @@
     <div class="header-right">
       <div class="header-mes">{{ lista.fecha|date:"F Y"|capfirst }}</div>
       <div class="header-vig">Vigencia</div>
+      {% if vigente_desde %}
+      <div class="header-desde">Vigente desde {{ vigente_desde|date:"d/m/Y" }}</div>
+      {% endif %}
     </div>
   </div>
 

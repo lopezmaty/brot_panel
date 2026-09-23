@@ -7,12 +7,13 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from sistema_pedidos.models import Cliente, TipoCliente, Pedido, ItemPedido
-from lista_precios.models import Variedad, Tamaño, Familia, ListaPrecios, Precio, Producto
+from lista_precios.models import Variedad, Tamaño, Familia, ListaPrecios, Precio, Producto, ActualizacionPrecios
+from lista_precios.services import aplicar_actualizaciones_pendientes
 from django.utils import timezone
 from datetime import timedelta
 from django.template.loader import render_to_string
 from weasyprint import HTML
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.contrib.staticfiles import finders
 from django.shortcuts import render, get_object_or_404
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -233,9 +234,21 @@ def lista_precios_detalle_view(request, lista_precios_id=None):
                     'tamaño_color': color['color'],
                 })
 
+            actualizacion_pendiente = None
+            pendiente = ActualizacionPrecios.objects.filter(
+                lista_precio=lista_precios, estado='programada'
+            ).prefetch_related('items').first()
+            if pendiente:
+                actualizacion_pendiente = {
+                    'id': pendiente.id,
+                    'vigente_desde': timezone.localtime(pendiente.vigente_desde),
+                    'cantidad_items': pendiente.items.count(),
+                }
+
             return render(request, 'lista_precios_detalle.html', {
                 'lista_precios': lista_precios,
                 'precios_actuales': precios_actuales,
+                'actualizacion_pendiente': actualizacion_pendiente,
             })
     else:
         return redirect('dashboard')
@@ -275,11 +288,10 @@ def centro_pedidos_view(request):
         return redirect('dashboard')
 
 
-@login_required(login_url='login')
-def lista_precios_pdf_view(request, lista_precios_id):
-    lista = ListaPrecios.objects.get(pk=lista_precios_id)
-    precios = Precio.objects.filter(lista_precio=lista)
-
+def _pdf_lista_precios(lista, precios, vigente_desde=None):
+    """Genera el PDF de una lista de precios a partir de los precios recibidos.
+    Lo usan el panel (todos los precios de la lista) y el catálogo del cliente.
+    Si vigente_desde tiene fecha, el encabezado indica desde cuándo rigen esos precios."""
     agrupado = {}
     for precio in precios:
         familia = precio.producto.familia
@@ -352,11 +364,72 @@ def lista_precios_pdf_view(request, lista_precios_id):
         'lista': lista,
         'ficha_tecnica': ficha_tecnica_lista,
         'logo_url': logo_url,
+        'vigente_desde': vigente_desde,
     })
     pdf = HTML(string=html_string).write_pdf()
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="lista_precios_{lista.nombre}.pdf"'
     return response
+
+
+@login_required(login_url='login')
+def lista_precios_pdf_view(request, lista_precios_id):
+    lista = ListaPrecios.objects.get(pk=lista_precios_id)
+    precios = Precio.objects.filter(lista_precio=lista)
+    return _pdf_lista_precios(lista, precios)
+
+
+def _precios_ultima_lista(lista, cliente):
+    """Precios de la última lista de un cliente, para su PDF.
+    - Si la lista tiene una actualización programada, se muestran esos precios
+      (aunque todavía no estén vigentes). Si no, los vigentes.
+    - Solo productos activos y visibles para el cliente: si un producto tiene
+      clientes exclusivos y el cliente no es uno de ellos, no aparece
+      (misma regla que el catálogo).
+    Devuelve (precios, vigente_desde); vigente_desde es None si no hay lista futura."""
+    precios = {}
+    for precio in Precio.objects.filter(lista_precio=lista).select_related(
+        'producto', 'producto__variedad', 'producto__tamaño', 'producto__familia'
+    ).prefetch_related('producto__clientes_exclusivos'):
+        precios[precio.producto_id] = precio
+
+    programada = ActualizacionPrecios.objects.filter(
+        lista_precio=lista, estado='programada'
+    ).first()
+    vigente_desde = None
+    if programada:
+        vigente_desde = timezone.localtime(programada.vigente_desde).date()
+        items = programada.items.select_related(
+            'producto', 'producto__variedad', 'producto__tamaño', 'producto__familia'
+        ).prefetch_related('producto__clientes_exclusivos')
+        for item in items:
+            precio = precios.get(item.producto_id)
+            if precio is not None:
+                precio.precio = item.precio_nuevo  # solo en memoria, no se guarda
+            else:
+                precios[item.producto_id] = Precio(
+                    lista_precio=lista, producto=item.producto, precio=item.precio_nuevo
+                )
+
+    visibles = []
+    for precio in precios.values():
+        producto = precio.producto
+        if not producto.activo:
+            continue
+        exclusivos = list(producto.clientes_exclusivos.all())
+        if exclusivos and cliente not in exclusivos:
+            continue
+        visibles.append(precio)
+    return visibles, vigente_desde
+
+
+def lista_precios_pdf_catalogo_view(request, token):
+    cliente = get_object_or_404(Cliente, token=token, activo=True)
+    lista = cliente.lista_precios
+    if not lista:
+        raise Http404('El cliente no tiene una lista de precios asignada.')
+    precios, vigente_desde = _precios_ultima_lista(lista, cliente)
+    return _pdf_lista_precios(lista, precios, vigente_desde)
 
 
 def comanda(request, pedido_id):
@@ -372,6 +445,8 @@ def catalogo_view(request, token):
     cliente = get_object_or_404(Cliente, token=token, activo=True)
 
     lista = cliente.lista_precios
+    if lista:
+        aplicar_actualizaciones_pendientes(lista)
     if not lista:
         return render(request, 'catalogo.html', {
             'cliente': cliente,

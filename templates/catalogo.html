@@ -19,15 +19,14 @@
     <img src="{% static 'img/logo.png' %}" alt="Brot Panes" class="topbar-logo">
   </div>
   <div class="topbar-right">
-    {% if cliente.lista_precios.pdf_catalogo %}
-    <a href="{{ cliente.lista_precios.pdf_catalogo.url }}" target="_blank" class="topbar-perfil-btn" style="margin-right: 4px;">
+    {% if not sin_lista %}
+    <a href="{% url 'lista_precios_pdf_catalogo' cliente.token %}" class="topbar-perfil-btn" style="margin-right: 4px;">
       <i class="ti ti-download"></i>
-      <span>Catálogo</span>
+      <span>Lista de precios</span>
     </a>
     {% endif %}
-    <a href="/catalogo/{{ cliente.token }}/perfil/" class="topbar-perfil-btn">
+    <a href="/catalogo/{{ cliente.token }}/perfil/" class="topbar-perfil-btn" aria-label="Mi perfil">
       <i class="ti ti-user-circle"></i>
-      <span>{{ cliente.nombre_comercio|default:cliente.razon_social|title }}</span>
     </a>
   </div>
 </header>
@@ -120,6 +119,17 @@
     <div class="modal-actions">
       <button type="button" class="btn-secondary" id="btnCancelarConfirmar" style="flex:1;">Cancelar</button>
       <button type="button" class="btn-primary" id="btnConfirmarPedido" style="flex:1;">Confirmar pedido</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalAviso" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:250; align-items:center; justify-content:center;">
+  <div class="modal-box" style="max-width:420px; width:90%;">
+    <h2 class="modal-title" id="avisoTitulo"></h2>
+    <p id="avisoMensaje" style="margin-bottom:8px; white-space:pre-line;"></p>
+    <p id="avisoVigencia" style="display:none; font-size:13px; color:var(--text-secondary); margin-bottom:16px;"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn-primary" id="btnConfirmarLecturaAviso" style="flex:1;">Confirmar lectura</button>
     </div>
   </div>
 </div>

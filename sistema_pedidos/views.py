@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from . import models, serializers
+from lista_precios.services import aplicar_actualizaciones_pendientes
+from django.utils import timezone
 from users.permissions import EsAdmin, EsColab
 from .xubio import obtener_token, XUBIO_BASE
 import requests
@@ -249,6 +251,8 @@ def confirmar_pedido_catalogo(request, token):
     )
 
     lista = cliente.lista_precios
+    if lista:
+        aplicar_actualizaciones_pendientes(lista)
     for item in items:
         producto = get_object_or_404(ProductoModel, id=item['producto_id'], activo=True)
         try:
@@ -349,3 +353,49 @@ def stock_productos(request):
                 }
             )
         return Response({'ok': True})
+
+
+@api_view(['GET'])
+@permission_classes([])
+@authentication_classes([])
+def comunicaciones_pendientes_catalogo(request, token):
+    """Comunicaciones sin leer de este cliente (avisos de lista de precios y
+    comunicaciones generales). Esto alimenta el popup del catálogo."""
+    from lista_precios.models import ActualizacionPrecios
+
+    cliente = get_object_or_404(models.Cliente, token=token, activo=True)
+
+    pendientes = models.ComunicacionDestinatario.objects.filter(
+        cliente=cliente, leida_en__isnull=True
+    ).select_related('comunicacion', 'comunicacion__actualizacion').order_by('comunicacion__creada')
+
+    data = []
+    for destinatario in pendientes:
+        comunicacion = destinatario.comunicacion
+        vigente_desde = None
+        if comunicacion.actualizacion:
+            vigente_desde = timezone.localtime(comunicacion.actualizacion.vigente_desde).strftime('%d/%m/%Y')
+        data.append({
+            'id': comunicacion.id,
+            'titulo': comunicacion.titulo,
+            'mensaje': comunicacion.mensaje,
+            'origen': comunicacion.origen,
+            'vigente_desde': vigente_desde,
+        })
+
+    return Response({'comunicaciones': data})
+
+
+@api_view(['POST'])
+@permission_classes([])
+@authentication_classes([])
+def confirmar_lectura_comunicacion(request, token, comunicacion_id):
+    """El cliente confirma que leyó una comunicación (botón del popup)."""
+    cliente = get_object_or_404(models.Cliente, token=token, activo=True)
+    destinatario = get_object_or_404(
+        models.ComunicacionDestinatario,
+        comunicacion_id=comunicacion_id, cliente=cliente, leida_en__isnull=True,
+    )
+    destinatario.leida_en = timezone.now()
+    destinatario.save(update_fields=['leida_en'])
+    return Response({'ok': True})

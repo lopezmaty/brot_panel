@@ -1,5 +1,6 @@
+from django.conf import settings
 from django.db import models
-from lista_precios.models import TipoCliente, Producto, ListaPrecios
+from lista_precios.models import TipoCliente, Producto, ListaPrecios, ActualizacionPrecios
 
 # Create your models here.
 
@@ -86,3 +87,50 @@ class StockProducto(models.Model):
 
     def __str__(self):
         return self.nombre
+
+
+class Comunicacion(models.Model):
+    """Una comunicación enviada a clientes: el aviso de una lista de precios
+    nueva, o una comunicación general (botón "Comunicación a clientes")."""
+
+    ORIGENES = [
+        ('lista_precios', 'Nueva lista de precios'),
+        ('manual', 'Comunicación general'),
+    ]
+
+    titulo = models.CharField(max_length=120)
+    mensaje = models.TextField()
+    origen = models.CharField(max_length=20, choices=ORIGENES)
+    actualizacion = models.ForeignKey(
+        ActualizacionPrecios, on_delete=models.CASCADE,
+        null=True, blank=True, related_name='comunicaciones',
+    )
+    creada = models.DateTimeField(auto_now_add=True)
+    creada_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    class Meta:
+        ordering = ['-creada']
+
+    def __str__(self):
+        return f'{self.titulo} ({self.creada:%d/%m/%Y})'
+
+
+class ComunicacionDestinatario(models.Model):
+    """Un cliente notificado de una Comunicacion: si la leyó y si se le mandó el mail."""
+
+    comunicacion = models.ForeignKey(
+        Comunicacion, on_delete=models.CASCADE, related_name='destinatarios'
+    )
+    cliente = models.ForeignKey(
+        Cliente, on_delete=models.CASCADE, related_name='comunicaciones'
+    )
+    leida_en = models.DateTimeField(null=True, blank=True)
+    mail_enviado = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('comunicacion', 'cliente')
+
+    def __str__(self):
+        return f'{self.comunicacion} -> {self.cliente}'

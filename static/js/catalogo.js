@@ -181,3 +181,63 @@ window.addEventListener('load', function () {
   body.classList.add('open');
   icon.className = 'ti ti-chevron-up';
 });
+
+// --- Avisos / comunicaciones pendientes (popup con "Confirmar lectura") ---
+
+let colaAvisos = [];
+
+function mostrarSiguienteAviso() {
+  const modal = document.getElementById('modalAviso');
+  if (colaAvisos.length === 0) {
+    modal.style.display = 'none';
+    return;
+  }
+
+  const aviso = colaAvisos[0];
+  document.getElementById('avisoTitulo').textContent = aviso.titulo;
+  document.getElementById('avisoMensaje').textContent = aviso.mensaje;
+
+  const vigenciaEl = document.getElementById('avisoVigencia');
+  if (aviso.vigente_desde) {
+    vigenciaEl.textContent = `Vigente desde el ${aviso.vigente_desde}.`;
+    vigenciaEl.style.display = 'block';
+  } else {
+    vigenciaEl.style.display = 'none';
+  }
+
+  modal.style.display = 'flex';
+}
+
+document.getElementById('btnConfirmarLecturaAviso').addEventListener('click', async function () {
+  if (colaAvisos.length === 0) return;
+  const aviso = colaAvisos[0];
+  const btn = this;
+  btn.disabled = true;
+
+  try {
+    await fetch(`/api/sistema_pedidos/catalogo/${TOKEN}/comunicaciones/${aviso.id}/confirmar/`, {
+      method: 'POST',
+    });
+  } catch (e) {
+    // si falla la confirmación, igual dejamos avanzar para no trabar al cliente;
+    // el aviso va a volver a aparecer la próxima vez que entre.
+  }
+
+  colaAvisos.shift();
+  btn.disabled = false;
+  mostrarSiguienteAviso();
+});
+
+async function cargarAvisosPendientes() {
+  try {
+    const response = await fetch(`/api/sistema_pedidos/catalogo/${TOKEN}/comunicaciones/pendientes/`);
+    if (!response.ok) return;
+    const data = await response.json();
+    colaAvisos = data.comunicaciones || [];
+    mostrarSiguienteAviso();
+  } catch (e) {
+    // sin conexión: no mostramos avisos, no bloqueamos el catálogo
+  }
+}
+
+cargarAvisosPendientes();

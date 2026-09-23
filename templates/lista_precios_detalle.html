@@ -30,9 +30,38 @@
     </div>
 
     {% if lista_precios %}
-    <div style="margin-top: 16px; display: flex; align-items: center; gap: 12px;">
-      <button type="button" id="btnImportarXubio" class="btn-secondary">Importar precios de Xubio</button>
-      <span id="importandoTexto" style="display: none; font-size: 13px; color: var(--text-secondary);">Importando...</span>
+    <div id="bloqueProgramarPrecios" style="margin-top: 16px;"
+         data-actualizacion-id="{% if actualizacion_pendiente %}{{ actualizacion_pendiente.id }}{% endif %}">
+
+      {% if actualizacion_pendiente %}
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; background: var(--bg-surface);">
+        <div>
+          <strong>Hay precios nuevos programados</strong>
+          <div style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;">
+            {{ actualizacion_pendiente.cantidad_items }} producto{{ actualizacion_pendiente.cantidad_items|pluralize }} con cambio de precio ·
+            entran en vigencia el {{ actualizacion_pendiente.vigente_desde|date:"d/m/Y" }} a las 00:00
+          </div>
+        </div>
+        <button type="button" id="btnCancelarProgramada" class="btn-secondary">Cancelar programación</button>
+      </div>
+      {% else %}
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <button type="button" id="btnProgramarPrecios" class="btn-secondary">Programar nuevos precios</button>
+      </div>
+      <div id="panelFechaVigencia" style="display: none; margin-top: 12px; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; background: var(--bg-surface);">
+        <label for="inputVigenteDesde">Los precios de Xubio entran en vigencia el</label>
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: 6px; flex-wrap: wrap;">
+          <input type="date" id="inputVigenteDesde">
+          <button type="button" id="btnConfirmarVigencia" class="btn-primary">Importar y programar</button>
+          <button type="button" id="btnCancelarFechaVigencia" class="btn-secondary">Cancelar</button>
+          <span id="importandoTexto" style="display: none; font-size: 13px; color: var(--text-secondary);">Importando...</span>
+        </div>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+          Se traen los precios actuales de Xubio y se guardan para aplicarse recién ese día a las 00:00.
+          Los clientes de esta lista reciben un aviso ahora, con la fecha de vigencia.
+        </p>
+      </div>
+      {% endif %}
     </div>
     {% endif %}
 
