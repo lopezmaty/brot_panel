@@ -15,6 +15,12 @@ from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.http import HttpResponse, Http404
 from django.contrib.staticfiles import finders
+from django.utils.text import slugify
+import io
+import qrcode
+from reportlab.pdfgen import canvas as reportlab_canvas
+from reportlab.lib.utils import ImageReader
+from reportlab.lib.units import cm, mm
 from django.shortcuts import render, get_object_or_404
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -455,6 +461,162 @@ def _precios_ultima_lista(lista, cliente):
             continue
         visibles.append(precio)
     return visibles, vigente_desde
+
+
+# ---------------------------------------------------------------------------
+# Etiqueta QR del magic link (para imprimir y entregar al cliente)
+# ---------------------------------------------------------------------------
+
+_QR_ANCHO_ETIQUETA = 8 * cm
+_QR_ALTO_ETIQUETA = 10 * cm
+_QR_PADDING = 3.5 * mm
+_QR_COLOR_TEXTO = (0.15, 0.13, 0.12)
+_QR_COLOR_SECUNDARIO = (0.5, 0.48, 0.47)
+
+
+def _qr_generar_imagen(link):
+    qr = qrcode.QRCode(border=1, box_size=10, error_correction=qrcode.constants.ERROR_CORRECT_M)
+    qr.add_data(link)
+    qr.make(fit=True)
+    return qr.make_image(fill_color='black', back_color='white').convert('RGB')
+
+
+def _qr_envolver_texto(c, texto, fuente, tamaño, ancho_max, max_lineas=2):
+    palabras = texto.split(' ')
+    lineas, actual = [], ''
+    for palabra in palabras:
+        prueba = f'{actual} {palabra}'.strip()
+        if c.stringWidth(prueba, fuente, tamaño) <= ancho_max:
+            actual = prueba
+        else:
+            if actual:
+                lineas.append(actual)
+            actual = palabra
+    if actual:
+        lineas.append(actual)
+
+    if len(lineas) > max_lineas:
+        lineas = lineas[:max_lineas]
+        ultima = lineas[-1]
+        while c.stringWidth(ultima + '...', fuente, tamaño) > ancho_max and len(ultima) > 1:
+            ultima = ultima[:-1]
+        lineas[-1] = ultima + '...'
+    return lineas
+
+
+def _qr_envolver_link(c, link, fuente, tamaño, ancho_max):
+    if c.stringWidth(link, fuente, tamaño) <= ancho_max:
+        return [link]
+    marcador = '/catalogo/'
+    if marcador in link:
+        idx = link.index(marcador) + len(marcador)
+        linea1, linea2 = link[:idx], link[idx:]
+        if (c.stringWidth(linea1, fuente, tamaño) <= ancho_max and
+                c.stringWidth(linea2, fuente, tamaño) <= ancho_max):
+            return [linea1, linea2]
+    return _qr_envolver_texto(c, link, fuente, tamaño, ancho_max, max_lineas=2)
+
+
+def _qr_generar_pdf_etiqueta(nombre, link):
+    """Arma en memoria el PDF de la etiqueta de 8x10cm con el QR del magic
+    link, el logo y los datos del cliente. Devuelve los bytes del PDF."""
+    logo_path = finders.find('img/logo.png')
+    logo_reader = ImageReader(logo_path)
+    from PIL import Image as PILImage
+    logo_ratio = PILImage.open(logo_path).width / PILImage.open(logo_path).height
+
+    buffer = io.BytesIO()
+    c = reportlab_canvas.Canvas(buffer, pagesize=(_QR_ANCHO_ETIQUETA, _QR_ALTO_ETIQUETA))
+
+    centro_x = _QR_ANCHO_ETIQUETA / 2
+    inner_ancho = _QR_ANCHO_ETIQUETA - _QR_PADDING * 2
+
+    fuente_cta, tam_cta = 'Helvetica-Bold', 10.5
+    fuente_nombre, tam_nombre = 'Helvetica-Bold', 9.5
+    fuente_link, tam_link = 'Helvetica', 6.3
+
+    lineas_cta = _qr_envolver_texto(c, 'Escaneá y hacé tu pedido', fuente_cta, tam_cta, inner_ancho, max_lineas=2)
+    nombre_mostrado = nombre if len(nombre) <= 60 else nombre[:57] + '...'
+    lineas_nombre = _qr_envolver_texto(c, nombre_mostrado, fuente_nombre, tam_nombre, inner_ancho, max_lineas=2)
+    lineas_link = _qr_envolver_link(c, link, fuente_link, tam_link, inner_ancho)
+
+    logo_alto = 1.0 * cm
+    logo_ancho = logo_alto * logo_ratio
+    if logo_ancho > inner_ancho * 0.7:
+        logo_ancho = inner_ancho * 0.7
+        logo_alto = logo_ancho / logo_ratio
+
+    qr_lado = min(4.7 * cm, inner_ancho)
+
+    interlineado_cta = tam_cta * 1.2
+    interlineado_nombre = tam_nombre * 1.25
+    interlineado_link = tam_link * 1.3
+
+    gap_logo_cta = 5 * mm
+    gap_cta_qr = 4 * mm
+    gap_qr_nombre = 5 * mm
+    gap_nombre_link = 2 * mm
+
+    alto_contenido = (
+        logo_alto + gap_logo_cta +
+        len(lineas_cta) * interlineado_cta + gap_cta_qr +
+        qr_lado + gap_qr_nombre +
+        len(lineas_nombre) * interlineado_nombre + gap_nombre_link +
+        len(lineas_link) * interlineado_link
+    )
+
+    cursor_y = _QR_ALTO_ETIQUETA / 2 + alto_contenido / 2
+
+    c.drawImage(logo_reader, centro_x - logo_ancho / 2, cursor_y - logo_alto,
+                width=logo_ancho, height=logo_alto, mask='auto')
+    cursor_y -= logo_alto + gap_logo_cta
+
+    c.setFont(fuente_cta, tam_cta)
+    c.setFillColorRGB(*_QR_COLOR_TEXTO)
+    for linea in lineas_cta:
+        cursor_y -= interlineado_cta
+        c.drawCentredString(centro_x, cursor_y + interlineado_cta * 0.22, linea)
+    cursor_y -= gap_cta_qr
+
+    qr_img = _qr_generar_imagen(link)
+    c.drawImage(ImageReader(qr_img), centro_x - qr_lado / 2, cursor_y - qr_lado,
+                width=qr_lado, height=qr_lado)
+    cursor_y -= qr_lado + gap_qr_nombre
+
+    c.setFont(fuente_nombre, tam_nombre)
+    c.setFillColorRGB(*_QR_COLOR_TEXTO)
+    for linea in lineas_nombre:
+        cursor_y -= interlineado_nombre
+        c.drawCentredString(centro_x, cursor_y + interlineado_nombre * 0.22, linea)
+    cursor_y -= gap_nombre_link
+
+    c.setFont(fuente_link, tam_link)
+    c.setFillColorRGB(*_QR_COLOR_SECUNDARIO)
+    for linea in lineas_link:
+        cursor_y -= interlineado_link
+        c.drawCentredString(centro_x, cursor_y + interlineado_link * 0.22, linea)
+
+    c.save()
+    return buffer.getvalue()
+
+
+@login_required(login_url='login')
+def cliente_qr_etiqueta_view(request, cliente_id):
+    if request.user.perfil.rol not in ('admin', 'colab'):
+        return redirect('dashboard')
+
+    cliente = get_object_or_404(Cliente, pk=cliente_id)
+    if not cliente.token:
+        raise Http404('Este cliente todavía no tiene un link generado.')
+
+    link = request.build_absolute_uri(f'/catalogo/{cliente.token}/')
+    nombre = cliente.nombre_comercio or cliente.razon_social or cliente.nombre
+
+    pdf_bytes = _qr_generar_pdf_etiqueta(nombre, link)
+
+    response = HttpResponse(pdf_bytes, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="qr-{slugify(nombre)}.pdf"'
+    return response
 
 
 def lista_precios_pdf_catalogo_view(request, token):

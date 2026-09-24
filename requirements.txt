@@ -30,3 +30,6 @@ whitenoise==6.12.0
 zopfli==0.4.3
 openpyxl
 pandas
+reportlab
+qrcode
+Pillow
