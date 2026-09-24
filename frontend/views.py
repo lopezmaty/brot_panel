@@ -649,6 +649,7 @@ def catalogo_view(request, token):
             'productos_con_precio': [],
             'sin_lista': True,
             'metodos': [],
+            'posee_deuda': cliente.posee_deuda,
         })
 
     precios = Precio.objects.filter(lista_precio=lista).select_related(
@@ -694,6 +695,7 @@ def catalogo_view(request, token):
         'cliente': cliente,
         'productos_con_precio': productos_con_precio,
         'metodos': metodos,
+        'posee_deuda': cliente.posee_deuda,
     })
 
 

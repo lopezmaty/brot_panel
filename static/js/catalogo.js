@@ -1,5 +1,21 @@
 const TOKEN = document.getElementById('catalogo-token').dataset.token;
+const POSEE_DEUDA = document.getElementById('catalogo-token').dataset.deuda === '1';
 const carrito = {};
+
+function mostrarModalDeuda() {
+  document.getElementById('modalDeuda').style.display = 'flex';
+}
+
+const btnCerrarModalDeuda = document.getElementById('btnCerrarModalDeuda');
+if (btnCerrarModalDeuda) {
+  btnCerrarModalDeuda.addEventListener('click', function () {
+    document.getElementById('modalDeuda').style.display = 'none';
+  });
+}
+
+if (POSEE_DEUDA) {
+  mostrarModalDeuda();
+}
 
 function formatearPrecio(numero) {
   return '$' + numero.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -73,6 +89,11 @@ document.getElementById('toggleCarrito').addEventListener('click', function () {
 });
 
 document.getElementById('btnEnviarPedido').addEventListener('click', function () {
+  if (POSEE_DEUDA) {
+    mostrarModalDeuda();
+    return;
+  }
+
   const items = Object.values(carrito).filter(i => i.cantidad > 0);
   if (items.length === 0) {
     alert('Agregá al menos un producto.');

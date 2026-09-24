@@ -234,6 +234,12 @@ def confirmar_pedido_catalogo(request, token):
 
     cliente = get_object_or_404(models.Cliente, token=token, activo=True)
 
+    if cliente.posee_deuda:
+        return Response({
+            'error': 'Registrás boletas vencidas. Por favor, ponete en contacto con '
+                     'administración para regularizar tu situación y poder generar un nuevo pedido.',
+        }, status=400)
+
     items = request.data.get('items', [])
     metodo_entrega = request.data.get('metodo_entrega', '')
     observaciones = request.data.get('observaciones', '')

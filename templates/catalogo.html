@@ -134,7 +134,22 @@
   </div>
 </div>
 
-<span id="catalogo-token" data-token="{{ cliente.token }}" style="display:none;"></span>
+<div class="modal-overlay" id="modalDeuda" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:260; align-items:center; justify-content:center;">
+  <div class="modal-box" style="max-width:420px; width:90%;">
+    <h2 class="modal-title">Tenés boletas vencidas</h2>
+    <p style="margin-bottom:8px; line-height:1.5;">
+      Registrás boletas vencidas. Por favor, ponete en contacto con administración para regularizar tu situación y poder generar un nuevo pedido.
+    </p>
+    <p style="margin-bottom:16px; font-size:14px; color:var(--text-secondary);">
+      WhatsApp administración: <a href="https://wa.me/5493513243882" style="color:#e8521a;">351 324-3882</a>
+    </p>
+    <div class="modal-actions">
+      <button type="button" class="btn-primary" id="btnCerrarModalDeuda" style="flex:1;">Entendido</button>
+    </div>
+  </div>
+</div>
+
+<span id="catalogo-token" data-token="{{ cliente.token }}" data-deuda="{% if posee_deuda %}1{% else %}0{% endif %}" style="display:none;"></span>
 <script src="{% static 'js/catalogo.js' %}?v=3"></script>
 
 </body>
