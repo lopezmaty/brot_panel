@@ -6,13 +6,8 @@ function mostrarModalDeuda() {
   document.getElementById('modalDeuda').style.display = 'flex';
 }
 
-const btnCerrarModalDeuda = document.getElementById('btnCerrarModalDeuda');
-if (btnCerrarModalDeuda) {
-  btnCerrarModalDeuda.addEventListener('click', function () {
-    document.getElementById('modalDeuda').style.display = 'none';
-  });
-}
-
+// El modal de deuda no tiene botón de cerrar a propósito: mientras el cliente
+// tenga boletas vencidas, no debe poder volver a interactuar con el catálogo.
 if (POSEE_DEUDA) {
   mostrarModalDeuda();
 }

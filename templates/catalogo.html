@@ -141,16 +141,18 @@
       Registrás boletas vencidas. Por favor, ponete en contacto con administración para regularizar tu situación y poder generar un nuevo pedido.
     </p>
     <p style="margin-bottom:16px; font-size:14px; color:var(--text-secondary);">
-      WhatsApp administración: <a href="https://wa.me/5493513243882" style="color:#e8521a;">351 324-3882</a>
+      No vas a poder hacer pedidos hasta regularizar tu situación.
     </p>
     <div class="modal-actions">
-      <button type="button" class="btn-primary" id="btnCerrarModalDeuda" style="flex:1;">Entendido</button>
+      <a href="https://wa.me/5493513243882" target="_blank" class="btn-primary" style="flex:1; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center;">
+        Escribinos por WhatsApp
+      </a>
     </div>
   </div>
 </div>
 
 <span id="catalogo-token" data-token="{{ cliente.token }}" data-deuda="{% if posee_deuda %}1{% else %}0{% endif %}" style="display:none;"></span>
-<script src="{% static 'js/catalogo.js' %}?v=3"></script>
+<script src="{% static 'js/catalogo.js' %}?v=4"></script>
 
 </body>
 </html>
