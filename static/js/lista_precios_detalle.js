@@ -87,7 +87,10 @@ if (bloqueProgramar) {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken')
           },
-          body: JSON.stringify({ vigente_desde: vigenteDesde })
+          body: JSON.stringify({
+            vigente_desde: vigenteDesde,
+            avisar_clientes: document.getElementById('checkAvisarClientes').checked,
+          })
         });
 
         const data = await response.json();
@@ -98,7 +101,11 @@ if (bloqueProgramar) {
         }
 
         let mensaje = `Se programaron ${data.cantidad_cambios} cambio${data.cantidad_cambios === 1 ? '' : 's'} de precio para el ${vigenteDesde.split('-').reverse().join('/')}.`;
-        mensaje += `\nSe avisó a ${data.clientes_notificados} cliente${data.clientes_notificados === 1 ? '' : 's'} de esta lista.`;
+        if (data.aviso_enviado) {
+          mensaje += `\nSe avisó a ${data.clientes_avisados} cliente${data.clientes_avisados === 1 ? '' : 's'} de esta lista.`;
+        } else {
+          mensaje += '\nNo se avisó a los clientes (quedó destildado). El precio va a cambiar igual el día programado.';
+        }
         if (data.sin_match && data.sin_match.length > 0) {
           mensaje += `\n\n${data.sin_match.length} productos de Xubio no matchearon con ningún producto de tu panel (revisá la consola para el detalle).`;
           console.log('Productos de Xubio sin match:', data.sin_match);

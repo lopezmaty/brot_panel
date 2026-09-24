@@ -284,15 +284,23 @@ def importar_precios_xubio(request, lista_id):
             for producto, anterior, nuevo in cambios
         ])
 
-    # 6) Avisar a los clientes de esta lista: popup en el catálogo + mail
-    logo_url = request.build_absolute_uri(static('img/logo.png'))
-    comunicacion = _avisar_clientes_lista_precios(lista, actualizacion, request.user, logo_url)
+    # 6) Avisar a los clientes de esta lista: popup en el catálogo + mail.
+    # Es opcional: por defecto se avisa, salvo que se pida explícitamente que no.
+    avisar_clientes = request.data.get('avisar_clientes', True)
+    if isinstance(avisar_clientes, str):
+        avisar_clientes = avisar_clientes.strip().lower() not in ('false', '0', '')
+
+    comunicacion = None
+    if avisar_clientes:
+        logo_url = request.build_absolute_uri(static('img/logo.png'))
+        comunicacion = _avisar_clientes_lista_precios(lista, actualizacion, request.user, logo_url)
 
     return Response({
         'actualizacion_id': actualizacion.id,
         'vigente_desde': vigente_desde.isoformat(),
         'cantidad_cambios': len(cambios),
-        'clientes_avisados': comunicacion.destinatarios.count(),
+        'aviso_enviado': comunicacion is not None,
+        'clientes_avisados': comunicacion.destinatarios.count() if comunicacion else 0,
         'sin_match': sin_match,
         'cambios': [
             {'producto': str(p), 'anterior': a, 'nuevo': n}

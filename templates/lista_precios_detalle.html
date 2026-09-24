@@ -56,9 +56,14 @@
           <button type="button" id="btnCancelarFechaVigencia" class="btn-secondary">Cancelar</button>
           <span id="importandoTexto" style="display: none; font-size: 13px; color: var(--text-secondary);">Importando...</span>
         </div>
+        <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px; cursor: pointer;">
+          <input type="checkbox" id="checkAvisarClientes" checked>
+          Avisar a los clientes (pop-up y mail)
+        </label>
         <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
           Se traen los precios actuales de Xubio y se guardan para aplicarse recién ese día a las 00:00.
-          Los clientes de esta lista reciben un aviso ahora, con la fecha de vigencia.
+          Si dejás tildado "Avisar a los clientes", reciben un aviso ahora con la fecha de vigencia.
+          Si lo destildás, el precio igual cambia ese día, pero sin avisarles.
         </p>
       </div>
       {% endif %}
