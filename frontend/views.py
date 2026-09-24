@@ -520,7 +520,7 @@ def _qr_envolver_link(c, link, fuente, tamaño, ancho_max):
 def _qr_generar_pdf_etiqueta(nombre, link):
     """Arma en memoria el PDF de la etiqueta de 8x10cm con el QR del magic
     link, el logo y los datos del cliente. Devuelve los bytes del PDF."""
-    logo_path = finders.find('img/logo.png')
+    logo_path = finders.find('img/logo_Brot.png')
     logo_reader = ImageReader(logo_path)
     from PIL import Image as PILImage
     logo_ratio = PILImage.open(logo_path).width / PILImage.open(logo_path).height
