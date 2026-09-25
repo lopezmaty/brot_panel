@@ -100,7 +100,7 @@ async function crearOEditarProducto() {
     });
 
     if (response.ok) {
-        window.location.href = '/panel/producto/';
+        window.location.href = '/producto/';
     } else {
         alert('No se pudo guardar el producto');
     }
