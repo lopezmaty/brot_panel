@@ -26,23 +26,23 @@ function badge(fila) {
   return `<span class="eerr-badge ${BADGE_POR_COLOR[fila.color] || 'gris'}">${icono} ${escapeHtml(fila.semaforo)}</span>`;
 }
 
-/* Supuestos: mismo orden y textos que la pestaña "08 Presupuesto EERR".
+/* Supuestos en el mismo orden y con los mismos nombres que las líneas del
+   Estado de Resultados, para cargarlos mirando el EERR.
    tipo 'pct' se muestra en % y se envía como fracción (52 → 0.52). */
 const SUPUESTOS = [
-  { seccion: 'Ventas' },
-  { campo: 'ventas_mes_inicial', label: 'Ventas de enero presupuestadas', tipo: 'money', desc: 'Punto de partida del presupuesto anual. Se puede reemplazar por el objetivo comercial definido.' },
-  { campo: 'crecimiento_ventas', label: 'Crecimiento mensual ventas', tipo: 'pct', desc: 'Proyecta cada mes siguiente con este crecimiento sobre el anterior.' },
-  { seccion: 'Costos sobre ventas' },
-  { campo: 'cmv_pct', label: 'CMV % sobre ventas', tipo: 'pct', desc: 'Costo de mercadería vendida proyectado sobre ventas.' },
-  { campo: 'gastos_variables_pct', label: 'Gastos variables % ventas', tipo: 'pct', desc: 'Packaging, logística, comisiones u otros variables.' },
-  { campo: 'gastos_financieros_pct', label: 'Gastos financieros % ventas', tipo: 'pct', desc: 'Bancos, intereses y comisiones.' },
-  { campo: 'impuestos_pct', label: 'Impuestos % ventas', tipo: 'pct', desc: 'Estimación fiscal de gestión.' },
-  { seccion: 'Estructura' },
-  { campo: 'mo_directa_base', label: 'MO directa base mensual', tipo: 'money', desc: 'Base mensual de mano de obra directa presupuestada.' },
-  { campo: 'indirectos_base', label: 'Indirectos productivos base', tipo: 'money', desc: 'Energía, gas, mantenimiento, alquiler, limpieza y estructura productiva.' },
-  { campo: 'administracion_base', label: 'Administración base', tipo: 'money', desc: 'Backoffice, honorarios, sistemas y administración.' },
-  { campo: 'incremento_estructura', label: 'Incremento mensual estructura', tipo: 'pct', desc: 'Ajusta mano de obra, indirectos y administración mes a mes.' },
-  { campo: 'amortizaciones_mensuales', label: 'Amortizaciones mensuales', tipo: 'money', desc: 'Costo económico sin salida de caja directa. Igual todos los meses.' },
+  { seccion: 'Líneas del Estado de Resultados' },
+  { campo: 'ventas_mes_inicial', label: 'Ventas netas', tipo: 'money', desc: 'Ventas de enero en $. Punto de partida del presupuesto anual; los meses siguientes crecen con el "Crecimiento mensual ventas".' },
+  { campo: 'cmv_pct', label: 'Costo mercadería vendida (CMV)', tipo: 'pct', desc: '% sobre ventas netas.' },
+  { campo: 'gastos_variables_pct', label: 'Gastos variables', tipo: 'pct', desc: '% sobre ventas netas. Packaging, logística, comisiones y medios de pago.' },
+  { campo: 'mo_directa_base', label: 'Mano de obra directa', tipo: 'money', desc: '$ de enero. Crece con el "Incremento mensual estructura".' },
+  { campo: 'indirectos_base', label: 'Indirectos productivos', tipo: 'money', desc: '$ de enero. Energía, mantenimiento, alquiler y limpieza. Crece con el "Incremento mensual estructura".' },
+  { campo: 'amortizaciones_mensuales', label: 'Amortizaciones', tipo: 'money', desc: '$ por mes. Igual todos los meses.' },
+  { campo: 'administracion_base', label: 'Gastos administración', tipo: 'money', desc: '$ de enero. Backoffice, honorarios y sistemas. Crece con el "Incremento mensual estructura".' },
+  { campo: 'gastos_financieros_pct', label: 'Gastos financieros', tipo: 'pct', desc: '% sobre ventas netas. Débitos y créditos bancarios, intereses y comisiones.' },
+  { campo: 'impuestos_pct', label: 'Impuestos', tipo: 'pct', desc: '% sobre ventas netas. Impuestos y tasas.' },
+  { seccion: 'Crecimiento mensual' },
+  { campo: 'crecimiento_ventas', label: 'Crecimiento mensual ventas', tipo: 'pct', desc: 'Cuánto crecen las ventas netas de un mes al siguiente.' },
+  { campo: 'incremento_estructura', label: 'Incremento mensual estructura', tipo: 'pct', desc: 'Cuánto aumentan por mes mano de obra directa, indirectos productivos y gastos administración.' },
   { seccion: 'Lectura gerencial y semáforo' },
   { campo: 'resultado_objetivo_pct', label: 'Resultado operativo objetivo', tipo: 'pct', desc: 'Margen operativo objetivo para lectura gerencial.' },
   { campo: 'tolerancia_ingresos', label: 'Tolerancia semáforo ingresos', tipo: 'pct', desc: 'Ingresos y resultado: amarillo si se alcanza al menos este porcentaje del presupuesto.' },
