@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from users.permissions import EsAdmin
 from . import models
 from . import rectificaciones as rects
+from .legajos_link import datos_legajo, vincular_automaticamente
 from datetime import date, datetime, timezone as dt_tz
 import calendar
 
@@ -261,10 +262,12 @@ def ch_empleados(request):
         and request.user.perfil.rol == 'admin'
     )
 
+    vincular_automaticamente()
+
     if incluir_todos:
-        empleados = models.Empleado.objects.all()
+        empleados = models.Empleado.objects.select_related('legajo').all()
     else:
-        empleados = models.Empleado.objects.filter(activo=True)
+        empleados = models.Empleado.objects.select_related('legajo').filter(activo=True)
 
     data = [
         {
@@ -277,9 +280,32 @@ def ch_empleados(request):
             'sin_descuento_descanso': e.sin_descuento_descanso,
             'bono_horas_extra': float(e.bono_horas_extra),
             'activo': e.activo,
+            'legajo_id': e.legajo_id,
+            'legajo_nombre': datos_legajo(e)['nombre_completo'] if e.legajo_id else '',
         }
         for e in empleados
     ]
+    return Response(data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def ch_legajos(request):
+    """Legajos activos del módulo Legajos, con el empleado del reloj al que están vinculados."""
+    from legajos.models import Empleado as Legajo
+    vincular_automaticamente()
+    vinculos = {e.legajo_id: e for e in models.Empleado.objects.exclude(legajo__isnull=True)}
+    data = []
+    for l in Legajo.objects.filter(estado=Legajo.Estado.ACTIVO).order_by('apellido', 'nombre'):
+        emp = vinculos.get(l.id)
+        data.append({
+            'id': l.id,
+            'nombre_completo': f'{l.nombre} {l.apellido}'.strip(),
+            'apellido_nombre': f'{l.apellido}, {l.nombre}',
+            'dni': l.dni,
+            'puesto': l.puesto,
+            'empleado_reloj': emp.nombre if emp else None,
+        })
     return Response(data)
 
 
@@ -338,6 +364,15 @@ def ch_empleados_update(request):
                     emp.bono_horas_extra = float(c['bono_horas_extra'])
                 if 'activo' in c:
                     emp.activo = bool(c['activo'])
+                if 'legajo_id' in c:
+                    legajo_id = c['legajo_id'] or None
+                    if legajo_id:
+                        otro = models.Empleado.objects.filter(legajo_id=legajo_id).exclude(id=emp.id).first()
+                        if otro:
+                            raise ValueError(
+                                f'Ese legajo ya está vinculado a {otro.nombre_display()}. Desvinculalo primero.'
+                            )
+                    emp.legajo_id = legajo_id
 
                 emp.save()
 

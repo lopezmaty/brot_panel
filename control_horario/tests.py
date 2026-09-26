@@ -155,6 +155,41 @@ class RectificacionesTests(TestCase):
         self._crear()
         self.assertTrue(Notificacion.objects.filter(titulo__contains='llegó a 1 incidencias').exists())
 
+    def _legajo(self, nombre='Juan', apellido='Perez', dni='31222333', puesto='Panadero'):
+        from datetime import date
+        from legajos.models import Empleado as Legajo
+        return Legajo.objects.create(nombre=nombre, apellido=apellido, dni=dni, puesto=puesto, fecha_ingreso=date(2024, 1, 1))
+
+    def test_vincula_legajo_por_nombre_y_toma_dni_y_puesto(self):
+        leg = self._legajo()
+        self._legajo(nombre='Ana', apellido='Gomez', dni='40111222')  # no coincide
+        data = self.client.get(self.API + 'rectificaciones/datos-dia/', {'empleado': 'Perez Juan', 'fecha': '2026-09-03'}).json()
+        self.assertTrue(data['desde_legajo'])
+        self.assertEqual(data['dni'], '31222333')
+        self.assertEqual(data['sector_turno'], 'Panadero')
+        self.assertEqual(data['empleado_display'], 'Juan Perez')
+        self.emp.refresh_from_db()
+        self.assertEqual(self.emp.legajo_id, leg.id)
+
+        r = self._crear(dni='')
+        self.assertEqual(r.json()['dni'], '31222333')
+        legajos = self.client.get(self.API + 'legajos/').json()
+        self.assertEqual({l['dni']: l['empleado_reloj'] for l in legajos}, {'31222333': 'Perez Juan', '40111222': None})
+
+    def test_vincular_legajo_a_mano_y_no_duplicar(self):
+        leg = self._legajo(nombre='Otro', apellido='Nombre', dni='1')
+        otro = Empleado.objects.create(nombre='Gomez Ana')
+        ok = self.client.post(self.API + 'empleados/update/', {'cambios': [{'id': self.emp.id, 'legajo_id': leg.id}]}, content_type='application/json')
+        self.assertEqual(ok.status_code, 200)
+        self.emp.refresh_from_db()
+        self.assertEqual(self.emp.legajo_id, leg.id)
+        dup = self.client.post(self.API + 'empleados/update/', {'cambios': [{'id': otro.id, 'legajo_id': leg.id}]}, content_type='application/json')
+        self.assertEqual(dup.status_code, 409)
+
+    def test_reporte_se_descarga_como_archivo(self):
+        rep = self.client.get(self.API + 'reporte-mensual/', {'empleado': 'Perez Juan', 'mes': '2026-09'})
+        self.assertTrue(rep['Content-Disposition'].startswith('attachment'))
+
     def test_pdfs(self):
         rid = self._crear().json()['id']
         anexo = self.client.get(f'{self.API}rectificaciones/{rid}/pdf/')

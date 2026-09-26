@@ -23,7 +23,7 @@ const CHRect = (() => {
   const dec = n => (Math.round((Number(n) || 0) * 100) / 100).toFixed(2).replace('.', ',');
   const fechaCorta = iso => { const [y, m, d] = iso.split('-'); return `${d}/${m}/${y}`; };
   // Las fechas vienen del servidor ya en hora local (con su offset): se muestran tal cual
-  const fechaHora = iso => (iso ? ${iso.slice(8, 10)}//  : '');
+  const fechaHora = iso => (iso ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}/${iso.slice(0, 4)} ${iso.slice(11, 16)}` : '');
   const dosDig = n => String(n).padStart(2, '0');
   const ahoraLocal = () => { const d = new Date(); return `${d.getFullYear()}-${dosDig(d.getMonth() + 1)}-${dosDig(d.getDate())}T${dosDig(d.getHours())}:${dosDig(d.getMinutes())}`; };
   const empleadosCH = () => (typeof chEmpleados !== 'undefined' ? chEmpleados : []);
@@ -92,10 +92,23 @@ const CHRect = (() => {
   /* ─────────────────────────────────────────────
      PASO 1 · Solicitud (declaración del empleado)
   ───────────────────────────────────────────── */
+  async function opcionesLegajos(seleccionado) {
+    // Listado de empleados del módulo Legajos; sólo se pueden elegir los vinculados al reloj
+    let legajos = [];
+    try { legajos = await api('legajos/'); } catch (err) { /* sin legajos: se usa la lista del reloj */ }
+    const vinculados = legajos.filter(l => l.empleado_reloj);
+    const sinVincular = legajos.filter(l => !l.empleado_reloj);
+    const nombresConLegajo = new Set(vinculados.map(l => l.empleado_reloj));
+    const soloReloj = empleadosCH().filter(x => !nombresConLegajo.has(x.nombre));
+    return (vinculados.length ? `<optgroup label="Legajos">${vinculados.map(l => `<option value="${e(l.empleado_reloj)}" ${l.empleado_reloj === seleccionado ? 'selected' : ''}>${e(l.apellido_nombre)} · DNI ${e(l.dni)}</option>`).join('')}</optgroup>` : '')
+      + (soloReloj.length ? `<optgroup label="Sin legajo vinculado (reloj)">${soloReloj.map(x => `<option value="${e(x.nombre)}" ${x.nombre === seleccionado ? 'selected' : ''}>${e(x.nombre_display)}</option>`).join('')}</optgroup>` : '')
+      + (sinVincular.length ? `<optgroup label="Legajos sin fichadas vinculadas (vincular en Configuración)">${sinVincular.map(l => `<option disabled>${e(l.apellido_nombre)} · DNI ${e(l.dni)}</option>`).join('')}</optgroup>` : '');
+  }
+
   async function abrirSolicitud(nombre, fecha) {
     const body = $('#chRectSolicitudBody');
     const libre = !nombre || !fecha;
-    const empOpts = empleadosCH().map(x => `<option value="${e(x.nombre)}" ${x.nombre === nombre ? 'selected' : ''}>${e(x.nombre_display)}</option>`).join('');
+    const empOpts = libre ? await opcionesLegajos(nombre) : '';
     body.innerHTML = `
       <div class="rect-steps">
         <div class="rect-step cur"><b>1. Declaración</b>Datos que informa el empleado</div>
@@ -104,7 +117,7 @@ const CHRect = (() => {
       </div>
       <div class="rect-grid">
         <div><label class="field-label">Empleado</label>
-          ${libre ? `<select id="rsEmp"><option value="">Elegí…</option>${empOpts}</select>` : `<input type="text" value="${e((empleadosCH().find(x => x.nombre === nombre) || {}).nombre_display || nombre)}" disabled><input type="hidden" id="rsEmp" value="${e(nombre)}">`}
+          ${libre ? `<select id="rsEmp"><option value="">Elegí…</option>${empOpts}</select>` : `<input type="text" id="rsEmpNombre" value="${e((empleadosCH().find(x => x.nombre === nombre) || {}).nombre_display || nombre)}" disabled><input type="hidden" id="rsEmp" value="${e(nombre)}">`}
         </div>
         <div><label class="field-label">Fecha de la incidencia</label>
           <input type="date" id="rsFecha" value="${e(fecha || '')}" ${libre ? '' : 'disabled'} max="${ahoraLocal().slice(0, 10)}">
@@ -148,8 +161,10 @@ const CHRect = (() => {
         ${datos.mes_cerrado ? '<div style="margin-top:6px;color:var(--error)"><b>El mes está cerrado.</b> Podés registrar la solicitud, pero para autorizar la corrección un administrador va a tener que abrir el mes.</div>' : ''}
       </div>
       <div class="rect-grid">
-        <div><label class="field-label">DNI</label><input type="text" id="rsDni" value="${e(datos.dni)}" placeholder="Ej: 30.123.456"></div>
-        <div><label class="field-label">Sector / turno</label><input type="text" id="rsSector" value="${e(datos.sector_turno)}" placeholder="Ej: Producción - turno mañana"></div>
+        <div><label class="field-label">DNI</label><input type="text" id="rsDni" value="${e(datos.dni)}" placeholder="Ej: 30.123.456" ${datos.desde_legajo && datos.dni ? 'readonly' : ''}>
+          ${datos.desde_legajo ? '<span class="hint">Tomado del legajo</span>' : '<span class="hint">Sin legajo vinculado: vinculalo en Configuración para completarlo solo</span>'}</div>
+        <div><label class="field-label">Sector / turno</label><input type="text" id="rsSector" value="${e(datos.sector_turno)}" placeholder="Ej: Producción - turno mañana">
+          ${datos.desde_legajo ? '<span class="hint">Puesto del legajo (podés agregar el turno)</span>' : ''}</div>
         <div class="full"><label class="field-label">Tipo de incidencia</label>
           <div class="rect-checks">${TIPOS.map(([v, l]) => `<label><input type="checkbox" name="rsTipo" value="${v}"> ${l}</label>`).join('')}</div>
           <input type="text" id="rsTipoOtro" placeholder="¿Cuál? (si elegiste Otro)" style="display:none;margin-top:6px">
@@ -177,6 +192,7 @@ const CHRect = (() => {
         <button class="btn btn-primary" id="rsGuardar">🖨 Generar formulario para imprimir</button>
       </div>`;
 
+    if ($('#rsEmpNombre')) $('#rsEmpNombre').value = datos.empleado_display;
     const emp = { medio_jornada: datos.medio_jornada, sin_descuento_descanso: datos.sin_descuento_descanso };
     const recalcular = () => {
       const h = horasDeclaradas($('#rsEnt').value, $('#rsSd').value, $('#rsRd').value, $('#rsSal').value, $('#rsSinDesc').checked, emp);
@@ -489,7 +505,34 @@ const CHRect = (() => {
     return `${API}reporte-mensual/?empleado=${encodeURIComponent(nombre)}&mes=${encodeURIComponent(mes)}`;
   }
   function botonReporte(nombre, mes) {
-    return `<a class="btn btn-secondary btn-rect" href="${urlReporte(nombre, mes)}" target="_blank" rel="noopener" title="Reporte mensual para entregar al empleado">⤓ PDF</a>`;
+    return `<button type="button" class="btn btn-secondary btn-rect" data-rect-reporte data-nombre="${e(nombre)}" data-mes="${e(mes)}" title="Descargar el reporte mensual para entregar al empleado">⤓ PDF</button>`;
+  }
+
+  async function descargarReporte(nombre, mes, boton) {
+    // Se pide el PDF y se descarga como archivo; si algo falla se muestra el motivo
+    const texto = boton ? boton.innerHTML : '';
+    if (boton) { boton.disabled = true; boton.innerHTML = 'Generando…'; }
+    try {
+      const res = await fetch(urlReporte(nombre, mes), { credentials: 'same-origin' });
+      if (!res.ok) {
+        let msg = 'No se pudo generar el reporte (' + res.status + ').';
+        try { msg = (await res.json()).error || msg; } catch (err) { /* no era JSON */ }
+        throw new Error(msg);
+      }
+      const blob = await res.blob();
+      const disp = res.headers.get('Content-Disposition') || '';
+      const nombreArchivo = (disp.match(/filename="?([^"]+)"?/) || [])[1] || `Reporte_horario_${mes}.pdf`;
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = nombreArchivo;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      toast('Reporte descargado', 'ti-file-download');
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      if (boton) { boton.disabled = false; boton.innerHTML = texto; }
+    }
   }
   function celdaIncidencias(n, limite) {
     n = n || 0;
@@ -516,7 +559,9 @@ const CHRect = (() => {
       const sol = ev.target.closest('[data-rect-solicitar]');
       if (sol) { ev.preventDefault(); abrirSolicitud(sol.dataset.nombre, sol.dataset.fecha); return; }
       const ver = ev.target.closest('[data-rect-ver]');
-      if (ver) { ev.preventDefault(); abrirGestion(ver.dataset.rectVer); }
+      if (ver) { ev.preventDefault(); abrirGestion(ver.dataset.rectVer); return; }
+      const rep = ev.target.closest('[data-rect-reporte]');
+      if (rep) { ev.preventDefault(); descargarReporte(rep.dataset.nombre, rep.dataset.mes, rep); }
     });
     ['chRectSolicitud', 'chRectGestion'].forEach(id => {
       document.getElementById(id).addEventListener('click', ev => { if (ev.target.id === id) cerrar(id); });
@@ -524,10 +569,10 @@ const CHRect = (() => {
     document.addEventListener('keydown', ev => { if (ev.key === 'Escape') { cerrar('chRectSolicitud'); cerrar('chRectGestion'); } });
 
     $('#chBtnRectSinMarcas').addEventListener('click', () => abrirSolicitud(null, null));
-    $('#chBtnReporteDetalle').addEventListener('click', () => {
+    $('#chBtnReporteDetalle').addEventListener('click', ev => {
       const emp = $('#chFiltroEmpDetalle').value, mes = $('#chFiltroMesDetalle').value;
-      if (!emp) return alert('Elegí un empleado en el filtro para descargar su reporte mensual.');
-      window.open(urlReporte(emp, mes), '_blank', 'noopener');
+      if (!emp) return alert('Elegí un empleado en el filtro "Empleado" para descargar su reporte mensual.');
+      descargarReporte(emp, mes, ev.currentTarget);
     });
 
     const lim = $('#chLimiteIncidencias');
