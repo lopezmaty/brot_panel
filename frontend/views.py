@@ -26,9 +26,74 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 
+def _variacion(actual, anterior):
+    """Porcentaje de cambio contra el valor anterior (None si no hay base)."""
+    if not anterior:
+        return None
+    return round((actual - anterior) / anterior * 100)
+
+
+def _proximos_cumpleanios(hoy, dias=30, limite=4):
+    from legajos.models import Empleado
+
+    proximos = []
+    for emp in Empleado.objects.filter(estado=Empleado.Estado.ACTIVO, fecha_nacimiento__isnull=False):
+        fecha = emp.proximo_cumpleanios(hoy)
+        faltan = (fecha - hoy).days
+        if faltan <= dias:
+            proximos.append({'empleado': emp, 'fecha': fecha, 'faltan': faltan})
+    proximos.sort(key=lambda c: c['faltan'])
+    return proximos[:limite]
+
+
 @login_required(login_url='login')
 def dashboard_view(request):
-    return render(request, 'dashboard.html')
+    from django.db.models import Count, F, Sum
+
+    hoy = timezone.localdate()
+    desde = hoy - timedelta(days=6)
+
+    # Pedidos del día (sin cancelados) y serie de los últimos 7 días para los mini gráficos
+    pedidos = Pedido.objects.exclude(estado='cancelado').filter(fecha__date__gte=desde)
+    por_dia = {
+        fila['fecha__date']: fila
+        for fila in pedidos.values('fecha__date').annotate(cantidad=Count('id', distinct=True))
+    }
+    items_por_dia = {
+        fila['pedido__fecha__date']: fila
+        for fila in ItemPedido.objects.filter(pedido__in=pedidos)
+        .values('pedido__fecha__date')
+        .annotate(unidades=Sum('cantidad'), total=Sum(F('cantidad') * F('precio')))
+    }
+
+    serie = []
+    for i in range(7):
+        dia = desde + timedelta(days=i)
+        serie.append({
+            'pedidos': por_dia.get(dia, {}).get('cantidad', 0),
+            'unidades': items_por_dia.get(dia, {}).get('unidades') or 0,
+            'total': float(items_por_dia.get(dia, {}).get('total') or 0),
+        })
+    hoy_d, ayer_d = serie[-1], serie[-2]
+
+    widgets = {
+        'pedidos_hoy': hoy_d['pedidos'],
+        'pedidos_sin_confirmar': Pedido.objects.filter(fecha__date=hoy, estado='nuevo').count(),
+        'pedidos_var': _variacion(hoy_d['pedidos'], ayer_d['pedidos']),
+        'unidades_hoy': hoy_d['unidades'],
+        'unidades_var': _variacion(hoy_d['unidades'], ayer_d['unidades']),
+        'ventas_hoy': hoy_d['total'],
+        'ventas_var': _variacion(hoy_d['total'], ayer_d['total']),
+        'serie_pedidos': [d['pedidos'] for d in serie],
+        'serie_unidades': [d['unidades'] for d in serie],
+        'serie_ventas': [d['total'] for d in serie],
+    }
+
+    return render(request, 'dashboard.html', {
+        'widgets': widgets,
+        'cumpleanios': _proximos_cumpleanios(hoy),
+        'hoy': hoy,
+    })
 
 
 def login_view(request):

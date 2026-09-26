@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'control_horario',
     'control_caja',
     'legajos',
+    'notificaciones',
 ]
 
 MIDDLEWARE = [

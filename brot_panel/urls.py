@@ -51,6 +51,7 @@ urlpatterns = [
     path('administracion/control-horario/', control_horario_view, name='control_horario'),
     path('administracion/control-caja/', include('control_caja.urls')),
     path('legajos/', include('legajos.urls')),
+    path('notificaciones/', include('notificaciones.urls')),
 
 ]
 
