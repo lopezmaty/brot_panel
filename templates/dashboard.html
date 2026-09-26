@@ -1,129 +1,139 @@
 {% extends 'base.html' %}
-
-{% block body_class %}no-sidebar{% endblock %}
+{% load static %}
 
 {% block content %}
+{% with rol=request.user.perfil.rol %}
 
-<h1 class="page-title">Acceso rápido</h1>
-
-<section class="qc-category">
-  <h2 class="qc-category-title">Administración</h2>
-  <div class="quick-access-grid">
-    <a href="{% url 'lista_precios' %}" class="quick-card">
-      <div class="qc-badge"><i class="ti ti-tag"></i></div>
-      <h3 class="qc-title">Lista de precios</h3>
-      <p class="qc-desc">Mantené tus precios actualizados y competitivos.</p>
-      <span class="qc-btn">Ir a la lista <i class="ti ti-arrow-right"></i></span>
-    </a>
-
-    <a href="{% url 'clientes' %}" class="quick-card">
-      <div class="qc-badge"><i class="ti ti-users"></i></div>
-      <h3 class="qc-title">Clientes</h3>
-      <p class="qc-desc">Gestioná tu cartera de clientes y sus datos.</p>
-      <span class="qc-btn">Ver clientes <i class="ti ti-arrow-right"></i></span>
-    </a>
-
-    <a href="{% url 'producto' %}" class="quick-card">
-      <div class="qc-badge"><i class="ti ti-box"></i></div>
-      <h3 class="qc-title">Productos</h3>
-      <p class="qc-desc">Gestioná el catálogo de productos.</p>
-      <span class="qc-btn">Ver productos <i class="ti ti-arrow-right"></i></span>
-    </a>
-
-    <a href="{% url 'control_caja' %}" class="quick-card">
-      <div class="qc-badge"><i class="ti ti-cash"></i></div>
-      <h3 class="qc-title">Control de caja</h3>
-      <p class="qc-desc">Registrá ingresos y egresos diarios.</p>
-      <span class="qc-btn">Ir a caja <i class="ti ti-arrow-right"></i></span>
-    </a>    
+<section class="bp-hero">
+  <div>
+    <div class="bp-eyebrow bp-reveal"><span class="bp-live"></span><span id="bpHoy">{{ hoy|date:"l j \d\e F"|capfirst }}</span></div>
+    <h1 class="bp-reveal" style="--i:1"><span id="bpSaludo">Hola</span>, <em>{{ request.user.first_name|default:request.user.username|capfirst }}</em>.</h1>
+    <p class="bp-reveal" style="--i:2">Esto es lo que está pasando hoy en Brot.</p>
+  </div>
+  <div class="bp-hero-actions bp-reveal" style="--i:3">
+    <a href="{% url 'control_caja' %}" class="btn-secondary"><i class="ti ti-cash"></i><span>Control de caja</span></a>
+    <a href="{% url 'centro_pedidos' %}" class="btn-primary"><i class="ti ti-clipboard-list"></i><span>Ver pedidos</span></a>
   </div>
 </section>
 
-<section class="qc-category">
-  <h2 class="qc-category-title">Producción</h2>
-  <div class="quick-access-grid">
-    <a href="{% url 'centro_pedidos' %}" class="quick-card">
-      <div class="qc-badge"><i class="ti ti-clipboard-list"></i></div>
-      <h3 class="qc-title">Pedidos</h3>
-      <p class="qc-desc">Controlá el estado y la producción de pedidos.</p>
-      <span class="qc-btn">Ver pedidos <i class="ti ti-arrow-right"></i></span>
-    </a>
-
-    <a href="{% url 'calculadora_produccion' %}" class="quick-card">
-      <div class="qc-badge"><i class="ti ti-calculator"></i></div>
-      <h3 class="qc-title">Calculador de producción</h3>
-      <p class="qc-desc">Estimá cantidades a producir según pedidos.</p>
-      <span class="qc-btn">Ir a la calculadora <i class="ti ti-arrow-right"></i></span>
-    </a>
-
-    <div class="quick-card qc-disabled">
-      <div class="qc-badge"><i class="ti ti-scale"></i></div>
-      <h3 class="qc-title">Calculadora de insumos</h3>
-      <p class="qc-desc">Calculá insumos necesarios por receta.</p>
-      <span class="qc-btn-disabled">Próximamente</span>
+<section class="bp-kpis">
+  <a href="{% url 'centro_pedidos' %}" class="bp-kpi bp-reveal" style="--i:3">
+    <div class="bp-kpi-top">
+      <span class="bp-kpi-label" style="--c:#3AAFE4"><i class="ti ti-clipboard-list"></i>Pedidos nuevos hoy</span>
+      {% include 'partials/delta.html' with v=widgets.pedidos_var %}
     </div>
-  </div>
+    <div class="bp-kpi-value" data-count="{{ widgets.pedidos_hoy }}">{{ widgets.pedidos_hoy }}</div>
+    <div class="bp-kpi-sub">{% if widgets.pedidos_sin_confirmar %}{{ widgets.pedidos_sin_confirmar }} sin confirmar{% else %}Todos confirmados{% endif %}</div>
+    <svg class="bp-spark" data-serie="serie_pedidos" data-color="#3AAFE4" viewBox="0 0 120 46" preserveAspectRatio="none"></svg>
+  </a>
+
+  <a href="{% url 'centro_pedidos' %}" class="bp-kpi bp-reveal" style="--i:4">
+    <div class="bp-kpi-top">
+      <span class="bp-kpi-label" style="--c:#8B5CF6"><i class="ti ti-package"></i>Unidades pedidas hoy</span>
+      {% include 'partials/delta.html' with v=widgets.unidades_var %}
+    </div>
+    <div class="bp-kpi-value" data-count="{{ widgets.unidades_hoy }}">{{ widgets.unidades_hoy }}</div>
+    <div class="bp-kpi-sub">Suma de todos los pedidos del día</div>
+    <svg class="bp-spark" data-serie="serie_unidades" data-color="#8B5CF6" viewBox="0 0 120 46" preserveAspectRatio="none"></svg>
+  </a>
+
+  <a href="{% url 'centro_pedidos' %}" class="bp-kpi bp-reveal" style="--i:5">
+    <div class="bp-kpi-top">
+      <span class="bp-kpi-label" style="--c:#F07030"><i class="ti ti-coin"></i>Ventas del día</span>
+      {% include 'partials/delta.html' with v=widgets.ventas_var %}
+    </div>
+    <div class="bp-kpi-value" data-count="{{ widgets.ventas_hoy|floatformat:0 }}" data-prefix="$ ">$ {{ widgets.ventas_hoy|floatformat:"0g" }}</div>
+    <div class="bp-kpi-sub">Total de los pedidos de hoy</div>
+    <svg class="bp-spark" data-serie="serie_ventas" data-color="#F07030" viewBox="0 0 120 46" preserveAspectRatio="none"></svg>
+  </a>
+
+  {% if rol == 'admin' or rol == 'colab' %}<a href="{% url 'legajos' %}" class="bp-kpi bp-reveal" style="--i:6">{% else %}<div class="bp-kpi bp-reveal" style="--i:6">{% endif %}
+    <div class="bp-kpi-top">
+      <span class="bp-kpi-label" style="--c:#EC4899"><i class="ti ti-cake"></i>Cumpleaños</span>
+      <span class="bp-delta flat">próximos 30 días</span>
+    </div>
+    {% if cumpleanios %}
+    <div class="bp-bday-list">
+      {% for c in cumpleanios %}
+      <div class="bp-bday {% if c.faltan == 0 %}today{% endif %}">
+        <span class="bp-avatar">{{ c.empleado.iniciales }}</span>
+        <strong>{{ c.empleado.nombre_completo }}</strong>
+        <span class="when">{% if c.faltan == 0 %}¡Hoy! 🎂{% elif c.faltan == 1 %}Mañana{% else %}{{ c.fecha|date:"j M" }}{% endif %}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="bp-bday-empty">No hay cumpleaños en los próximos 30 días.</div>
+    {% endif %}
+  {% if rol == 'admin' or rol == 'colab' %}</a>{% else %}</div>{% endif %}
 </section>
 
-<section class="qc-category">
-  <h2 class="qc-category-title">Gestión gerencial</h2>
-  <div class="quick-access-grid">
-    <a href="{% url 'mapa_economico' %}" class="quick-card">
-      <div class="qc-badge"><i class="ti ti-map"></i></div>
-      <h3 class="qc-title">Mapa Económico</h3>
-      <p class="qc-desc">Compras, ventas y márgenes por rubro, mes a mes.</p>
-      <span class="qc-btn">Ir al mapa <i class="ti ti-arrow-right"></i></span>
-    </a>
-
-    <a href="{% url 'costeo_precios' %}" class="quick-card">
-      <div class="qc-badge"><i class="ti ti-report-money"></i></div>
-      <h3 class="qc-title">Centro de Costos</h3>
-      <p class="qc-desc">Costos de producción, márgenes y listas de precios.</p>
-      <span class="qc-btn">Ir al centro de costos <i class="ti ti-arrow-right"></i></span>
-    </a>
-
-    <a href="{% url 'estado_resultados' %}" class="quick-card">
-      <div class="qc-badge"><i class="ti ti-report-analytics"></i></div>
-      <h3 class="qc-title">Estado de Resultados</h3>
-      <p class="qc-desc">Ventas, CMV y resultado operativo, mes a mes.</p>
-      <span class="qc-btn">Ir al EERR <i class="ti ti-arrow-right"></i></span>
-    </a>
-
-    <a href="{% url 'flujo_fondos' %}" class="quick-card">
-      <div class="qc-badge"><i class="ti ti-chart-line"></i></div>
-      <h3 class="qc-title">Flujo de fondos</h3>
-      <p class="qc-desc">Cobros y pagos proyectados a 30, 60 y 90 días.</p>
-      <span class="qc-btn">Ir al flujo <i class="ti ti-arrow-right"></i></span>
-    </a>
-
-    <a href="{% url 'presupuesto_eerr_page' %}" class="quick-card">
-      <div class="qc-badge"><i class="ti ti-target-arrow"></i></div>
-      <h3 class="qc-title">Presupuesto EERR</h3>
-      <p class="qc-desc">Presupuesto anual contra real, con semáforo de cumplimiento.</p>
-      <span class="qc-btn">Ir al presupuesto <i class="ti ti-arrow-right"></i></span>
-    </a>
+<section>
+  <div class="bp-section-head">
+    <h2>Acceso rápido</h2>
+    <div class="bp-chips" id="bpChips"><span class="bp-chip-pill" id="bpChipPill"></span></div>
   </div>
-</section>
 
-<section class="qc-category">
-  <h2 class="qc-category-title">Recursos humanos</h2>
-  <div class="quick-access-grid">
-    {% if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab' %}
-    <a href="{% url 'control_horario' %}" class="quick-card">
-      <div class="qc-badge"><i class="ti ti-clock-hour-4"></i></div>
-      <h3 class="qc-title">Control Horario</h3>
-      <p class="qc-desc">Importá fichadas del reloj biométrico y calculá horas del equipo.</p>
-      <span class="qc-btn">Ir al horario <i class="ti ti-arrow-right"></i></span>
-    </a>
+  <div id="bpGroups">
+    <div class="bp-group" data-fav-group>
+      <h3 class="bp-group-title"><i class="ti ti-star-filled" style="color:var(--orange)"></i> Favoritos</h3>
+      <div class="bp-grid" id="bpFavGrid"></div>
+    </div>
 
-    <a href="{% url 'legajos' %}" class="quick-card">
-      <div class="qc-badge"><i class="ti ti-address-book"></i></div>
-      <h3 class="qc-title">Legajos</h3>
-      <p class="qc-desc">Legajos, documentación, trámites, ausencias y cumpleaños del equipo.</p>
-      <span class="qc-btn">Ir a legajos <i class="ti ti-arrow-right"></i></span>
-    </a>
+    <div class="bp-group" data-group="Administración">
+      <h3 class="bp-group-title"><i class="ti ti-building-store"></i> Administración</h3>
+      <div class="bp-grid">
+        {% include 'partials/modulo.html' with id='lista_precios' url='lista_precios' icono='ti-tag' color='#F07030' titulo='Lista de precios' desc='Mantené tus precios actualizados y competitivos.' %}
+        {% include 'partials/modulo.html' with id='clientes' url='clientes' icono='ti-users' color='#3AAFE4' titulo='Clientes' desc='Gestioná tu cartera de clientes y sus datos.' %}
+        {% include 'partials/modulo.html' with id='producto' url='producto' icono='ti-box' color='#8B5CF6' titulo='Productos' desc='Gestioná el catálogo de productos.' %}
+        {% include 'partials/modulo.html' with id='control_caja' url='control_caja' icono='ti-cash' color='#22B07D' titulo='Control de caja' desc='Registrá ingresos y egresos diarios.' %}
+      </div>
+    </div>
+
+    <div class="bp-group" data-group="Producción">
+      <h3 class="bp-group-title"><i class="ti ti-bread"></i> Producción</h3>
+      <div class="bp-grid">
+        {% include 'partials/modulo.html' with id='centro_pedidos' url='centro_pedidos' icono='ti-clipboard-list' color='#F07030' titulo='Pedidos' desc='Controlá el estado y la producción de pedidos.' %}
+        {% include 'partials/modulo.html' with id='calculadora_produccion' url='calculadora_produccion' icono='ti-calculator' color='#3AAFE4' titulo='Calculador de producción' desc='Estimá cantidades a producir según pedidos.' %}
+        <div class="bp-mod disabled" style="--c:#8A9BB8">
+          <div class="bp-mod-icon"><i class="ti ti-scale"></i></div>
+          <h3>Calculadora de insumos</h3>
+          <p>Calculá insumos necesarios por receta.</p>
+          <div class="bp-mod-foot" style="justify-content:flex-start"><span class="bp-tag">Próximamente</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bp-group" data-group="Gestión gerencial">
+      <h3 class="bp-group-title"><i class="ti ti-chart-pie"></i> Gestión gerencial</h3>
+      <div class="bp-grid">
+        {% include 'partials/modulo.html' with id='mapa_economico' url='mapa_economico' icono='ti-map' color='#14B8A6' titulo='Mapa Económico' desc='Compras, ventas y márgenes por rubro, mes a mes.' %}
+        {% include 'partials/modulo.html' with id='costeo_precios' url='costeo_precios' icono='ti-report-money' color='#F59E0B' titulo='Centro de Costos' desc='Costos de producción, márgenes y listas de precios.' %}
+        {% include 'partials/modulo.html' with id='estado_resultados' url='estado_resultados' icono='ti-report-analytics' color='#3AAFE4' titulo='Estado de Resultados' desc='Ventas, CMV y resultado operativo, mes a mes.' %}
+        {% include 'partials/modulo.html' with id='flujo_fondos' url='flujo_fondos' icono='ti-chart-line' color='#22B07D' titulo='Flujo de fondos' desc='Cobros y pagos proyectados a 30, 60 y 90 días.' %}
+        {% include 'partials/modulo.html' with id='presupuesto_eerr' url='presupuesto_eerr_page' icono='ti-target-arrow' color='#E5484D' titulo='Presupuesto EERR' desc='Presupuesto anual contra real, con semáforo de cumplimiento.' %}
+      </div>
+    </div>
+
+    {% if rol == 'admin' or rol == 'colab' %}
+    <div class="bp-group" data-group="Recursos humanos">
+      <h3 class="bp-group-title"><i class="ti ti-id-badge-2"></i> Recursos humanos</h3>
+      <div class="bp-grid">
+        {% include 'partials/modulo.html' with id='control_horario' url='control_horario' icono='ti-clock-hour-4' color='#8B5CF6' titulo='Control Horario' desc='Importá fichadas del reloj biométrico y calculá horas del equipo.' %}
+        {% include 'partials/modulo.html' with id='legajos' url='legajos' icono='ti-address-book' color='#EC4899' titulo='Legajos' desc='Legajos, documentación, trámites, ausencias y cumpleaños del equipo.' %}
+      </div>
+    </div>
     {% endif %}
   </div>
 </section>
 
+{{ widgets.serie_pedidos|json_script:"serie_pedidos" }}
+{{ widgets.serie_unidades|json_script:"serie_unidades" }}
+{{ widgets.serie_ventas|json_script:"serie_ventas" }}
+
+{% endwith %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/dashboard.js' %}"></script>
 {% endblock %}

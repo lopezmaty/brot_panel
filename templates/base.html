@@ -5,108 +5,140 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Brot Panel{% endblock %}</title>
+  <script>
+    try {
+      var t = localStorage.getItem('tema');
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = t;
+      if (localStorage.getItem('panel.colapsado') === '1') document.documentElement.classList.add('bp-colapsado');
+    } catch (e) {}
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 
-  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/panel.css' %}">
   {% block extra_css %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
 
-  <nav class="topnav">
-    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Colapsar menú">
-      <i class="ti ti-menu-2"></i>
-    </button>
+  {% with rol=request.user.perfil.rol %}
+  <div class="bp-app" id="bpApp">
 
-    <a href="{% url 'dashboard' %}" class="logo">
-      <img src="{% static 'img/logo.png' %}" alt="Brot Panes" class="logo-img">
-      <span>Panel</span>
-    </a>
+    <aside class="bp-sidebar" id="sidebar">
+      <a href="{% url 'dashboard' %}" class="bp-brand">
+        <img src="{% static 'img/logo.png' %}" alt="Brot Panes">
+        <span class="bp-brand-mark">B</span>
+        <span class="bp-brand-name">Panel</span>
+      </a>
 
-    <div class="topnav-categories">
-      <div class="topnav-dropdown">
-        <span class="topnav-cat-label">Administración <i class="ti ti-chevron-down"></i></span>
-        <div class="topnav-dropdown-menu">
-          <a href="{% url 'lista_precios' %}">Lista de precios</a>
-          <a href="{% url 'clientes' %}">Clientes</a>
-          <a href="{% url 'producto' %}">Productos</a>
-          <a href="{% url 'control_caja' %}">Control de caja</a>
-        </div>
-      </div>
-
-      <div class="topnav-dropdown">
-        <span class="topnav-cat-label">Producción <i class="ti ti-chevron-down"></i></span>
-        <div class="topnav-dropdown-menu">
-          <a href="{% url 'centro_pedidos' %}">Pedidos</a>
-          <a href="{% url 'calculadora_produccion' %}">Calculador de producción</a>
-          <span class="topnav-dropdown-disabled">Calculadora de insumos</span>
-        </div>
-      </div>
-
-      <div class="topnav-dropdown">
-        <span class="topnav-cat-label">Gestión gerencial <i class="ti ti-chevron-down"></i></span>
-        <div class="topnav-dropdown-menu">
-          <a href="{% url 'mapa_economico' %}">Mapa Económico</a>
-          <a href="{% url 'costeo_precios' %}">Centro de Costos</a>
-          <a href="{% url 'estado_resultados' %}">Estado de Resultados</a>
-          <a href="{% url 'flujo_fondos' %}">Flujo de fondos</a>
-          <a href="{% url 'presupuesto_eerr_page' %}">Presupuesto EERR</a>
-        </div>
-      </div>
-
-      <div class="topnav-dropdown">
-        <span class="topnav-cat-label">Recursos humanos <i class="ti ti-chevron-down"></i></span>
-        <div class="topnav-dropdown-menu">
-          {% if request.user.perfil.rol == 'admin' or request.user.perfil.rol == 'colab' %}
-          <a href="{% url 'control_horario' %}">Control Horario</a>
-          <a href="{% url 'legajos' %}">Legajos</a>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
-      <i class="ti ti-moon" id="themeIcon"></i>
-    </button>
-
-    <div class="topnav-user">
-      <button class="topnav-user-info" id="userMenuToggle">
-        <span class="sidebar-dot"><i class="ti ti-user-circle"></i></span>
-        <span>{{ request.user.username }}</span>
-        <i class="ti ti-chevron-down"></i>
+      <button type="button" class="bp-search-trigger" data-bp-palette>
+        <i class="ti ti-search"></i><span>Buscar…</span><kbd class="bp-kbd">Ctrl K</kbd>
       </button>
-      <div class="user-dropdown" id="userDropdown">
-        {% if request.user.perfil.rol == 'admin' %}
-        <a href="{% url 'usuarios' %}" class="user-dropdown-item">
-          <i class="ti ti-users-group"></i> Gestión de usuarios
-        </a>
+
+      <nav class="bp-nav" id="bpNav">
+        <div class="bp-subnav" id="bpSubnav">{% block sidebar %}{% endblock %}</div>
+
+        <a href="{% url 'dashboard' %}" class="bp-nav-link" data-label="Inicio" data-icon="ti-home-2"><i class="ti ti-home-2"></i><span>Inicio</span></a>
+
+        <div class="bp-nav-group" data-g="admin">
+          <button type="button" class="bp-nav-group-btn"><span>Administración</span><i class="ti ti-chevron-down chev"></i></button>
+          <div class="bp-nav-items"><div>
+            <a href="{% url 'lista_precios' %}" class="bp-nav-link" data-label="Lista de precios" data-icon="ti-tag" data-c="#F07030"><i class="ti ti-tag"></i><span>Lista de precios</span></a>
+            <a href="{% url 'clientes' %}" class="bp-nav-link" data-label="Clientes" data-icon="ti-users" data-c="#3AAFE4" data-also="{% url 'historico_comunicaciones' %}"><i class="ti ti-users"></i><span>Clientes</span></a>
+            <a href="{% url 'producto' %}" class="bp-nav-link" data-label="Productos" data-icon="ti-box" data-c="#8B5CF6"><i class="ti ti-box"></i><span>Productos</span></a>
+            <a href="{% url 'control_caja' %}" class="bp-nav-link" data-label="Control de caja" data-icon="ti-cash" data-c="#22B07D"><i class="ti ti-cash"></i><span>Control de caja</span></a>
+          </div></div>
+        </div>
+
+        <div class="bp-nav-group" data-g="prod">
+          <button type="button" class="bp-nav-group-btn"><span>Producción</span><i class="ti ti-chevron-down chev"></i></button>
+          <div class="bp-nav-items"><div>
+            <a href="{% url 'centro_pedidos' %}" class="bp-nav-link" data-label="Pedidos" data-icon="ti-clipboard-list" data-c="#F07030"><i class="ti ti-clipboard-list"></i><span>Pedidos</span></a>
+            <a href="{% url 'calculadora_produccion' %}" class="bp-nav-link" data-label="Calculador de producción" data-icon="ti-calculator" data-c="#3AAFE4"><i class="ti ti-calculator"></i><span>Calculador de producción</span></a>
+            <span class="bp-nav-link disabled"><i class="ti ti-scale"></i><span>Calculadora de insumos</span><em class="bp-soon">Pronto</em></span>
+          </div></div>
+        </div>
+
+        <div class="bp-nav-group" data-g="ger">
+          <button type="button" class="bp-nav-group-btn"><span>Gestión gerencial</span><i class="ti ti-chevron-down chev"></i></button>
+          <div class="bp-nav-items"><div>
+            <a href="{% url 'mapa_economico' %}" class="bp-nav-link" data-label="Mapa Económico" data-icon="ti-map" data-c="#14B8A6"><i class="ti ti-map"></i><span>Mapa Económico</span></a>
+            <a href="{% url 'costeo_precios' %}" class="bp-nav-link" data-label="Centro de Costos" data-icon="ti-report-money" data-c="#F59E0B"><i class="ti ti-report-money"></i><span>Centro de Costos</span></a>
+            <a href="{% url 'estado_resultados' %}" class="bp-nav-link" data-label="Estado de Resultados" data-icon="ti-report-analytics" data-c="#3AAFE4"><i class="ti ti-report-analytics"></i><span>Estado de Resultados</span></a>
+            <a href="{% url 'flujo_fondos' %}" class="bp-nav-link" data-label="Flujo de fondos" data-icon="ti-chart-line" data-c="#22B07D"><i class="ti ti-chart-line"></i><span>Flujo de fondos</span></a>
+            <a href="{% url 'presupuesto_eerr_page' %}" class="bp-nav-link" data-label="Presupuesto EERR" data-icon="ti-target-arrow" data-c="#E5484D"><i class="ti ti-target-arrow"></i><span>Presupuesto EERR</span></a>
+          </div></div>
+        </div>
+
+        {% if rol == 'admin' or rol == 'colab' %}
+        <div class="bp-nav-group" data-g="rrhh">
+          <button type="button" class="bp-nav-group-btn"><span>Recursos humanos</span><i class="ti ti-chevron-down chev"></i></button>
+          <div class="bp-nav-items"><div>
+            <a href="{% url 'control_horario' %}" class="bp-nav-link" data-label="Control Horario" data-icon="ti-clock-hour-4" data-c="#8B5CF6"><i class="ti ti-clock-hour-4"></i><span>Control Horario</span></a>
+            <a href="{% url 'legajos' %}" class="bp-nav-link" data-label="Legajos" data-icon="ti-address-book" data-c="#EC4899"><i class="ti ti-address-book"></i><span>Legajos</span></a>
+          </div></div>
+        </div>
         {% endif %}
-        <a href="{% url 'logout' %}" class="user-dropdown-item">
-          <i class="ti ti-logout"></i> Cerrar sesión
-        </a>
+      </nav>
+
+      <div class="bp-side-footer">
+        <button type="button" class="bp-user-chip" id="userMenuToggle">
+          <span class="bp-avatar">{{ request.user.first_name|default:request.user.username|slice:":1" }}</span>
+          <span class="bp-user-meta">
+            <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+            <small>{{ request.user.perfil.get_rol_display|default:"Usuario"|capfirst }}</small>
+          </span>
+          <i class="ti ti-selector"></i>
+        </button>
+        <div class="bp-user-menu" id="userDropdown">
+          {% if rol == 'admin' %}
+          <a href="{% url 'usuarios' %}" data-label="Gestión de usuarios" data-icon="ti-users-group"><i class="ti ti-users-group"></i> Gestión de usuarios</a>
+          {% endif %}
+          <a href="{% url 'logout' %}" class="danger"><i class="ti ti-logout"></i> Cerrar sesión</a>
+        </div>
       </div>
-    </div>
-  </nav>
-
-  <div class="app-layout">
-    <aside class="sidebar" id="sidebar">
-      {% block sidebar %}{% endblock %}
     </aside>
+    <div class="bp-scrim" id="bpScrim"></div>
 
-    <main class="content">
-      {% block content %}
-      {% endblock %}
-    </main>
+    <div class="bp-main">
+      <header class="bp-topbar" id="bpTopbar">
+        <button type="button" class="bp-icon-btn bp-desktop-only" id="sidebarToggle" title="Colapsar menú ( [ )" aria-label="Colapsar menú">
+          <i class="ti ti-layout-sidebar-left-collapse"></i>
+        </button>
+        <button type="button" class="bp-icon-btn bp-mobile-only" id="bpMobileBtn" aria-label="Abrir menú"><i class="ti ti-menu-2"></i></button>
+        <div class="bp-crumbs" id="bpCrumbs"><strong>Brot Panel</strong></div>
+        <div class="bp-spacer"></div>
+        <button type="button" class="bp-icon-btn bp-mobile-only" data-bp-palette aria-label="Buscar"><i class="ti ti-search"></i></button>
+        <div class="bp-notif">
+          <button type="button" class="bp-icon-btn" id="bpNotifBtn" title="Notificaciones" aria-label="Notificaciones">
+            <i class="ti ti-bell"></i><span class="bp-notif-count" id="bpNotifCount" hidden>0</span>
+          </button>
+          <div class="bp-notif-panel" id="bpNotifPanel">
+            <div class="bp-notif-head"><strong>Notificaciones</strong><button type="button" id="bpNotifAll">Marcar todas como leídas</button></div>
+            <div class="bp-notif-list" id="bpNotifList"><div class="bp-notif-empty"><i class="ti ti-bell-off"></i>Cargando…</div></div>
+          </div>
+        </div>
+        <button type="button" class="bp-icon-btn" id="themeToggle" title="Cambiar tema" aria-label="Cambiar tema">
+          <i class="ti ti-moon" id="themeIcon"></i>
+        </button>
+      </header>
+
+      <main class="content">
+        {% block content %}
+        {% endblock %}
+      </main>
+    </div>
   </div>
+  {% endwith %}
 
   <div class="modal-overlay" id="modalConfirm">
     <div class="modal-box">
       <h2 class="modal-title">Confirmar acción</h2>
-      <p id="confirmMessage" style="color: var(--text-secondary); margin: 0 0 20px;">¿Estás seguro?</p>
+      <p id="confirmMessage" style="color: var(--text-secondary); margin: 0 0 4px; line-height: 1.5;">¿Estás seguro?</p>
       <div class="modal-actions">
         <button type="button" class="btn-secondary" id="btnConfirmCancel">Cancelar</button>
         <button type="button" class="btn-primary" id="btnConfirmAccept">Confirmar</button>
@@ -114,15 +146,23 @@
     </div>
   </div>
 
-  <script>
-    document.getElementById('sidebarToggle').addEventListener('click', function () {
-      document.getElementById('sidebar').classList.toggle('collapsed');
-    });
+  <div class="bp-overlay" id="bpOverlay">
+    <div class="bp-palette" role="dialog" aria-label="Buscar">
+      <div class="bp-palette-input">
+        <i class="ti ti-search"></i>
+        <input id="bpPaletteInput" placeholder="Buscá un módulo o acción…" autocomplete="off">
+        <kbd class="bp-kbd">Esc</kbd>
+      </div>
+      <div class="bp-palette-list" id="bpPaletteList"></div>
+      <div class="bp-palette-foot">
+        <span><kbd class="bp-kbd">↑</kbd><kbd class="bp-kbd">↓</kbd>navegar</span>
+        <span><kbd class="bp-kbd">↵</kbd>abrir</span>
+        <span><kbd class="bp-kbd">[</kbd>colapsar menú</span>
+      </div>
+    </div>
+  </div>
 
-    document.getElementById('userMenuToggle').addEventListener('click', function () {
-      document.getElementById('userDropdown').classList.toggle('open');
-    });
-  </script>
+  <div class="bp-toasts" id="bpToasts"></div>
 
   <script src="{% static 'js/base.js' %}"></script>
 
