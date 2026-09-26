@@ -49,24 +49,18 @@
   <tr><td class="l">DNI</td><td>{{ d.dni|default:"" }}</td></tr>
   <tr><td class="l">Fecha de la incidencia</td><td>{{ r.fecha|date:"d/m/Y" }}</td></tr>
   <tr><td class="l">Sector / turno</td><td>{{ d.sector_turno|default:"" }}</td></tr>
-  <tr><td class="l">Tipo de incidencia</td>
+  <tr><td class="l">Marca olvidada o incorrecta</td>
     <td class="opts check">
-      <span>{% if "ingreso" in r.tipos %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Ingreso</span>
+      <span>{% if "ingreso" in r.tipos %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Entrada</span>
       <span>{% if "salida" in r.tipos %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Salida</span>
-      <span>{% if "descanso" in r.tipos %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Descanso</span>
-      <span>{% if "falla_tecnica" in r.tipos %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Falla técnica</span>
-      <span>{% if "otro" in r.tipos %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Otro{% if r.tipo_otro %}: {{ r.tipo_otro }}{% endif %}</span>
     </td></tr>
   <tr><td class="l">Marcas originales del reloj biométrico</td><td>{{ r.marcas_originales }}</td></tr>
   <tr><td class="l">Cálculo provisional del sistema</td><td>{{ r.calculo_provisional }} No se reconoce automáticamente el horario informado.</td></tr>
   <tr><td class="l">Horario real informado</td>
     <td>
       {% if d.real_entrada or d.real_salida %}
-        Entrada {{ d.real_entrada|default:"—" }}
-        {% if d.real_salida_descanso or d.real_regreso_descanso %} · Salida a descanso {{ d.real_salida_descanso|default:"—" }} · Regreso {{ d.real_regreso_descanso|default:"—" }}{% endif %}
-        · Salida {{ d.real_salida|default:"—" }}.
-        {% if r.sin_descanso_declarado %} Declara que <b>no pudo tomar el descanso</b>.{% endif %}
-        {% if d.horas_declaradas is not None %} <span class="muted">(Equivale a {{ d.horas_declaradas|floatformat:2 }} h)</span>{% endif %}
+        Entrada {{ d.real_entrada|default:"—" }} · Salida {{ d.real_salida|default:"—" }}.
+        {% if d.horas_declaradas is not None %} <span class="muted">(Equivale a {{ d.horas_declaradas|floatformat:2 }} h con el descanso de 30 min descontado)</span>{% endif %}
       {% endif %}
       {% if r.horario_real_texto %}<br>{{ r.horario_real_texto }}{% endif %}
     </td></tr>

@@ -14,6 +14,8 @@ from . import models
 R = models.RectificacionFichada
 
 TIPOS_LABEL = dict(R.TIPOS)
+# Por decisión de la empresa sólo se rectifican marcas de entrada y de salida
+TIPOS_PERMITIDOS = ('ingreso', 'salida')
 DESCANSO_COMPLETA = 0.5
 
 

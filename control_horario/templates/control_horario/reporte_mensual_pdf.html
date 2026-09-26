@@ -37,6 +37,12 @@
   .dos { display: flex; gap: 10px; }
   .dos > div { flex: 1; }
   .leyenda { margin-top: 8px; font-size: 7pt; color: #4a5d7a; line-height: 1.4; border: 1px solid #dbe3ee; padding: 5px 7px; border-radius: 4px; background: #fafbfd; }
+  .conformidad { margin-top: 10px; border: 1px solid #c3cddc; border-radius: 4px; padding: 0 0 8px; }
+  .conformidad h2 { margin: 0 0 6px; }
+  .conformidad p, .conformidad ul { margin: 4px 9px; font-size: 7.8pt; line-height: 1.45; }
+  .conformidad ul { padding-left: 16px; }
+  .conformidad .nota { color: #6b7a90; font-size: 7pt; }
+  .conformidad .firmas { margin: 26px 9px 0; }
   .firmas { margin-top: 18px; display: flex; gap: 40px; }
   .firmas div { flex: 1; border-top: 1px solid #1b2433; padding-top: 3px; text-align: center; font-size: 7.4pt; color: #4a5d7a; }
   .avoid { page-break-inside: avoid; }
@@ -147,7 +153,7 @@
     <tr>
       <td>{{ r.numero }}</td>
       <td style="white-space:nowrap">{{ r.fecha|date:"d/m/Y" }}</td>
-      <td>{% for t in r.tipos %}{% if not forloop.first %}, {% endif %}{% if t == "falla_tecnica" %}Falla técnica{% else %}{{ t|capfirst }}{% endif %}{% endfor %}</td>
+      <td>{% for t in r.tipos %}{% if not forloop.first %}, {% endif %}{% if t == "ingreso" %}Entrada{% elif t == "falla_tecnica" %}Falla técnica{% else %}{{ t|capfirst }}{% endif %}{% endfor %}</td>
       <td>{{ r.motivo|truncatechars:90 }}</td>
       <td style="white-space:nowrap">{{ r.fecha_hora_aviso|date:"d/m H:i" }}{% if r.aviso_fuera_de_termino %}<br><span class="tag err">Fuera de término</span>{% endif %}</td>
       <td>{% if r.estado == "resuelta" %}{{ r.get_resolucion_display|truncatewords:4 }}{% else %}{{ r.get_estado_display }}{% if r.estado == "anulada" %}: {{ r.motivo_anulacion }}{% endif %}{% endif %}</td>
@@ -165,13 +171,26 @@
 <div class="leyenda avoid">
   <b>Cómo leer este resumen.</b> Las marcas del reloj biométrico se muestran tal como fueron registradas y no se modifican. Con 4 marcas se liquidan las horas registradas; con 2 marcas se presume el descanso de 30 minutos y se descuenta (Reglamento §5); con otra cantidad se considera error de fichada y se carga el mínimo diario.
   Las correcciones excepcionales se registran aparte (Anexo I) y sólo reemplazan las horas a liquidar del día cuando fueron autorizadas.
-  La firma o recepción de este resumen acredita su entrega, pero no implica renuncia a derechos ni impide rectificaciones posteriores cuando aparezca prueba suficiente. Las discrepancias deben informarse dentro de las 48 horas de recibido (Reglamento §12).
 </div>
 
-<div class="firmas avoid">
-  <div>Firma del trabajador/a — recibí copia</div>
-  <div>Aclaración y fecha</div>
-  <div>Firma por BROTHAUS S.A.S.</div>
+<div class="conformidad avoid">
+  <h2>Conformidad con la compensación de horas — Acuerdo de Banco de Horas</h2>
+  <p>
+    En el marco del <b>Acuerdo Individual Voluntario de Banco de Horas</b> suscripto con BROTHAUS S.A.S., el/la trabajador/a
+    <b>{{ datos_emp.nombre_completo }}</b>{% if datos_emp.dni %}, DNI <b>{{ datos_emp.dni }}</b>{% endif %}, declara haber revisado el detalle de
+    <b>{{ mes_label }}</b> y presta conformidad con las compensaciones de horas registradas tal como fueron acordadas:
+  </p>
+  <ul>
+    <li>Las <b>salidas anticipadas</b> (finalización de la jornada antes del horario previsto) que aceptó durante el mes quedan incorporadas como saldo a recuperar dentro del banco de horas, conforme a la cláusula 7 del Acuerdo.</li>
+    <li>Las horas trabajadas por encima de la jornada quedan registradas como saldo a su favor y se compensan o liquidan según su naturaleza (cláusula 10).</li>
+    <li>El saldo del mes surge de la diferencia informada en este resumen: <b>{% if resumen.diferencia > 0 %}+{% endif %}{{ resumen.diferencia|floatformat:2 }} h</b>{% if resumen.diferencia < -0.01 %} a recuperar{% elif resumen.diferencia > 0.01 %} a favor del trabajador/a{% endif %}. Los saldos se compensan dentro de un plazo máximo de tres (3) meses desde su generación (cláusula 10).</li>
+  </ul>
+  <p class="nota">Esta conformidad se presta dentro del régimen general del Acuerdo y no implica renuncia a salarios, adicionales, límites de jornada, descansos ni otros derechos (cláusula 14). Las discrepancias pueden informarse preferentemente dentro de las 48 horas (cláusula 9).</p>
+  <div class="firmas">
+    <div>Firma del trabajador/a</div>
+    <div>Aclaración</div>
+    <div>Fecha</div>
+  </div>
 </div>
 </body>
 </html>

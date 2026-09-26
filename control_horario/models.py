@@ -142,7 +142,7 @@ class RectificacionFichada(models.Model):
         NO_ACREDITADA = 'no_acreditada', 'Incidencia no acreditada: se mantiene el cálculo administrativo provisional'
 
     TIPOS = [
-        ('ingreso', 'Ingreso'),
+        ('ingreso', 'Entrada'),
         ('salida', 'Salida'),
         ('descanso', 'Descanso'),
         ('falla_tecnica', 'Falla técnica'),

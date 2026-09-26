@@ -51,9 +51,9 @@ class RectificacionesTests(TestCase):
 
     def _crear(self, fecha='2026-09-03', **extra):
         datos = {
-            'empleado': 'Perez Juan', 'fecha': fecha, 'tipos': ['descanso'], 'dni': '30.000.000',
-            'real_entrada': '06:00', 'real_salida': '15:00', 'sin_descanso_declarado': True,
-            'motivo': 'No pudo tomar el descanso.', 'fecha_hora_aviso': '2026-09-04T09:00',
+            'empleado': 'Perez Juan', 'fecha': fecha, 'tipos': ['salida'], 'dni': '30.000.000',
+            'real_entrada': '06:00', 'real_salida': '15:00',
+            'motivo': 'Se olvidó de marcar la salida.', 'fecha_hora_aviso': '2026-09-04T09:00',
         }
         datos.update(extra)
         return self.client.post(self.API + 'rectificaciones/', datos, content_type='application/json')
@@ -74,7 +74,8 @@ class RectificacionesTests(TestCase):
         rid = r.json()['id']
         self.assertEqual(r.json()['estado'], 'pendiente_firma')
         self.assertEqual(r.json()['horas_provisionales'], 8.5)
-        self.assertEqual(r.json()['horas_declaradas'], 9.0)
+        # 06:00 a 15:00 con el descanso de 30 min descontado
+        self.assertEqual(r.json()['horas_declaradas'], 8.5)
         self.assertFalse(r.json()['fuera_de_termino'])
 
         # Sin foto no se puede resolver
@@ -107,7 +108,7 @@ class RectificacionesTests(TestCase):
         self.assertEqual(fila['a_liquidar'], 8.5)
 
     def test_dia_sin_marcas_aparece_y_suma_al_autorizarse(self):
-        rid = self._crear(fecha='2026-09-05', tipos=['ingreso', 'salida'], sin_descanso_declarado=False).json()['id']
+        rid = self._crear(fecha='2026-09-05', tipos=['ingreso', 'salida']).json()['id']
         fila = next(x for x in self._detalle() if x['fecha'] == '2026-09-05')
         self.assertTrue(fila['sin_marcas'])
         self.assertEqual(fila['a_liquidar'], 0)
@@ -131,6 +132,23 @@ class RectificacionesTests(TestCase):
         self.client.post(f'{self.API}rectificaciones/{rid}/foto/', {'foto': _foto()})
         HistorialMes.objects.create(mes='2026-09', snapshot={})
         self.assertEqual(self._resolver(rid).status_code, 409)
+
+    def test_solo_entrada_o_salida(self):
+        # El descanso no se puede declarar: sólo marcas de entrada o salida
+        self.assertEqual(self._crear(tipos=['descanso']).status_code, 400)
+        r = self._crear(tipos=['descanso', 'salida'], sin_descanso_declarado=True, real_salida_descanso='10:00')
+        self.assertEqual(r.status_code, 201)
+        self.assertEqual(r.json()['tipos'], ['salida'])
+        self.assertFalse(r.json()['sin_descanso_declarado'])
+        self.assertEqual(r.json()['real_salida_descanso'], '')
+
+    def test_reporte_con_conformidad_sin_firma_de_empresa(self):
+        from . import views_rectificaciones as vr
+        from django.template.loader import render_to_string
+        html = render_to_string('control_horario/reporte_mensual_pdf.html', vr.datos_reporte(self.emp, '2026-09'))
+        self.assertIn('Acuerdo Individual Voluntario de Banco de Horas', html)
+        self.assertNotIn('recibí copia', html)
+        self.assertNotIn('Firma por BROTHAUS', html)
 
     def test_aviso_fuera_de_termino(self):
         r = self._crear(fecha_hora_aviso='2026-09-08T10:00')

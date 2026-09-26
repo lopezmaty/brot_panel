@@ -11,6 +11,8 @@ const CHRect = (() => {
     ['ingreso', 'Ingreso'], ['salida', 'Salida'], ['descanso', 'Descanso'],
     ['falla_tecnica', 'Falla técnica'], ['otro', 'Otro'],
   ];
+  // En el formulario sólo se rectifican marcas de entrada o salida (el descanso no se declara)
+  const TIPOS_FORM = [['ingreso', 'Entrada'], ['salida', 'Salida']];
   const ESTADO_BADGE = {
     pendiente_firma: ['amarillo', 'Pendiente de firma y foto'],
     pendiente_resolucion: ['azul', 'Pendiente de resolución'],
@@ -147,12 +149,10 @@ const CHRect = (() => {
 
   function pintarFormulario(datos, fecha) {
     const m = datos.marcas.filter(Boolean);
-    // Precarga del horario real: se sugieren las marcas existentes
-    const sug = { ent: '', sd: '', rd: '', sal: '' };
+    // Precarga del horario real: primera marca como entrada y última como salida
+    const sug = { ent: '', sal: '' };
     if (m.length >= 1) sug.ent = m[0].slice(0, 5);
-    if (m.length === 2) sug.sal = m[1].slice(0, 5);
-    if (m.length >= 4) { sug.sd = m[1].slice(0, 5); sug.rd = m[2].slice(0, 5); sug.sal = m[3].slice(0, 5); }
-    if (m.length === 3) { sug.sd = m[1].slice(0, 5); sug.rd = m[2].slice(0, 5); }
+    if (m.length >= 2) sug.sal = m[m.length - 1].slice(0, 5);
 
     $('#rsResto').innerHTML = `
       <div class="rect-info">
@@ -165,20 +165,16 @@ const CHRect = (() => {
           ${datos.desde_legajo ? '<span class="hint">Tomado del legajo</span>' : '<span class="hint">Sin legajo vinculado: vinculalo en Configuración para completarlo solo</span>'}</div>
         <div><label class="field-label">Sector / turno</label><input type="text" id="rsSector" value="${e(datos.sector_turno)}" placeholder="Ej: Producción - turno mañana">
           ${datos.desde_legajo ? '<span class="hint">Puesto del legajo (podés agregar el turno)</span>' : ''}</div>
-        <div class="full"><label class="field-label">Tipo de incidencia</label>
-          <div class="rect-checks">${TIPOS.map(([v, l]) => `<label><input type="checkbox" name="rsTipo" value="${v}"> ${l}</label>`).join('')}</div>
-          <input type="text" id="rsTipoOtro" placeholder="¿Cuál? (si elegiste Otro)" style="display:none;margin-top:6px">
+        <div class="full"><label class="field-label">Marca que se olvidó o se hizo mal</label>
+          <div class="rect-checks">${TIPOS_FORM.map(([v, l]) => `<label><input type="checkbox" name="rsTipo" value="${v}"> ${l}</label>`).join('')}</div>
         </div>
         <div class="full"><label class="field-label">Horario real informado por el empleado</label>
-          <div class="rect-times">
+          <div class="rect-times" style="grid-template-columns:1fr 1fr">
             <div><span class="hint">Entrada</span><input type="time" id="rsEnt" value="${sug.ent}"></div>
-            <div><span class="hint">Salida a descanso</span><input type="time" id="rsSd" value="${sug.sd}"></div>
-            <div><span class="hint">Regreso de descanso</span><input type="time" id="rsRd" value="${sug.rd}"></div>
-            <div><span class="hint">Salida final</span><input type="time" id="rsSal" value="${sug.sal}"></div>
+            <div><span class="hint">Salida</span><input type="time" id="rsSal" value="${sug.sal}"></div>
           </div>
-          <label style="display:flex;gap:6px;align-items:center;margin-top:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="rsSinDesc"> No pudo tomar el descanso (no se descuentan los 30 min)</label>
           <div style="margin-top:8px;font-size:13px">Horas que surgen del horario declarado: <span class="rect-horas" id="rsHoras">—</span>
-            <span class="hint">(el sistema calculó ${dec(datos.horas_provisionales)} h)</span></div>
+            <span class="hint">(con el descanso de 30 min descontado, como indica el Reglamento · el sistema calculó ${dec(datos.horas_provisionales)} h)</span></div>
         </div>
         <div class="full"><label class="field-label">Aclaración del horario (opcional)</label><input type="text" id="rsHorarioTxt" placeholder="Ej: se quedó hasta las 15 por una entrega"></div>
         <div class="full"><label class="field-label">Motivo de la incidencia *</label><textarea id="rsMotivo" placeholder="Ej: Olvido de realizar la marcación de salida al finalizar la jornada."></textarea></div>
@@ -195,16 +191,12 @@ const CHRect = (() => {
     if ($('#rsEmpNombre')) $('#rsEmpNombre').value = datos.empleado_display;
     const emp = { medio_jornada: datos.medio_jornada, sin_descuento_descanso: datos.sin_descuento_descanso };
     const recalcular = () => {
-      const h = horasDeclaradas($('#rsEnt').value, $('#rsSd').value, $('#rsRd').value, $('#rsSal').value, $('#rsSinDesc').checked, emp);
+      const h = horasDeclaradas($('#rsEnt').value, '', '', $('#rsSal').value, false, emp);
       $('#rsHoras').textContent = h === null ? '—' : dec(h) + ' h';
       $('#rsTermino').innerHTML = fueraDeTermino(fecha, $('#rsAviso').value)
         ? '<div class="alerta-card" style="margin:0">⚠ El aviso es posterior a las 48 h de la incidencia: va a quedar registrado como <b>fuera de término</b> (Reglamento §7). Igual se puede tramitar.</div>' : '';
     };
-    ['#rsEnt', '#rsSd', '#rsRd', '#rsSal', '#rsSinDesc', '#rsAviso'].forEach(s => $(s).addEventListener('input', recalcular));
-    $$('input[name=rsTipo]').forEach(c => c.addEventListener('change', () => {
-      $('#rsTipoOtro').style.display = $('input[name=rsTipo][value=otro]').checked ? 'block' : 'none';
-      if (c.value === 'descanso' && c.checked && !$('#rsSinDesc').checked && !$('#rsSd').value) recalcular();
-    }));
+    ['#rsEnt', '#rsSal', '#rsAviso'].forEach(s => $(s).addEventListener('input', recalcular));
     recalcular();
     $('#rsCancelar').addEventListener('click', () => cerrar('chRectSolicitud'));
     $('#rsGuardar').addEventListener('click', () => guardarSolicitud(fecha));
@@ -219,18 +211,14 @@ const CHRect = (() => {
       dni: $('#rsDni').value,
       sector_turno: $('#rsSector').value,
       tipos: $$('input[name=rsTipo]:checked').map(c => c.value),
-      tipo_otro: $('#rsTipoOtro').value,
       real_entrada: $('#rsEnt').value,
-      real_salida_descanso: $('#rsSd').value,
-      real_regreso_descanso: $('#rsRd').value,
       real_salida: $('#rsSal').value,
-      sin_descanso_declarado: $('#rsSinDesc').checked,
       horario_real_texto: $('#rsHorarioTxt').value,
       motivo: $('#rsMotivo').value,
       fecha_hora_aviso: $('#rsAviso').value,
       medio_aviso: $('#rsMedio').value,
     };
-    if (!payload.tipos.length) return mostrarError(body, 'Elegí al menos un tipo de incidencia.');
+    if (!payload.tipos.length) return mostrarError(body, 'Marcá si la incidencia es de la entrada, de la salida o de ambas.');
     if (!payload.motivo.trim()) return mostrarError(body, 'Completá el motivo de la incidencia.');
     btn.disabled = true; btn.textContent = 'Generando…';
     try {
