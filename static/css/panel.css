@@ -1238,10 +1238,13 @@ html.bp-no-vt .bp-sidebar, html.bp-no-vt .content { view-transition-name: none; 
 .tabla-productos .fila-producto .btn-delete { margin-left: 0; justify-self: end; }
 
 /* Calculadora de producción: filas alternadas para leer y cargar mejor */
-.content :is(#tablaDetalleBody, #tablaResumenBody) tr:nth-child(even) td { background: color-mix(in srgb, var(--navy) 8%, transparent); }
-:root[data-theme="dark"] .content :is(#tablaDetalleBody, #tablaResumenBody) tr:nth-child(even) td { background: rgba(255, 255, 255, .06); }
-.content :is(#tablaDetalleBody, #tablaResumenBody) tr:hover td { background: color-mix(in srgb, var(--sky) 10%, transparent); }
-.content #tablaDetalleBody tr:focus-within td { background: color-mix(in srgb, var(--orange) 10%, transparent); }
+.content .card:has(#tablaDetalleBody, #tablaResumenBody) { --fila-clara: #FFFFFF; --fila-oscura: #DDE5F0; --fila-hover: #CFE6F7; --fila-activa: #FDE3D2; }
+:root[data-theme="dark"] .content .card:has(#tablaDetalleBody, #tablaResumenBody) { --fila-clara: #161E2D; --fila-oscura: #232E44; --fila-hover: #1F3550; --fila-activa: #3A2A22; }
+.content :is(#tablaDetalleBody, #tablaResumenBody) tr:nth-child(odd) td { background: var(--fila-clara) !important; }
+.content :is(#tablaDetalleBody, #tablaResumenBody) tr:nth-child(even) td { background: var(--fila-oscura) !important; }
+.content :is(#tablaDetalleBody, #tablaResumenBody) tr:hover td { background: var(--fila-hover) !important; }
+.content #tablaDetalleBody tr:focus-within td { background: var(--fila-activa) !important; }
+.content :is(#tablaDetalleBody, #tablaResumenBody) td { border-bottom-color: transparent; }
 
 /* Tablas con scroll lateral (el contenedor lo agrega base.js) */
 .bp-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
@@ -1341,10 +1344,7 @@ html.bp-no-vt .bp-sidebar, html.bp-no-vt .content { view-transition-name: none; 
     min-width: 130px;
     max-width: 150px;
   }
-  .content #tablaDetalleBody tr:nth-child(even) td:first-child,
-  .content #tablaResumenBody tr:nth-child(even) td:first-child { background: color-mix(in srgb, var(--navy) 8%, var(--surface-solid)) !important; }
-  :root[data-theme="dark"] .content #tablaDetalleBody tr:nth-child(even) td:first-child,
-  :root[data-theme="dark"] .content #tablaResumenBody tr:nth-child(even) td:first-child { background: color-mix(in srgb, #fff 6%, var(--surface-solid)) !important; }
+
   .content #tablaDetalleBody input { min-width: 70px; min-height: 36px; font-size: 16px !important; }
 }
 
