@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4 landscape; margin: 11mm 12mm 13mm; @bottom-center { content: "Resumen mensual de registro horario · {{ emp.nombre_display }} · {{ mes_label }} · Página " counter(page) " de " counter(pages); font: 7pt Helvetica, Arial, sans-serif; color: #6b7a90; } }
+  * { box-sizing: border-box; }
+  body { font-family: Helvetica, Arial, sans-serif; font-size: 8.2pt; color: #1b2433; margin: 0; }
+  .top { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #132644; padding-bottom: 6px; margin-bottom: 8px; }
+  .top img { height: 28px; }
+  .top .emp { text-align: right; font-size: 7.4pt; color: #4a5d7a; line-height: 1.35; }
+  .top .emp b { color: #132644; font-size: 8.2pt; }
+  h1 { font-size: 13pt; margin: 0 0 2px; color: #132644; }
+  .datos { display: flex; gap: 22px; font-size: 8.4pt; color: #4a5d7a; margin-bottom: 8px; }
+  .datos b { color: #1b2433; }
+  .kpis { display: flex; gap: 6px; margin-bottom: 8px; }
+  .kpi { flex: 1; border: 1px solid #c9d4e4; border-radius: 5px; padding: 5px 7px; background: #f6f8fc; }
+  .kpi small { display: block; font-size: 6.8pt; text-transform: uppercase; letter-spacing: .4px; color: #6b7a90; font-weight: bold; }
+  .kpi span { font-size: 11pt; font-weight: bold; color: #132644; }
+  .kpi.alerta { background: #fdecec; border-color: #f3b4b4; }
+  .kpi.alerta span { color: #b42318; }
+  h2 { font-size: 9pt; color: #fff; background: #132644; padding: 3px 7px; margin: 9px 0 0; text-transform: uppercase; letter-spacing: .4px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid #c3cddc; padding: 2.6px 4px; vertical-align: top; }
+  th { background: #eef2f8; font-size: 6.9pt; text-transform: uppercase; letter-spacing: .3px; color: #1e2d45; text-align: center; }
+  td.c { text-align: center; }
+  td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr.corr td { background: #fff5ec; }
+  tr.sinm td { background: #fbfbfb; color: #6b7a90; }
+  .tag { display: inline-block; padding: 0 4px; border-radius: 3px; font-size: 6.8pt; font-weight: bold; }
+  .ok { background: #e3f5ea; color: #16794a; }
+  .warn { background: #fdf1dd; color: #a2640e; }
+  .err { background: #fde2e2; color: #b42318; }
+  .rect { background: #ffe7d6; color: #b4480c; }
+  .muted { color: #6b7a90; }
+  .total td { font-weight: bold; background: #eef2f8; }
+  .dos { display: flex; gap: 10px; }
+  .dos > div { flex: 1; }
+  .leyenda { margin-top: 8px; font-size: 7pt; color: #4a5d7a; line-height: 1.4; border: 1px solid #dbe3ee; padding: 5px 7px; border-radius: 4px; background: #fafbfd; }
+  .firmas { margin-top: 18px; display: flex; gap: 40px; }
+  .firmas div { flex: 1; border-top: 1px solid #1b2433; padding-top: 3px; text-align: center; font-size: 7.4pt; color: #4a5d7a; }
+  .avoid { page-break-inside: avoid; }
+</style>
+</head>
+<body>
+<div class="top">
+  {% if logo_base64 %}<img src="data:image/png;base64,{{ logo_base64 }}" alt="Brot">{% else %}<b>BROT PANES</b>{% endif %}
+  <div class="emp"><b>BROTHAUS S.A.S. (BROT PANES)</b><br>Resumen mensual · Reglamento de Registro Horario §12</div>
+</div>
+
+<h1>Resumen mensual de registro horario — {{ mes_label }}</h1>
+<div class="datos">
+  <span>Trabajador/a: <b>{{ emp.nombre_display }}</b></span>
+  {% if emp.dni %}<span>DNI: <b>{{ emp.dni }}</b></span>{% endif %}
+  {% if emp.sector_turno %}<span>Sector / turno: <b>{{ emp.sector_turno }}</b></span>{% endif %}
+  <span>Jornada: <b>{% if emp.medio_jornada %}Media jornada{% else %}Jornada completa{% endif %}</b></span>
+  <span>Mes: <b>{% if cerrado %}Cerrado el {{ cerrado.cerrado_el|date:"d/m/Y" }}{% else %}Abierto (valores provisorios){% endif %}</b></span>
+  <span>Emitido: <b>{{ emitido_el|date:"d/m/Y H:i" }}</b></span>
+</div>
+
+<div class="kpis">
+  <div class="kpi"><small>Horas a liquidar</small><span>{{ resumen.total_horas_mes|floatformat:2 }} h</span></div>
+  <div class="kpi"><small>Horas esperadas</small><span>{{ resumen.horas_esperadas|floatformat:2 }} h</span></div>
+  <div class="kpi {% if resumen.diferencia < -0.01 %}alerta{% endif %}"><small>Diferencia</small><span>{% if resumen.diferencia > 0 %}+{% endif %}{{ resumen.diferencia|floatformat:2 }} h</span></div>
+  <div class="kpi"><small>Días trabajados</small><span>{{ resumen.dias_trabajados }}</span></div>
+  <div class="kpi {% if dias_error or dias_sin_descanso %}alerta{% endif %}"><small>Días con incidencia de marca</small><span>{{ dias_error }} error · {{ dias_sin_descanso }} sin descanso</span></div>
+  <div class="kpi {% if supera_limite %}alerta{% endif %}"><small>Rectificaciones</small><span>{{ incidencias }} de {{ limite }}</span></div>
+</div>
+
+<h2>Detalle diario</h2>
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">Fecha</th>
+      <th colspan="4">Marcas originales del reloj (no se modifican)</th>
+      <th rowspan="2">Horas<br>registradas</th>
+      <th rowspan="2">Cálculo del sistema</th>
+      <th rowspan="2">A liquidar<br>sistema</th>
+      <th rowspan="2">Corrección excepcional</th>
+      <th rowspan="2">A liquidar<br>final</th>
+    </tr>
+    <tr><th>Entrada</th><th>Sal. desc.</th><th>Reg. desc.</th><th>Salida</th></tr>
+  </thead>
+  <tbody>
+  {% for f in filas %}
+    <tr class="{% if f.corregido %}corr{% elif not f.marcas.0 %}sinm{% endif %}">
+      <td style="white-space:nowrap">{{ f.dia }} {{ f.fecha|date:"d/m" }}</td>
+      {% for m in f.marcas %}<td class="c">{{ m|default:"—" }}</td>{% endfor %}
+      <td class="n">{% if f.horas is not None %}{{ f.horas|floatformat:2 }} h{% else %}—{% endif %}</td>
+      <td>
+        {% if "Error" in f.estado %}<span class="tag err">Error de fichada</span>
+        {% elif "sin descanso" in f.estado or "descontó" in f.estado %}<span class="tag warn">Sin descanso marcado</span>
+        {% elif "Sin marcas" in f.estado %}<span class="tag warn">Sin marcas</span>
+        {% else %}<span class="tag ok">OK</span>{% endif %}
+        <span class="muted">{{ f.estado }}</span>
+      </td>
+      <td class="n">{{ f.a_liquidar_sistema|floatformat:2 }} h</td>
+      <td>
+        {% if f.rect %}
+          <span class="tag rect">N° {{ f.rect.numero }}</span>
+          {% if f.rect.autoriza_correccion %}{{ f.rect.horario_corregido }} · {{ f.rect.get_resolucion_display|truncatewords:3 }}
+          {% elif f.rect.estado == "resuelta" %}No acreditada: se mantiene el cálculo del sistema
+          {% else %}{{ f.rect.get_estado_display }}{% endif %}
+        {% else %}<span class="muted">—</span>{% endif %}
+      </td>
+      <td class="n"><b>{{ f.a_liquidar|floatformat:2 }} h</b></td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="11" class="c muted">No hay fichadas registradas para este mes.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<div class="dos avoid">
+  <div>
+    <h2>Ajustes y totales del mes</h2>
+    <table>
+      <tr><td>Horas a liquidar por fichadas y correcciones</td><td class="n">{{ resumen.total_horas_mes|floatformat:2 }} h</td></tr>
+      <tr><td>Faltas justificadas (suman horas){% if faltas_label %}: {{ faltas_label }}{% endif %}</td><td class="n">{% if faltas_label %}incluidas{% else %}—{% endif %}</td></tr>
+      <tr><td>Feriados no trabajados (restan de lo esperado){% if feriados_label %}: {{ feriados_label }}{% endif %}</td><td class="n">{% if feriados_label %}aplicado{% else %}—{% endif %}</td></tr>
+      <tr><td>Vacaciones (restan de lo esperado){% if vacaciones_label %}: {{ vacaciones_label }}{% endif %}</td><td class="n">{% if resumen.debito_vacaciones %}-{{ resumen.debito_vacaciones|floatformat:2 }} h{% else %}—{% endif %}</td></tr>
+      <tr><td>Horas esperadas del mes</td><td class="n">{{ resumen.horas_esperadas|floatformat:2 }} h</td></tr>
+      {% if resumen.bono_compensado %}<tr><td>Bono de horas extra compensado</td><td class="n">-{{ resumen.bono_compensado|floatformat:2 }} h</td></tr>{% endif %}
+      <tr class="total"><td>Diferencia (a favor + / en contra −)</td><td class="n">{% if resumen.diferencia > 0 %}+{% endif %}{{ resumen.diferencia|floatformat:2 }} h</td></tr>
+      {% if ajuste.observacion %}<tr><td colspan="2" class="muted">Observación: {{ ajuste.observacion }}</td></tr>{% endif %}
+    </table>
+  </div>
+  <div>
+    <h2>Liquidaciones de horas registradas en el mes</h2>
+    <table>
+      <tr><th>Fecha</th><th>Horas</th><th>Comentario</th></tr>
+      {% for l in liquidaciones %}
+        <tr><td>{{ l.fecha|date:"d/m/Y" }}</td><td class="n">{{ l.monto|floatformat:2 }} h</td><td>{{ l.comentario|default:"—" }}</td></tr>
+      {% empty %}
+        <tr><td colspan="3" class="c muted">Sin liquidaciones registradas en este mes.</td></tr>
+      {% endfor %}
+      {% if liquidaciones %}<tr class="total"><td>Total</td><td class="n">{{ total_liquidado|floatformat:2 }} h</td><td></td></tr>{% endif %}
+    </table>
+  </div>
+</div>
+
+<div class="avoid">
+<h2>Rectificaciones excepcionales de fichada (Anexo I)</h2>
+<table>
+  <tr><th>N°</th><th>Fecha</th><th>Tipo</th><th>Motivo informado</th><th>Aviso</th><th>Estado / resolución</th><th>Horario corregido</th><th>Horas autorizadas</th><th>Aprobó</th></tr>
+  {% for r in rectificaciones %}
+    <tr>
+      <td>{{ r.numero }}</td>
+      <td style="white-space:nowrap">{{ r.fecha|date:"d/m/Y" }}</td>
+      <td>{% for t in r.tipos %}{% if not forloop.first %}, {% endif %}{% if t == "falla_tecnica" %}Falla técnica{% else %}{{ t|capfirst }}{% endif %}{% endfor %}</td>
+      <td>{{ r.motivo|truncatechars:90 }}</td>
+      <td style="white-space:nowrap">{{ r.fecha_hora_aviso|date:"d/m H:i" }}{% if r.aviso_fuera_de_termino %}<br><span class="tag err">Fuera de término</span>{% endif %}</td>
+      <td>{% if r.estado == "resuelta" %}{{ r.get_resolucion_display|truncatewords:4 }}{% else %}{{ r.get_estado_display }}{% if r.estado == "anulada" %}: {{ r.motivo_anulacion }}{% endif %}{% endif %}</td>
+      <td>{{ r.horario_corregido|default:"—" }}</td>
+      <td class="n">{% if r.autoriza_correccion %}{{ r.horas_a_liquidar|floatformat:2 }} h{% else %}—{% endif %}</td>
+      <td>{{ r.aprobado_por|default:"—" }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="9" class="c muted">No hubo rectificaciones en este mes.</td></tr>
+  {% endfor %}
+</table>
+{% if supera_limite %}<p style="margin:4px 0 0;color:#b42318;font-size:7.6pt"><b>Se alcanzó el límite interno de {{ limite }} rectificaciones en el mes.</b> Corresponde evaluar la medida según el Reglamento §10 (no es automática).</p>{% endif %}
+</div>
+
+<div class="leyenda avoid">
+  <b>Cómo leer este resumen.</b> Las marcas del reloj biométrico se muestran tal como fueron registradas y no se modifican. Con 4 marcas se liquidan las horas registradas; con 2 marcas se presume el descanso de 30 minutos y se descuenta (Reglamento §5); con otra cantidad se considera error de fichada y se carga el mínimo diario.
+  Las correcciones excepcionales se registran aparte (Anexo I) y sólo reemplazan las horas a liquidar del día cuando fueron autorizadas.
+  La firma o recepción de este resumen acredita su entrega, pero no implica renuncia a derechos ni impide rectificaciones posteriores cuando aparezca prueba suficiente. Las discrepancias deben informarse dentro de las 48 horas de recibido (Reglamento §12).
+</div>
+
+<div class="firmas avoid">
+  <div>Firma del trabajador/a — recibí copia</div>
+  <div>Aclaración y fecha</div>
+  <div>Firma por BROTHAUS S.A.S.</div>
+</div>
+</body>
+</html>

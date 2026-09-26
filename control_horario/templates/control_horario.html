@@ -131,6 +131,66 @@
 .ch-wrap .liq-item .monto{font-family:var(--mono);font-weight:700;color:var(--navy);}
 .ch-wrap .liq-item .meta{color:var(--gray600);}
 
+/* ── Rectificaciones ── */
+.ch-nav-badge{background:var(--orange);color:#fff;}
+.ch-wrap input[type=time],.ch-wrap input[type=datetime-local],.ch-wrap input[type=file]{border:1.5px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-family:inherit;font-size:.85rem;color:var(--gray800);background:var(--white);outline:none;}
+.ch-wrap .rect-modal{max-width:800px;}
+.ch-wrap .rect-modal textarea{min-height:72px;font-family:var(--font-body);font-size:.85rem;background:var(--white);}
+.ch-wrap .rect-modal input:not([type=checkbox]):not([type=radio]),.ch-wrap .rect-modal select,.ch-wrap .rect-modal textarea{width:100%;}
+.ch-wrap .rect-steps{display:flex;gap:6px;margin:0 0 16px;}
+.ch-wrap .rect-step{flex:1;padding:8px 10px;border-radius:10px;background:var(--gray50);border:1px solid var(--border);font-size:11.5px;color:var(--gray600);}
+.ch-wrap .rect-step b{display:block;font-size:12.5px;color:var(--navy);}
+.ch-wrap .rect-step.done{background:var(--verde-soft);border-color:#86EFAC;}
+.ch-wrap .rect-step.cur{background:var(--pale);border-color:var(--sky);}
+.ch-wrap .rect-info{background:var(--gray50);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:14px;line-height:1.55;}
+.ch-wrap .rect-info b{color:var(--navy);}
+.ch-wrap .rect-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;}
+.ch-wrap .rect-grid .full{grid-column:1/-1;}
+.ch-wrap .rect-times{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.ch-wrap .rect-checks{display:flex;flex-wrap:wrap;gap:8px 18px;padding:4px 0;}
+.ch-wrap .rect-checks label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gray800);cursor:pointer;font-weight:500;}
+.ch-wrap .rect-modal label:not(.field-label){text-transform:none;letter-spacing:0;font-size:13px;font-weight:500;color:var(--gray800);margin:0;}
+.ch-wrap .rect-sub{font-family:var(--font-display);font-size:1.05rem;color:var(--navy);margin:18px 0 10px;padding-top:14px;border-top:1px solid var(--gray100);}
+.ch-wrap .rect-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px;padding-top:14px;border-top:1px solid var(--gray100);}
+.ch-wrap .rect-dl{display:grid;grid-template-columns:190px 1fr;gap:7px 14px;font-size:13px;margin:0;}
+.ch-wrap .rect-dl dt{color:var(--gray600);font-weight:600;}
+.ch-wrap .rect-dl dd{margin:0;color:var(--gray800);}
+.ch-wrap .rect-foto{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin:6px 0 4px;}
+.ch-wrap .rect-foto img{max-width:220px;max-height:220px;border-radius:10px;border:1px solid var(--border);object-fit:cover;}
+.ch-wrap .rect-horas{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--navy);}
+.ch-wrap .rect-error{display:none;margin-top:12px;}
+.ch-wrap .badge.naranja{background:#FFEDE0;color:#C2410C;}
+.ch-wrap .badge.azul{background:var(--pale);color:#1B6FA8;}
+.ch-wrap .liq-tachado{display:block;font-size:11px;color:var(--gray400);text-decoration:line-through;font-weight:400;}
+.ch-wrap .btn-rect{padding:4px 10px;font-size:.74rem;border-radius:8px;white-space:nowrap;}
+@media (max-width:640px){
+  .ch-wrap .rect-grid{grid-template-columns:1fr;}
+  .ch-wrap .rect-times{grid-template-columns:1fr 1fr;}
+  .ch-wrap .rect-dl{grid-template-columns:1fr;gap:2px;}
+  .ch-wrap .rect-dl dd{margin-bottom:8px;}
+  .ch-wrap .rect-steps{flex-direction:column;}
+  .ch-wrap .panel{padding:18px 16px;}
+}
+
+/* ── Tema oscuro: el módulo define sus colores acá, así que se redefinen acá ── */
+:root[data-theme="dark"] .ch-wrap{
+  color:#E4E8F1;
+  --navy:#E8EEF8;--white:#161E2D;--gray50:rgba(255,255,255,.035);--gray100:#1D2638;--gray200:#2A3448;
+  --gray400:#7D8AA3;--gray600:#A9B4CC;--gray800:#E4E8F1;--border:rgba(255,255,255,.12);
+  --pale:rgba(58,175,228,.14);--verde-soft:rgba(34,176,125,.16);--amber-soft:rgba(245,158,11,.16);--rojo-soft:rgba(229,72,77,.16);
+  --shadow:0 1px 2px rgba(0,0,0,.3);--shadow-lg:0 24px 48px -16px rgba(0,0,0,.6);
+}
+:root[data-theme="dark"] .ch-admin-badge{background:rgba(37,99,235,.22);color:#93C5FD;}
+:root[data-theme="dark"] .ch-wrap .badge.naranja{background:rgba(240,112,48,.2);color:#FDBA8C;}
+:root[data-theme="dark"] .ch-wrap .badge.azul{color:#7DD3FC;}
+:root[data-theme="dark"] .ch-wrap .badge.verde{color:#4ADE80;}
+:root[data-theme="dark"] .ch-wrap .badge.amarillo{color:#FCD34D;}
+:root[data-theme="dark"] .ch-wrap .badge.rojo{color:#FCA5A5;}
+:root[data-theme="dark"] .ch-wrap .alerta-card{border-color:rgba(229,72,77,.45);}
+:root[data-theme="dark"] .ch-wrap .alerta-card.ok{border-color:rgba(34,176,125,.45);}
+:root[data-theme="dark"] .ch-wrap .btn-danger{color:#FCA5A5;border-color:rgba(229,72,77,.45);}
+:root[data-theme="dark"] .ch-wrap .rect-step.done{border-color:rgba(34,176,125,.45);}
+
 ::-webkit-scrollbar{width:9px;height:9px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--gray200);border-radius:99px;}
@@ -142,6 +202,7 @@
 <nav id="ch-nav">
   <button class="ch-nav-btn active" data-tab="importar"><span>📥</span>Importar</button>
   <button class="ch-nav-btn" data-tab="detalle"><span>🗓️</span>Detalle diario</button>
+  <button class="ch-nav-btn" data-tab="rectificaciones"><span>✍️</span>Rectificaciones<span class="ch-nav-badge" id="chRectBadge" hidden>0</span></button>
   <button class="ch-nav-btn" data-tab="resumen"><span>📊</span>Resumen mensual</button>
   <button class="ch-nav-btn" data-tab="evolucion"><span>📈</span>Evolución</button>
   {% if es_admin %}
@@ -199,7 +260,7 @@
 <div class="ch-tab" id="ch-tab-detalle">
   <div class="panel">
     <h1>Detalle diario</h1>
-    <p class="lede">Horas calculadas por empleado y día. 4 marcas = OK con descanso. 2 marcas = se descuenta el descanso automáticamente. Otra cantidad = error de fichada (se carga el mínimo diario).</p>
+    <p class="lede">Horas calculadas por empleado y día. 4 marcas = OK con descanso. 2 marcas = se descuenta el descanso automáticamente. Otra cantidad = error de fichada (se carga el mínimo diario). Si el empleado informa un olvido o un error, usá <b>Solicitar</b> en la columna Rectificación: las marcas del reloj nunca se modifican.</p>
     <div class="filters">
       <div>
         <label class="field-label">Mes</label>
@@ -209,11 +270,45 @@
         <label class="field-label">Empleado</label>
         <select id="chFiltroEmpDetalle"><option value="">Todos</option></select>
       </div>
-      <div style="margin-left:auto">
+      <div style="margin-left:auto;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" id="chBtnRectSinMarcas" title="Para un día en que el empleado no fichó ninguna vez">＋ Rectificación de día sin marcas</button>
+        <button class="btn btn-secondary btn-sm" id="chBtnReporteDetalle" title="Reporte mensual en PDF del empleado elegido">⤓ Reporte PDF</button>
         <button class="btn btn-secondary btn-sm" id="chBtnExportDetalle">Exportar CSV</button>
       </div>
     </div>
     <div id="chDetalleContainer"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     RECTIFICACIONES
+══════════════════════════════════════════ -->
+<div class="ch-tab" id="ch-tab-rectificaciones">
+  <div class="panel">
+    <h1>Rectificaciones de fichada</h1>
+    <p class="lede">Reportes y correcciones excepcionales (Anexo I del Reglamento). El circuito es: <b>1)</b> se carga la declaración del empleado y se imprime el formulario, <b>2)</b> el empleado y el encargado lo firman y se sube la foto, <b>3)</b> se completa la verificación y la resolución. Sólo una rectificación autorizada cambia las horas a liquidar de ese día; las marcas del reloj quedan intactas.</p>
+    <div class="grid-cards" id="chRectKpis"></div>
+    <div class="filters">
+      <div>
+        <label class="field-label">Mes</label>
+        <select id="chRectFiltroMes"><option value="">Todos</option></select>
+      </div>
+      <div>
+        <label class="field-label">Estado</label>
+        <select id="chRectFiltroEstado">
+          <option value="">Todos</option>
+          <option value="pendiente_firma">Pendiente de firma y foto</option>
+          <option value="pendiente_resolucion">Pendiente de resolución</option>
+          <option value="resuelta">Resuelta</option>
+          <option value="anulada">Anulada</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">Empleado</label>
+        <select id="chRectFiltroEmp"><option value="">Todos</option></select>
+      </div>
+    </div>
+    <div id="chRectContainer"></div>
   </div>
 </div>
 
@@ -319,8 +414,41 @@
       <button class="btn btn-primary" id="chBtnGuardarConfig">Guardar cambios</button>
     </div>
   </div>
+
+  <div class="panel">
+    <h2 class="section-title">Incidencias y apercibimientos</h2>
+    <p class="section-help">Cantidad de rectificaciones en un mismo mes a partir de la cual el sistema marca al empleado para evaluar un apercibimiento. No aplica ninguna sanción automática (Reglamento §10).</p>
+    <div class="row">
+      <div>
+        <label class="field-label">Límite de rectificaciones por mes</label>
+        <input type="number" id="chLimiteIncidencias" min="1" max="31" step="1">
+      </div>
+      <div>
+        <button class="btn btn-primary" id="chBtnGuardarLimite">Guardar límite</button>
+      </div>
+    </div>
+  </div>
 </div>
 {% endif %}
+
+<!-- ══════════════════════════════════════════
+     VENTANA: SOLICITAR RECTIFICACIÓN (parte 1)
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="chRectSolicitud">
+  <div class="modal-box rect-modal">
+    <h2 class="modal-title">Solicitar rectificación de fichada</h2>
+    <div id="chRectSolicitudBody"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     VENTANA: GESTIONAR RECTIFICACIÓN (foto + parte 2)
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="chRectGestion">
+  <div class="modal-box rect-modal">
+    <div id="chRectGestionBody"></div>
+  </div>
+</div>
 
 </div><!-- .ch-wrap -->
 {% endblock %}
@@ -331,4 +459,5 @@ const ES_ADMIN = {{ es_admin|lower }};
 const CH_CSRF_READY = true;
 </script>
 <script src="{% static 'js/control_horario.js' %}"></script>
+<script src="{% static 'js/control_horario_rectificaciones.js' %}"></script>
 {% endblock %}
