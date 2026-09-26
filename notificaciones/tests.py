@@ -1,9 +1,10 @@
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 from unittest import mock
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.utils import timezone
 
 from users.models import Perfil
 
@@ -77,10 +78,18 @@ class DashboardWidgetsTests(TestCase):
         cancelado = Pedido.objects.create(cliente=cliente, metodo_entrega='retiro', estado='cancelado')
         ItemPedido.objects.create(pedido=cancelado, producto=producto, cantidad=99, precio=Decimal('1'))
 
+        # Un pedido nuevo de hace 10 días también cuenta como "nuevo" (pero no suma a las ventas de hoy)
+        viejo = Pedido.objects.create(cliente=cliente, metodo_entrega='retiro')
+        ItemPedido.objects.create(pedido=viejo, producto=producto, cantidad=5, precio=Decimal('100'))
+        Pedido.objects.filter(pk=viejo.pk).update(fecha=p1.fecha - timedelta(days=10))
+        # Un pedido ya confirmado no cuenta como nuevo
+        Pedido.objects.create(cliente=cliente, metodo_entrega='retiro', estado='en_proceso')
+
         self.client.force_login(user)
-        with mock.patch('django.utils.timezone.localdate', return_value=p1.fecha.date()):
+        with mock.patch('django.utils.timezone.localdate', return_value=timezone.localtime(p1.fecha).date()):
             w = self.client.get('/dashboard/').context['widgets']
-        self.assertEqual(w['pedidos_hoy'], 1)
+        self.assertEqual(w['pedidos_nuevos'], 2)
+        self.assertEqual(w['pedidos_nuevos_hoy'], 1)
         self.assertEqual(w['unidades_hoy'], 10)
         self.assertEqual(w['ventas_hoy'], 1000.0)
 
@@ -90,4 +99,4 @@ class DashboardWidgetsTests(TestCase):
         with mock.patch('django.utils.timezone.localdate', return_value=date(2026, 1, 1)):
             resp = self.client.get('/dashboard/')
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.context['widgets']['pedidos_hoy'], 0)
+        self.assertEqual(resp.context['widgets']['pedidos_nuevos'], 0)

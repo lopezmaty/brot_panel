@@ -1290,19 +1290,71 @@ html.bp-no-vt .bp-sidebar, html.bp-no-vt .content { view-transition-name: none; 
   .modal-overlay.open .modal-box { animation: bp-sheet-in .35s var(--ease); }
 }
 @keyframes bp-sheet-in { from { transform: translateY(100%); } }
-/* Usuarios: nombre editable en la tabla */
+/* Usuarios: nombre editable en la tabla, con botón Guardar */
+.nombre-edit { display: flex; align-items: center; gap: 8px; }
 .input-nombre {
-  width: 150px;
-  min-height: 34px;
+  width: 160px;
+  min-height: 36px;
   padding: 0 10px;
-  border: 1px solid transparent;
-  border-radius: 9px;
-  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface-solid);
   color: var(--heading);
   font: inherit;
   font-size: 14px;
-  transition: border-color .15s, background .15s;
 }
-.input-nombre:hover { border-color: var(--line-strong); background: var(--surface-solid); }
 .input-nombre::placeholder { color: var(--text-3); }
+.btn-guardar-nombre { min-height: 36px; padding: 0 12px; font-size: 13px; }
+.btn-guardar-nombre:disabled { background: var(--surface-2); color: var(--text-3); box-shadow: none; opacity: 1; }
 #formCrearUsuario input, #formCrearUsuario select { margin-bottom: 2px; }
+/* ---------- Celular: notificaciones y aviso de tabla deslizable ---------- */
+@media (max-width: 860px) {
+  .bp-notif { position: static; }
+  .bp-notif-panel { position: fixed; top: 62px; left: 12px; right: 12px; width: auto; }
+
+  /* Sombra en el borde de la tabla cuando hay más columnas para deslizar */
+  .bp-table-scroll {
+    background:
+      linear-gradient(to right, var(--surface-solid) 30%, transparent) left center / 40px 100% no-repeat local,
+      linear-gradient(to left, var(--surface-solid) 30%, transparent) right center / 40px 100% no-repeat local,
+      radial-gradient(farthest-side at 0 50%, rgba(19, 38, 68, .22), transparent) left center / 14px 100% no-repeat scroll,
+      radial-gradient(farthest-side at 100% 50%, rgba(19, 38, 68, .22), transparent) right center / 14px 100% no-repeat scroll;
+  }
+  :root[data-theme="dark"] .bp-table-scroll {
+    background:
+      linear-gradient(to right, var(--surface-solid) 30%, transparent) left center / 40px 100% no-repeat local,
+      linear-gradient(to left, var(--surface-solid) 30%, transparent) right center / 40px 100% no-repeat local,
+      radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, .6), transparent) left center / 14px 100% no-repeat scroll,
+      radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, .6), transparent) right center / 14px 100% no-repeat scroll;
+  }
+}
+/* Calculadora en celular: el nombre del producto queda fijo al deslizar */
+@media (max-width: 860px) {
+  .content .card:has(#tablaDetalleBody) :is(thead th:first-child, #tablaDetalleBody td:first-child),
+  .content .card:has(#tablaResumenBody) :is(thead th:first-child, #tablaResumenBody td:first-child, tfoot td:first-child) {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--surface-solid);
+    box-shadow: 1px 0 0 var(--line-strong), 6px 0 10px -6px rgba(19, 38, 68, .25);
+    white-space: normal !important;
+    min-width: 130px;
+    max-width: 150px;
+  }
+  .content #tablaDetalleBody tr:nth-child(even) td:first-child,
+  .content #tablaResumenBody tr:nth-child(even) td:first-child { background: color-mix(in srgb, var(--navy) 8%, var(--surface-solid)) !important; }
+  :root[data-theme="dark"] .content #tablaDetalleBody tr:nth-child(even) td:first-child,
+  :root[data-theme="dark"] .content #tablaResumenBody tr:nth-child(even) td:first-child { background: color-mix(in srgb, #fff 6%, var(--surface-solid)) !important; }
+  .content #tablaDetalleBody input { min-width: 70px; min-height: 36px; font-size: 16px !important; }
+}
+
+/* iPhone: con letra menor a 16px el navegador hace zoom al tocar un campo */
+@media (max-width: 860px) {
+  .content :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), select, textarea),
+  .modal-box :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea),
+  .bp-palette-input input { font-size: 16px !important; }
+  .nombre-edit { flex-wrap: nowrap; }
+  .input-nombre { width: 110px; }
+  .btn-guardar-nombre { font-size: 0; gap: 0; width: 38px; padding: 0; }
+  .btn-guardar-nombre i { font-size: 18px; }
+}

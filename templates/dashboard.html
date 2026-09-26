@@ -17,14 +17,19 @@
 </section>
 
 <section class="bp-kpis">
-  <a href="{% url 'centro_pedidos' %}" class="bp-kpi bp-reveal" style="--i:3">
+  <a href="{% url 'centro_pedidos' %}?estado=nuevo" class="bp-kpi bp-reveal" style="--i:3">
     <div class="bp-kpi-top">
-      <span class="bp-kpi-label" style="--c:#3AAFE4"><i class="ti ti-clipboard-list"></i>Pedidos nuevos hoy</span>
-      {% include 'partials/delta.html' with v=widgets.pedidos_var %}
+      <span class="bp-kpi-label" style="--c:#3AAFE4"><i class="ti ti-clipboard-list"></i>Pedidos nuevos</span>
+      {% if widgets.pedidos_nuevos %}<span class="bp-delta up">sin confirmar</span>{% else %}<span class="bp-delta flat">al día</span>{% endif %}
     </div>
-    <div class="bp-kpi-value" data-count="{{ widgets.pedidos_hoy }}">{{ widgets.pedidos_hoy }}</div>
-    <div class="bp-kpi-sub">{% if widgets.pedidos_sin_confirmar %}{{ widgets.pedidos_sin_confirmar }} sin confirmar{% else %}Todos confirmados{% endif %}</div>
-    <svg class="bp-spark" data-serie="serie_pedidos" data-color="#3AAFE4" viewBox="0 0 120 46" preserveAspectRatio="none"></svg>
+    <div class="bp-kpi-value" data-count="{{ widgets.pedidos_nuevos }}">{{ widgets.pedidos_nuevos }}</div>
+    <div class="bp-kpi-sub">
+      {% if widgets.pedidos_nuevos %}
+        {{ widgets.pedidos_nuevos_hoy }} entraron hoy · el más viejo, hace {{ widgets.pedido_nuevo_mas_viejo|timesince }}
+      {% else %}
+        No hay pedidos esperando confirmación
+      {% endif %}
+    </div>
   </a>
 
   <a href="{% url 'centro_pedidos' %}" class="bp-kpi bp-reveal" style="--i:4">

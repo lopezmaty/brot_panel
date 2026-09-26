@@ -76,10 +76,14 @@ def dashboard_view(request):
         })
     hoy_d, ayer_d = serie[-1], serie[-2]
 
+    # Pedidos nuevos: todos los que siguen en estado "nuevo", sin importar la fecha
+    nuevos = Pedido.objects.filter(estado='nuevo')
+    mas_viejo = nuevos.order_by('fecha').values_list('fecha', flat=True).first()
+
     widgets = {
-        'pedidos_hoy': hoy_d['pedidos'],
-        'pedidos_sin_confirmar': Pedido.objects.filter(fecha__date=hoy, estado='nuevo').count(),
-        'pedidos_var': _variacion(hoy_d['pedidos'], ayer_d['pedidos']),
+        'pedidos_nuevos': nuevos.count(),
+        'pedidos_nuevos_hoy': nuevos.filter(fecha__date=hoy).count(),
+        'pedido_nuevo_mas_viejo': mas_viejo,
         'unidades_hoy': hoy_d['unidades'],
         'unidades_var': _variacion(hoy_d['unidades'], ayer_d['unidades']),
         'ventas_hoy': hoy_d['total'],
