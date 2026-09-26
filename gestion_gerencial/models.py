@@ -360,3 +360,48 @@ class SaldoBancario(models.Model):
 
     def __str__(self):
         return f'{self.cuenta} {self.fecha}: ${self.monto}'
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PRESUPUESTO EERR
+# ═══════════════════════════════════════════════════════════════════════════
+
+class PresupuestoEERR(models.Model):
+    """Supuestos del presupuesto anual (enero a diciembre de `anio`).
+    Los 12 meses presupuestados se calculan desde estos supuestos, no se guardan.
+    El real de cada mes sale del Estado de Resultados (_calcular_eerr_valores)."""
+
+    anio = models.PositiveIntegerField(unique=True)
+
+    # Ventas
+    ventas_mes_inicial = models.DecimalField(max_digits=14, decimal_places=2)   # ventas de enero
+    crecimiento_ventas = models.DecimalField(max_digits=6, decimal_places=4)    # 0.03 = 3% mensual
+
+    # Costos proporcionales a ventas
+    cmv_pct = models.DecimalField(max_digits=6, decimal_places=4)
+    gastos_variables_pct = models.DecimalField(max_digits=6, decimal_places=4)
+    gastos_financieros_pct = models.DecimalField(max_digits=6, decimal_places=4)
+    impuestos_pct = models.DecimalField(max_digits=6, decimal_places=4)
+
+    # Estructura (base mensual de enero, crece con incremento_estructura)
+    mo_directa_base = models.DecimalField(max_digits=14, decimal_places=2)
+    indirectos_base = models.DecimalField(max_digits=14, decimal_places=2)
+    administracion_base = models.DecimalField(max_digits=14, decimal_places=2)
+    incremento_estructura = models.DecimalField(max_digits=6, decimal_places=4)
+
+    # Fijo todos los meses
+    amortizaciones_mensuales = models.DecimalField(max_digits=14, decimal_places=2)
+
+    # Lectura gerencial y semáforo
+    resultado_objetivo_pct = models.DecimalField(max_digits=6, decimal_places=4)
+    tolerancia_ingresos = models.DecimalField(max_digits=6, decimal_places=4, default=0.9)
+    tolerancia_egresos = models.DecimalField(max_digits=6, decimal_places=4, default=1.1)
+
+    modificado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-anio']
+        verbose_name = 'Presupuesto EERR'
+
+    def __str__(self):
+        return f'Presupuesto {self.anio}'

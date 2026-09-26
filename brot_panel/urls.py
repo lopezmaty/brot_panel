@@ -23,7 +23,7 @@ from sistema_pedidos.views import confirmar_pedido_catalogo
 from django.conf import settings
 from django.conf.urls.static import static
 from frontend.views import catalogo_view, perfil_catalogo_view
-from gestion_gerencial.views import mapa_economico_view, costeo_precios_view, estado_resultados_view
+from gestion_gerencial.views import mapa_economico_view, costeo_precios_view, estado_resultados_view, presupuesto_eerr_view
 from gestion_gerencial.views_flujo import flujo_fondos_view
 from control_horario.views import control_horario_view
 
@@ -46,6 +46,7 @@ urlpatterns = [
     path('gestion-gerencial/costeo-precios/', costeo_precios_view, name='costeo_precios'),
     path('gestion-gerencial/estado-resultados/', estado_resultados_view, name='estado_resultados'),
     path('gestion-gerencial/flujo-fondos/', flujo_fondos_view, name='flujo_fondos'),
+    path('gestion-gerencial/presupuesto-eerr/', presupuesto_eerr_view, name='presupuesto_eerr_page'),
     path('api/control_horario/', include('control_horario.urls')),
     path('administracion/control-horario/', control_horario_view, name='control_horario'),
     path('administracion/control-caja/', include('control_caja.urls')),

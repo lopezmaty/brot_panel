@@ -42,6 +42,10 @@ urlpatterns = [
     path('eerr/calcular/', views.calcular_eerr_mes, name='calcular_eerr_mes'),
     path('eerr/historico/', views.historico_eerr, name='historico_eerr'),
 
+    # --- Presupuesto EERR ---
+    path('presupuesto/', views.presupuesto_eerr, name='presupuesto_eerr'),
+    path('presupuesto/guardar/', views.guardar_presupuesto_eerr, name='guardar_presupuesto_eerr'),
+
     # --- Flujo de fondos ---
     path('flujo-fondos/resumen/', views_flujo.ff_resumen, name='ff_resumen'),
     path('flujo-fondos/cuentas/', views_flujo.ff_cuentas, name='ff_cuentas'),

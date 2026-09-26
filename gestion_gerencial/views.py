@@ -794,7 +794,7 @@ def costeo_recetas_guardar(request):
 # ESTADO DE RESULTADOS (EERR) — vistas de API
 # ============================================================
 
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from .services_costeo import calc_mp_unitario, calc_amortizacion_mensual, calcular_todo, _d
 import decimal as _decimal_module
 
@@ -1323,3 +1323,239 @@ def estado_resultados_view(request):
     if request.user.perfil.rol != 'admin':
         return redirect('dashboard')
     return render(request, 'estado_resultados.html')
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PRESUPUESTO EERR
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Mismo orden y claves que devuelve _calcular_eerr_valores, para cruzar presupuesto vs real.
+CONCEPTOS_PRESUPUESTO = [
+    ('ventas_netas', 'Ventas netas', 'ingreso'),
+    ('cmv', 'CMV', 'egreso'),
+    ('gastos_variables', 'Gastos variables', 'egreso'),
+    ('mano_obra_directa', 'Mano de obra directa', 'egreso'),
+    ('indirectos_productivos', 'Indirectos productivos', 'egreso'),
+    ('amortizaciones', 'Amortizaciones', 'egreso'),
+    ('gastos_administracion', 'Administración', 'egreso'),
+    ('gastos_financieros', 'Gastos financieros', 'egreso'),
+    ('impuestos', 'Impuestos', 'egreso'),
+    ('otros_resultados', 'Otros resultados', 'mixto'),
+]
+
+CAMPOS_SUPUESTOS_PRESUPUESTO = [
+    'ventas_mes_inicial', 'crecimiento_ventas', 'cmv_pct', 'gastos_variables_pct',
+    'mo_directa_base', 'indirectos_base', 'amortizaciones_mensuales', 'administracion_base',
+    'incremento_estructura', 'gastos_financieros_pct', 'impuestos_pct',
+    'resultado_objetivo_pct', 'tolerancia_ingresos', 'tolerancia_egresos',
+]
+
+
+def _meses_del_anio(anio):
+    return [f'{anio}-{m:02d}' for m in range(1, 13)]
+
+
+def _resultado_operativo(valores):
+    """Ventas - egresos + otros. Misma fórmula que el Excel (fila 41)."""
+    egresos = sum(valores[c] for c, _, tipo in CONCEPTOS_PRESUPUESTO if tipo == 'egreso')
+    return valores['ventas_netas'] - egresos + valores['otros_resultados']
+
+
+def _presupuesto_mensual(p):
+    """Los 12 meses calculados desde los supuestos (filas 31 a 41 del Excel).
+    i = 0 para enero, como el COLUMN()-3 del Excel."""
+    meses = []
+    for i in range(12):
+        ventas = p.ventas_mes_inicial * (1 + p.crecimiento_ventas) ** i
+        factor_estructura = (1 + p.incremento_estructura) ** i
+        valores = {
+            'ventas_netas': ventas,
+            'cmv': ventas * p.cmv_pct,
+            'gastos_variables': ventas * p.gastos_variables_pct,
+            'mano_obra_directa': p.mo_directa_base * factor_estructura,
+            'indirectos_productivos': p.indirectos_base * factor_estructura,
+            'amortizaciones': p.amortizaciones_mensuales,
+            'gastos_administracion': p.administracion_base * factor_estructura,
+            'gastos_financieros': ventas * p.gastos_financieros_pct,
+            'impuestos': ventas * p.impuestos_pct,
+            'otros_resultados': Decimal('0'),
+        }
+        valores['resultado_operativo'] = _resultado_operativo(valores)
+        meses.append({k: float(v) for k, v in valores.items()})
+    return meses
+
+
+def _real_mensual(anio):
+    """Real de cada mes desde el EERR. Un mes cuenta como real solo si tiene
+    compras o ventas importadas Y cierre de costeo; si no, queda en None."""
+    meses_con_datos = (
+        set(models.CompraEERR.objects.values_list('mes', flat=True).distinct())
+        | set(models.VentaProductoEERR.objects.values_list('mes', flat=True).distinct())
+    )
+    claves = [c for c, _, _ in CONCEPTOS_PRESUPUESTO] + ['resultado_operativo']
+    reales = []
+    for mes in _meses_del_anio(anio):
+        if mes not in meses_con_datos:
+            reales.append(None)
+            continue
+        eerr = _calcular_eerr_valores(mes)
+        if not eerr.get('costeo_cerrado'):
+            reales.append(None)
+            continue
+        reales.append({k: eerr[k] for k in claves})
+    return reales
+
+
+def _semaforo(tipo, cumplimiento, hay_real, tol_ing, tol_egr):
+    """Devuelve (color, texto semáforo, lectura) con las mismas reglas del Excel."""
+    if not hay_real:
+        return 'sin_real', 'Sin real', 'Pendiente de carga real'
+    if tipo == 'mixto':
+        return 'informativo', 'Informativo', 'Concepto informativo: analizar signo e impacto'
+    if tipo == 'egreso':
+        if cumplimiento <= 1:
+            return 'verde', 'En presupuesto', 'Gasto dentro de lo presupuestado'
+        if cumplimiento <= tol_egr:
+            return 'amarillo', 'Desvío controlado', 'Desvío menor, monitorear'
+        return 'rojo', 'Sobreejecución', 'Revisar sobreejecución'
+    # ingreso / resultado
+    if cumplimiento >= 1:
+        return 'verde', 'Cumple', 'Cumple o supera lo presupuestado'
+    if cumplimiento >= tol_ing:
+        return 'amarillo', 'Parcial', 'Cerca del objetivo presupuestado'
+    return 'rojo', 'Bajo', 'Revisar brecha de cumplimiento'
+
+
+def _fila_comparacion(concepto, tipo, presupuesto, real, hay_real, tol_ing, tol_egr):
+    cumplimiento = real / presupuesto if presupuesto else 0
+    color, semaforo, lectura = _semaforo(tipo, cumplimiento, hay_real, tol_ing, tol_egr)
+    return {
+        'concepto': concepto,
+        'tipo': tipo,
+        'presupuesto': presupuesto,
+        'real': real,
+        'brecha': real - presupuesto,
+        'cumplimiento': cumplimiento,
+        'color': color,
+        'semaforo': semaforo,
+        'lectura': lectura,
+    }
+
+
+def _supuestos_a_dict(p):
+    datos = {campo: float(getattr(p, campo)) for campo in CAMPOS_SUPUESTOS_PRESUPUESTO}
+    datos['anio'] = p.anio
+    return datos
+
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def presupuesto_eerr(request):
+    try:
+        anio = int(request.GET.get('anio'))
+    except (TypeError, ValueError):
+        return Response({'error': 'Falta el año o no es válido.'}, status=400)
+
+    anios = list(models.PresupuestoEERR.objects.values_list('anio', flat=True))
+    p = models.PresupuestoEERR.objects.filter(anio=anio).first()
+    if not p:
+        return Response({'anio': anio, 'existe': False, 'anios': anios})
+
+    tol_ing = float(p.tolerancia_ingresos)
+    tol_egr = float(p.tolerancia_egresos)
+
+    presupuesto = _presupuesto_mensual(p)
+    real = _real_mensual(anio)
+    hay_real = any(r is not None for r in real)
+
+    def total(meses, clave):
+        return sum(m[clave] for m in meses if m is not None)
+
+    # --- Cumplimiento por concepto (filas 59 a 69) ---
+    claves = CONCEPTOS_PRESUPUESTO + [('resultado_operativo', 'Resultado operativo', 'resultado')]
+    cumplimiento = [
+        _fila_comparacion(nombre, tipo, total(presupuesto, clave), total(real, clave), hay_real, tol_ing, tol_egr)
+        for clave, nombre, tipo in claves
+    ]
+
+    # --- Panel acumulado (filas 23 a 27): compara los 12 meses, igual que el Excel ---
+    claves_egreso = [c for c, _, tipo in CONCEPTOS_PRESUPUESTO if tipo == 'egreso']
+    ing_p, ing_r = total(presupuesto, 'ventas_netas'), total(real, 'ventas_netas')
+    egr_p = sum(total(presupuesto, c) for c in claves_egreso)
+    egr_r = sum(total(real, c) for c in claves_egreso)
+    res_p, res_r = total(presupuesto, 'resultado_operativo'), total(real, 'resultado_operativo')
+
+    fila_ing = _fila_comparacion('Ingresos acumulados', 'ingreso', ing_p, ing_r, hay_real, tol_ing, tol_egr)
+    fila_egr = _fila_comparacion('Egresos acumulados', 'egreso', egr_p, egr_r, hay_real, tol_ing, tol_egr)
+    fila_res = _fila_comparacion('Resultado operativo', 'resultado', res_p, res_r, hay_real, tol_ing, tol_egr)
+
+    # Margen: el Excel compara el margen real contra el presupuestado (no el cociente).
+    margen_p = res_p / ing_p if ing_p else 0
+    margen_r = res_r / ing_r if ing_r else 0
+    if not hay_real:
+        color, semaforo, lectura = 'sin_real', 'Sin real', 'Pendiente de carga real'
+    elif margen_r >= margen_p:
+        color, semaforo, lectura = 'verde', 'Cumple', 'Margen real en línea con el presupuesto'
+    elif margen_r >= margen_p * tol_ing:
+        color, semaforo, lectura = 'amarillo', 'Parcial', 'Margen cerca del objetivo'
+    else:
+        color, semaforo, lectura = 'rojo', 'Bajo', 'Revisar margen operativo'
+    fila_margen = {
+        'concepto': 'Margen operativo', 'tipo': 'margen',
+        'presupuesto': margen_p, 'real': margen_r, 'brecha': margen_r - margen_p,
+        'cumplimiento': margen_r / margen_p if margen_p else 0,
+        'color': color, 'semaforo': semaforo, 'lectura': lectura,
+    }
+
+    # --- Lectura ejecutiva (fila 27) ---
+    if not hay_real:
+        lectura_ejecutiva = 'Cargar datos reales para analizar cumplimiento acumulado.'
+    elif fila_egr['color'] == 'rojo':
+        lectura_ejecutiva = 'Prioridad: revisar egresos acumulados porque superan el presupuesto.'
+    elif fila_res['color'] == 'rojo':
+        lectura_ejecutiva = 'Prioridad: revisar ventas, CMV y estructura porque el resultado está por debajo del presupuesto.'
+    else:
+        lectura_ejecutiva = 'Evolución presupuestaria bajo control.'
+
+    return Response({
+        'anio': anio,
+        'existe': True,
+        'anios': anios,
+        'supuestos': _supuestos_a_dict(p),
+        'meses': _meses_del_anio(anio),
+        'conceptos': [{'clave': c, 'nombre': n, 'tipo': t} for c, n, t in claves],
+        'presupuesto_mensual': presupuesto,
+        'real_mensual': real,
+        'panel_acumulado': [fila_ing, fila_egr, fila_res, fila_margen],
+        'lectura_ejecutiva': lectura_ejecutiva,
+        'cumplimiento': cumplimiento,
+    })
+
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def guardar_presupuesto_eerr(request):
+    try:
+        anio = int(request.data.get('anio'))
+    except (TypeError, ValueError):
+        return Response({'error': 'Falta el año o no es válido.'}, status=400)
+
+    valores = {}
+    for campo in CAMPOS_SUPUESTOS_PRESUPUESTO:
+        valor = request.data.get(campo)
+        if valor in (None, ''):
+            return Response({'error': f'Falta completar "{campo}".'}, status=400)
+        try:
+            valores[campo] = Decimal(str(valor))
+        except (InvalidOperation, ValueError):
+            return Response({'error': f'El valor de "{campo}" no es un número válido.'}, status=400)
+
+    p, creado = models.PresupuestoEERR.objects.update_or_create(anio=anio, defaults=valores)
+    return Response({'ok': True, 'creado': creado, 'supuestos': _supuestos_a_dict(p)})
+
+
+@login_required(login_url='login')
+def presupuesto_eerr_view(request):
+    if request.user.perfil.rol != 'admin':
+        return redirect('dashboard')
+    return render(request, 'presupuesto_eerr.html')
