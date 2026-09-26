@@ -20,6 +20,7 @@ from notificaciones.services import notificar
 
 from . import models
 from . import rectificaciones as rects
+from .legajos_link import datos_legajo, vincular_automaticamente
 from .views import _ajustes_dict, _errores_manuales_set, _mes_cerrado, build_detalle, monthly_summary
 
 R = models.RectificacionFichada
@@ -90,7 +91,7 @@ def serializar(r):
         'id': r.id,
         'numero': r.numero,
         'empleado': r.empleado.nombre,
-        'empleado_display': r.empleado.nombre_display(),
+        'empleado_display': datos_legajo(r.empleado)['nombre_completo'],
         'fecha': r.fecha.isoformat(),
         'mes': r.fecha.strftime('%Y-%m'),
         'estado': r.estado,
@@ -164,7 +165,9 @@ def _pdf(template, contexto, nombre_archivo):
 @api_view(['GET'])
 @permission_classes([EsAdminOColab])
 def datos_dia(request):
-    emp = get_object_or_404(models.Empleado, nombre=request.GET.get('empleado'))
+    vincular_automaticamente()
+    emp = get_object_or_404(models.Empleado.objects.select_related('legajo'), nombre=request.GET.get('empleado'))
+    leg = datos_legajo(emp)
     try:
         fecha = date.fromisoformat(request.GET.get('fecha', ''))
     except ValueError:
@@ -173,9 +176,10 @@ def datos_dia(request):
     existente = rects.rectificaciones_qs(empleado=emp).filter(fecha=fecha).first()
     return Response({
         'empleado': emp.nombre,
-        'empleado_display': emp.nombre_display(),
-        'dni': emp.dni,
-        'sector_turno': emp.sector_turno,
+        'empleado_display': leg['nombre_completo'],
+        'dni': leg['dni'],
+        'sector_turno': leg['puesto'],
+        'desde_legajo': leg['desde_legajo'],
         'medio_jornada': emp.medio_jornada,
         'sin_descuento_descanso': emp.sin_descuento_descanso,
         'marcas': [fila.get(k) for k in ('h1', 'h2', 'h3', 'h4')] if fila else [],
@@ -233,8 +237,8 @@ def rectificaciones(request):
         r = R.objects.create(
             empleado=emp,
             fecha=fecha,
-            dni=(d.get('dni') or '').strip(),
-            sector_turno=(d.get('sector_turno') or '').strip(),
+            dni=(d.get('dni') or '').strip() or datos_legajo(emp)['dni'],
+            sector_turno=(d.get('sector_turno') or '').strip() or datos_legajo(emp)['puesto'],
             tipos=tipos,
             tipo_otro=(d.get('tipo_otro') or '').strip(),
             marcas_originales=rects.formatear_marcas(fila),
@@ -251,9 +255,9 @@ def rectificaciones(request):
             medio_aviso=(d.get('medio_aviso') or R._meta.get_field('medio_aviso').default).strip(),
             creada_por=request.user,
         )
-        # Recordar DNI y sector para la próxima vez
+        # Recordar DNI y sector para la próxima vez (si no vienen del legajo)
         cambios = []
-        if r.dni and emp.dni != r.dni:
+        if r.dni and emp.dni != r.dni and not emp.legajo_id:
             emp.dni = r.dni
             cambios.append('dni')
         if r.sector_turno and emp.sector_turno != r.sector_turno:
@@ -460,6 +464,7 @@ def datos_reporte(emp, mes):
     dias_js = {1: 'lunes', 2: 'martes', 3: 'miércoles', 4: 'jueves', 5: 'viernes', 6: 'sábado', 0: 'domingo'}
     vacaciones = ajuste.get('vacaciones') or {}
     return {
+        'datos_emp': datos_legajo(emp),
         'faltas_label': ', '.join(dias_js.get(int(x), str(x)) for x in ajuste.get('faltas') or []),
         'feriados_label': ', '.join(dias_js.get(int(x), str(x)) for x in ajuste.get('feriados') or []),
         'vacaciones_label': ', '.join(f'{v} {dias_js.get(int(k), k)}' for k, v in vacaciones.items() if int(v or 0)),
@@ -492,5 +497,8 @@ def reporte_mensual(request):
     except (ValueError, TypeError):
         return Response({'error': 'Mes inválido (YYYY-MM).'}, status=400)
     datos = datos_reporte(emp, mes)
-    return _pdf('control_horario/reporte_mensual_pdf.html', datos,
+    resp = _pdf('control_horario/reporte_mensual_pdf.html', datos,
                 f'Reporte_horario_{mes}_{emp.nombre.replace(" ", "_")}.pdf')
+    # Se descarga como archivo (para entregárselo al empleado)
+    resp['Content-Disposition'] = resp['Content-Disposition'].replace('inline', 'attachment')
+    return resp

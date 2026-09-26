@@ -16,7 +16,13 @@ class Empleado(models.Model):
         db_index=True
     )
 
-    # Datos que pide el Anexo I (se completan la primera vez que se usan)
+    # Legajo del empleado (módulo Legajos): de ahí salen DNI, puesto y nombre completo
+    legajo = models.OneToOneField(
+        'legajos.Empleado', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='empleado_reloj',
+    )
+
+    # Datos que pide el Anexo I (se usan si el empleado no tiene legajo vinculado)
     dni = models.CharField(max_length=15, blank=True, default='')
     sector_turno = models.CharField(max_length=100, blank=True, default='')
 

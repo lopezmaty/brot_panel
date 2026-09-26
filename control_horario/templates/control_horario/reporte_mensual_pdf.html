@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <style>
-  @page { size: A4 landscape; margin: 11mm 12mm 13mm; @bottom-center { content: "Resumen mensual de registro horario · {{ emp.nombre_display }} · {{ mes_label }} · Página " counter(page) " de " counter(pages); font: 7pt Helvetica, Arial, sans-serif; color: #6b7a90; } }
+  @page { size: A4 landscape; margin: 11mm 12mm 13mm; @bottom-center { content: "Resumen mensual de registro horario · {{ datos_emp.nombre_completo }} · {{ mes_label }} · Página " counter(page) " de " counter(pages); font: 7pt Helvetica, Arial, sans-serif; color: #6b7a90; } }
   * { box-sizing: border-box; }
   body { font-family: Helvetica, Arial, sans-serif; font-size: 8.2pt; color: #1b2433; margin: 0; }
   .top { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #132644; padding-bottom: 6px; margin-bottom: 8px; }
@@ -50,9 +50,9 @@
 
 <h1>Resumen mensual de registro horario — {{ mes_label }}</h1>
 <div class="datos">
-  <span>Trabajador/a: <b>{{ emp.nombre_display }}</b></span>
-  {% if emp.dni %}<span>DNI: <b>{{ emp.dni }}</b></span>{% endif %}
-  {% if emp.sector_turno %}<span>Sector / turno: <b>{{ emp.sector_turno }}</b></span>{% endif %}
+  <span>Trabajador/a: <b>{{ datos_emp.nombre_completo }}</b></span>
+  {% if datos_emp.dni %}<span>DNI: <b>{{ datos_emp.dni }}</b></span>{% endif %}
+  {% if datos_emp.puesto %}<span>Puesto / sector: <b>{{ datos_emp.puesto }}</b></span>{% endif %}
   <span>Jornada: <b>{% if emp.medio_jornada %}Media jornada{% else %}Jornada completa{% endif %}</b></span>
   <span>Mes: <b>{% if cerrado %}Cerrado el {{ cerrado.cerrado_el|date:"d/m/Y" }}{% else %}Abierto (valores provisorios){% endif %}</b></span>
   <span>Emitido: <b>{{ emitido_el|date:"d/m/Y H:i" }}</b></span>

@@ -34,6 +34,9 @@ function sello(estado){
   return '<span class="badge verde">OK</span>';
 }
 
+function rectInc(n, limite){ return typeof CHRect !== 'undefined' ? CHRect.celdaIncidencias(n, limite) : String(n||0); }
+function rectPdf(nombre, mes){ return typeof CHRect !== 'undefined' ? CHRect.botonReporte(nombre, mes) : ''; }
+
 function selloResumen(estado){
   const cls = estado==='OK'?'verde':(estado==='Faltan horas'?'rojo':'amarillo');
   return '<span class="badge '+cls+'">'+esc(estado)+'</span>';
@@ -267,7 +270,8 @@ async function renderDetalle(){
     const rows = await chFetch(url);
     if(!rows.length){ cont.innerHTML = emptyState('No hay fichadas para este filtro.'); return; }
     const colErrTh = ES_ADMIN ? '<th style="text-align:center" title="Error de fichada">Error de fichada</th>' : '';
-    let html = '<div class="table-scroll"><table><thead><tr><th>Empleado</th><th>Fecha</th><th style="text-align:right">Marca 1</th><th style="text-align:right">Marca 2</th><th style="text-align:right">Marca 3</th><th style="text-align:right">Marca 4</th><th style="text-align:right">Horas (bruto)</th><th>Estado</th><th style="text-align:right">A liquidar</th><th title="Reporte y corrección excepcional de fichada (Anexo I)">Rectificación</th>'+colErrTh+'</tr></thead><tbody>';
+    const conRect = typeof CHRect !== 'undefined';
+    let html = '<div class="table-scroll"><table><thead><tr><th>Empleado</th><th>Fecha</th>'+(conRect?'<th title="Reporte y corrección excepcional de fichada (Anexo I)">Rectificación</th>':'')+'<th style="text-align:right">Marca 1</th><th style="text-align:right">Marca 2</th><th style="text-align:right">Marca 3</th><th style="text-align:right">Marca 4</th><th style="text-align:right">Horas (bruto)</th><th>Estado</th><th style="text-align:right">A liquidar</th>'+colErrTh+'</tr></thead><tbody>';
     rows.forEach(r=>{
       const colErrTd = ES_ADMIN
         ? '<td style="text-align:center">'+(r.sin_marcas ? '' : '<input type="checkbox" class="ch-err-manual"'
@@ -275,11 +279,11 @@ async function renderDetalle(){
           +(r.es_error_manual?' checked':'')+' title="Error de fichada">')+'</td>'
         : '';
       html+='<tr><td class="nombre-cell">'+esc(r.nombre)+'</td><td>'+fmtFechaCorta(r.fecha)+'</td>'
+        +(conRect?'<td data-export="'+esc(r.rectificacion ? 'N° '+r.rectificacion.numero+' - '+r.rectificacion.estado_label : '')+'">'+CHRect.celdaDetalle(r)+'</td>':'')
         +'<td style="text-align:right">'+(r.h1||'—')+'</td><td style="text-align:right">'+(r.h2||'—')+'</td><td style="text-align:right">'+(r.h3||'—')+'</td><td style="text-align:right">'+(r.h4||'—')+'</td>'
         +'<td style="text-align:right">'+(r.horas!==null?fmtDec(r.horas)+' h':'—')+'</td>'
         +'<td>'+sello(r.estado)+'</td>'
-        +CHRect.celdaLiquidar(r)
-        +'<td data-export="'+esc(r.rectificacion ? 'N° '+r.rectificacion.numero+' - '+r.rectificacion.estado_label : '')+'">'+CHRect.celdaDetalle(r)+'</td>'
+        +(conRect?CHRect.celdaLiquidar(r):'<td style="text-align:right;font-weight:700">'+fmtDec(r.a_liquidar)+' h</td>')
         +colErrTd+'</tr>';
     });
     html+='</tbody></table></div>';
@@ -318,7 +322,7 @@ function exportarDetalle(){
   const cont = document.getElementById('chDetalleContainer');
   const rows = cont.querySelectorAll('tbody tr');
   if(!rows.length) return;
-  const headers = ['Empleado','Fecha','Marca 1','Marca 2','Marca 3','Marca 4','Horas bruto','Estado','A liquidar','Rectificación'];
+  const headers = ['Empleado','Fecha','Rectificación','Marca 1','Marca 2','Marca 3','Marca 4','Horas bruto','Estado','A liquidar'];
   const data = Array.from(rows).map(r=>Array.from(r.querySelectorAll('td')).slice(0, headers.length).map(td=>(td.dataset.export ?? td.textContent).trim()));
   exportCSV('detalle_horario.csv', headers, data);
 }
@@ -355,8 +359,8 @@ function renderResumenSnapshot(data){
     const dif = snap.diferencia||0;
     const color = dif<-0.01?'var(--error)':(dif>0.01?'var(--good)':'');
     html+='<tr><td class="nombre-cell">'+esc(nombre)+'</td><td style="font-family:var(--font-mono);text-align:center">'+(snap.total?fmtDec(snap.total)+' h':'—')+'</td><td style="font-family:var(--font-mono);text-align:center">'+(snap.esperadas?fmtDec(snap.esperadas)+' h':'—')+'</td><td style="font-family:var(--font-mono);text-align:center;font-weight:700;color:'+color+'">'+fmtHorasEtq(dif)+'</td>'
-      +'<td style="text-align:center">'+CHRect.celdaIncidencias((data.incidencias||{})[nombre], data.limite_incidencias)+'</td>'
-      +'<td style="text-align:right">'+CHRect.botonReporte(nombre, data.mes)+'</td></tr>';
+      +'<td style="text-align:center">'+rectInc((data.incidencias||{})[nombre], data.limite_incidencias)+'</td>'
+      +'<td style="text-align:right">'+rectPdf(nombre, data.mes)+'</td></tr>';
   }
   html+='</tbody></table></div>';
   cont.innerHTML = html;
@@ -408,8 +412,8 @@ function renderResumenVivo(data, mes){
       +'<td style="text-align:center">'+r.dias_con_error+'</td>'
       +'<td style="text-align:center">'+difCell+'</td>'
       +'<td>'+selloResumen(r.estado)+'</td>'
-      +'<td style="text-align:center">'+CHRect.celdaIncidencias(r.incidencias, r.limite_incidencias)+'</td>'
-      +'<td style="text-align:right">'+CHRect.botonReporte(r.nombre_raw, mes)+'</td>'
+      +'<td style="text-align:center">'+rectInc(r.incidencias, r.limite_incidencias)+'</td>'
+      +'<td style="text-align:right">'+rectPdf(r.nombre_raw, mes)+'</td>'
       +'</tr>';
     if(r.observacion) html+='<tr><td colspan="11" style="font-size:12px;color:var(--gray600);padding-left:20px;font-style:italic">📝 '+esc(r.observacion)+'</td></tr>';
   });
@@ -693,10 +697,14 @@ async function renderConfig(){
   const cont = document.getElementById('chConfigContainer');
   cont.innerHTML = '<p class="hint">Cargando...</p>';
   try{
-    const empleados = await chFetch('empleados/?todos=1');
+    const [empleados, legajos] = await Promise.all([chFetch('empleados/?todos=1'), chFetch('legajos/').catch(()=>[])]);
     configLocal = empleados.map(e=>({...e, alias:e.alias||e.nombre}));
-    let html = '<div class="table-scroll"><table><thead><tr>'
-      +'<th>Nombre completo</th><th>Alias (nombre en reloj)</th><th title="Media jornada">½ Jornada</th>'
+    const legajoSelect = (e, i)=>'<select data-idx="'+i+'" data-campo="legajo_id" style="width:230px"><option value="">— Sin vincular —</option>'
+      + legajos.map(l=>'<option value="'+l.id+'"'+(l.id===e.legajo_id?' selected':'')+(l.empleado_reloj && l.empleado_reloj!==e.nombre?' disabled':'')+'>'+esc(l.apellido_nombre)+' · DNI '+esc(l.dni)+(l.empleado_reloj && l.empleado_reloj!==e.nombre?' (ya vinculado)':'')+'</option>').join('')
+      + '</select>';
+    let html = '<p class="section-help">La columna <b>Legajo</b> vincula a cada empleado del reloj con su legajo (módulo Legajos): de ahí salen el nombre, el DNI y el puesto para las rectificaciones y los reportes. Se vinculan solos cuando el nombre coincide; si no, elegilo acá.</p>'
+      +'<div class="table-scroll"><table><thead><tr>'
+      +'<th>Nombre completo</th><th>Alias (nombre en reloj)</th><th>Legajo</th><th title="Media jornada">½ Jornada</th>'
       +'<th title="No descontar descanso si marca 2 veces">Sin desc. descanso</th>'
       +'<th title="Bono mensual de horas extra compensadas">Bono h. extra/mes</th>'
       +'<th style="text-align:center" title="Ocultar de Evolución y Resumen mensual">Ocultar</th>'
@@ -705,6 +713,7 @@ async function renderConfig(){
       html+='<tr>'
         +'<td><input type="text" data-idx="'+i+'" data-campo="alias" value="'+esc(e.alias||e.nombre)+'" placeholder="Nombre completo..." style="width:220px"></td>'
         +'<td><input type="text" data-idx="'+i+'" data-campo="nombre_reloj" value="'+esc(e.nombre_reloj||'')+'" placeholder="Como aparece en el reloj..." style="width:220px"></td>'
+        +'<td>'+legajoSelect(e, i)+'</td>'
         +'<td style="text-align:center"><input type="checkbox" data-idx="'+i+'" data-campo="medio_jornada"'+(e.medio_jornada?' checked':'')+'></td>'
         +'<td style="text-align:center"><input type="checkbox" data-idx="'+i+'" data-campo="sin_descuento_descanso"'+(e.sin_descuento_descanso?' checked':'')+'></td>'
         +'<td><input type="number" data-idx="'+i+'" data-campo="bono_horas_extra" value="'+e.bono_horas_extra+'" min="0" step="0.5" style="width:80px"></td>'
@@ -714,10 +723,11 @@ async function renderConfig(){
     html+='</tbody></table></div>';
     cont.innerHTML = html;
 
-    cont.querySelectorAll('input').forEach(inp=>{
+    cont.querySelectorAll('input, select[data-campo]').forEach(inp=>{
       inp.addEventListener('change', ()=>{
         const idx = Number(inp.dataset.idx);
         const campo = inp.dataset.campo;
+        if(campo==='legajo_id') { configLocal[idx].legajo_id = inp.value ? Number(inp.value) : null; return; }
         if(inp.type==='checkbox') {
           if(campo==='ocultar') configLocal[idx].activo=!inp.checked;
           else configLocal[idx][campo]=inp.checked;

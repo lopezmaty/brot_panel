@@ -14,6 +14,7 @@ urlpatterns = [
     path('config/', vr.config, name='ch_config'),
 
     path('empleados/', views.ch_empleados, name='ch_empleados'),
+    path('legajos/', views.ch_legajos, name='ch_legajos'),
     path('empleados/update/', views.ch_empleados_update, name='ch_empleados_update'),
     path('empleados/crear/', views.ch_empleado_crear, name='ch_empleado_crear'),
     path('meses/', views.ch_meses, name='ch_meses'),
