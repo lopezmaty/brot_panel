@@ -31,8 +31,13 @@
       <tr>
         <td>{{ u.username }}</td>
         <td>
-          <input type="text" class="input-nombre" data-user-id="{{ u.id }}" value="{{ u.perfil.nombre }}"
-                 placeholder="Ej: Mati" maxlength="50" aria-label="Nombre de {{ u.username }}">
+          <div class="nombre-edit">
+            <input type="text" class="input-nombre" data-user-id="{{ u.id }}" value="{{ u.perfil.nombre }}"
+                   placeholder="Ej: Mati" maxlength="50" aria-label="Nombre de {{ u.username }}">
+            <button type="button" class="btn-primary btn-guardar-nombre" data-user-id="{{ u.id }}" disabled>
+              <i class="ti ti-device-floppy"></i> Guardar
+            </button>
+          </div>
         </td>
         <td>{{ u.email }}</td>
         <td>

@@ -75,9 +75,12 @@ document.getElementById('formCrearUsuario').addEventListener('submit', function 
     crearUsuario();
 });
 
-async function guardarNombre(input) {
+async function guardarNombre(input, boton) {
     const nombre = input.value.trim();
     if (nombre === input.dataset.guardado) return;
+
+    boton.disabled = true;
+    boton.innerHTML = '<i class="ti ti-loader-2"></i> Guardando...';
 
     const response = await fetch(`/api/users/usuarios/${input.dataset.userId}/`, {
         method: 'PATCH',
@@ -89,18 +92,28 @@ async function guardarNombre(input) {
     });
 
     if (response.ok) {
+        input.value = nombre;
         input.dataset.guardado = nombre;
+        boton.innerHTML = '<i class="ti ti-check"></i> Guardado';
         bpToast(nombre ? `Nombre guardado: ${nombre}` : 'Nombre borrado', 'ti-check');
+        setTimeout(function () { boton.innerHTML = '<i class="ti ti-device-floppy"></i> Guardar'; }, 1800);
     } else {
         alert('No se pudo guardar el nombre');
-        input.value = input.dataset.guardado;
+        boton.disabled = false;
+        boton.innerHTML = '<i class="ti ti-device-floppy"></i> Guardar';
     }
 }
 
 document.querySelectorAll('.input-nombre').forEach(function (input) {
+    const boton = input.parentElement.querySelector('.btn-guardar-nombre');
     input.dataset.guardado = input.value;
-    input.addEventListener('change', function () { guardarNombre(input); });
-    input.addEventListener('keydown', function (evento) {
-        if (evento.key === 'Enter') input.blur();
+
+    input.addEventListener('input', function () {
+        boton.disabled = input.value.trim() === input.dataset.guardado;
+        boton.innerHTML = '<i class="ti ti-device-floppy"></i> Guardar';
     });
+    input.addEventListener('keydown', function (evento) {
+        if (evento.key === 'Enter' && !boton.disabled) guardarNombre(input, boton);
+    });
+    boton.addEventListener('click', function () { guardarNombre(input, boton); });
 });
