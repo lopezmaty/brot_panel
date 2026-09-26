@@ -7,7 +7,7 @@
 <section class="bp-hero">
   <div>
     <div class="bp-eyebrow bp-reveal"><span class="bp-live"></span><span id="bpHoy">{{ hoy|date:"l j \d\e F"|capfirst }}</span></div>
-    <h1 class="bp-reveal" style="--i:1"><span id="bpSaludo">Hola</span>, <em>{{ request.user.first_name|default:request.user.username|capfirst }}</em>.</h1>
+    <h1 class="bp-reveal" style="--i:1"><span id="bpSaludo">Hola</span>, <em>{% firstof request.user.perfil.nombre request.user.first_name request.user.username %}</em>.</h1>
     <p class="bp-reveal" style="--i:2">Esto es lo que está pasando hoy en Brot.</p>
   </div>
   <div class="bp-hero-actions bp-reveal" style="--i:3">

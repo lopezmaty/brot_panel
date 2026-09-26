@@ -20,6 +20,7 @@
     <thead>
       <tr>
         <th>Usuario</th>
+        <th>Nombre</th>
         <th>Mail</th>
         <th>Rol</th>
         <th></th>
@@ -29,6 +30,10 @@
       {% for u in users %}
       <tr>
         <td>{{ u.username }}</td>
+        <td>
+          <input type="text" class="input-nombre" data-user-id="{{ u.id }}" value="{{ u.perfil.nombre }}"
+                 placeholder="Ej: Mati" maxlength="50" aria-label="Nombre de {{ u.username }}">
+        </td>
         <td>{{ u.email }}</td>
         <td>
           {% if u.perfil.rol == 'admin' %}
@@ -59,6 +64,9 @@
     <form id="formCrearUsuario">
       <label>Usuario</label>
       <input type="text" id="inputUsername" required>
+
+      <label>Nombre</label>
+      <input type="text" id="inputNombre" placeholder="Cómo lo saludamos en el panel, ej: Mati" maxlength="50">
 
       <label>Mail</label>
       <input type="email" id="inputEmail" required>

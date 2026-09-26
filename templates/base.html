@@ -87,9 +87,9 @@
 
       <div class="bp-side-footer">
         <button type="button" class="bp-user-chip" id="userMenuToggle">
-          <span class="bp-avatar">{{ request.user.first_name|default:request.user.username|slice:":1" }}</span>
+          {% firstof request.user.perfil.nombre request.user.first_name request.user.username as nombre_visible %}<span class="bp-avatar">{{ nombre_visible|slice:":1" }}</span>
           <span class="bp-user-meta">
-            <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+            <strong>{{ nombre_visible }}</strong>
             <small>{{ request.user.perfil.get_rol_display|default:"Usuario"|capfirst }}</small>
           </span>
           <i class="ti ti-selector"></i>

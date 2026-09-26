@@ -5,4 +5,5 @@ from . import models
 
 @admin.register(models.Perfil)
 class PerfilAdmin(admin.ModelAdmin):
-    fields = ['usuario', 'rol']
+    fields = ['usuario', 'nombre', 'rol']
+    list_display = ['usuario', 'nombre', 'rol']
