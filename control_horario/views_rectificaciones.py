@@ -479,6 +479,12 @@ def datos_reporte(emp, mes):
         'limite': limite,
         'supera_limite': incidencias >= limite,
         'dias_sin_descanso': sum(1 for f in filas if 'sin descanso' in f['estado'].lower() or 'descontó' in f['estado']),
+        # Días sin marcas de descanso en los que se descontaron los 30 min (Reglamento §5).
+        # Los días con una corrección autorizada quedan afuera: su cálculo lo definió la rectificación.
+        'fechas_sin_descanso': [
+            f['fecha'] for f in filas
+            if ('sin descanso' in f['estado'].lower() or 'descontó' in f['estado']) and not f['corregido']
+        ],
         'dias_error': sum(1 for f in filas if 'Error' in f['estado']),
         'cerrado': historial,
     }

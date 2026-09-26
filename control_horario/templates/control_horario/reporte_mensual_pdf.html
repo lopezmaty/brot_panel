@@ -174,15 +174,23 @@
 </div>
 
 <div class="conformidad avoid">
-  <h2>Conformidad con la compensación de horas — Acuerdo de Banco de Horas</h2>
+  <h2>Conformidad del trabajador/a — descansos y compensación de horas</h2>
   <p>
-    En el marco del <b>Acuerdo Individual Voluntario de Banco de Horas</b> suscripto con BROTHAUS S.A.S., el/la trabajador/a
+    En el marco del <b>Reglamento Interno de Registro y Control Horario</b> y del <b>Acuerdo Individual Voluntario de Banco de Horas</b> suscripto con BROTHAUS S.A.S., el/la trabajador/a
     <b>{{ datos_emp.nombre_completo }}</b>{% if datos_emp.dni %}, DNI <b>{{ datos_emp.dni }}</b>{% endif %}, declara haber revisado el detalle de
-    <b>{{ mes_label }}</b> y presta conformidad con las compensaciones de horas registradas tal como fueron acordadas:
+    <b>{{ mes_label }}</b> y presta conformidad con lo siguiente:
   </p>
   <ul>
     <li>Las <b>salidas anticipadas</b> (finalización de la jornada antes del horario previsto) que aceptó durante el mes quedan incorporadas como saldo a recuperar dentro del banco de horas, conforme a la cláusula 7 del Acuerdo.</li>
     <li>Las horas trabajadas por encima de la jornada quedan registradas como saldo a su favor y se compensan o liquidan según su naturaleza (cláusula 10).</li>
+    {% if fechas_sin_descanso %}
+    <li>Reconoce que <b>omitió marcar en el reloj el descanso obligatorio</b> de treinta (30) minutos los días
+      {% for f in fechas_sin_descanso %}<b>{{ f|date:"d/m" }}</b>{% if not forloop.last %}{% if forloop.revcounter == 2 %} y {% else %}, {% endif %}{% endif %}{% endfor %}
+      ({{ fechas_sin_descanso|length }} día{{ fechas_sin_descanso|length|pluralize }}), y <b>declara que en esos días sí gozó efectivamente de ese descanso</b>.
+      En consecuencia, acepta que se hayan descontado los 30 minutos de cada una de esas jornadas, conforme al Reglamento Interno de Registro y Control Horario (§5).</li>
+    {% else %}
+    <li>Durante el mes registró las marcas de descanso en el reloj o no hubo jornadas con descanso sin marcar.</li>
+    {% endif %}
     <li>El saldo del mes surge de la diferencia informada en este resumen: <b>{% if resumen.diferencia > 0 %}+{% endif %}{{ resumen.diferencia|floatformat:2 }} h</b>{% if resumen.diferencia < -0.01 %} a recuperar{% elif resumen.diferencia > 0.01 %} a favor del trabajador/a{% endif %}. Los saldos se compensan dentro de un plazo máximo de tres (3) meses desde su generación (cláusula 10).</li>
   </ul>
   <p class="nota">Esta conformidad se presta dentro del régimen general del Acuerdo y no implica renuncia a salarios, adicionales, límites de jornada, descansos ni otros derechos (cláusula 14). Las discrepancias pueden informarse preferentemente dentro de las 48 horas (cláusula 9).</p>

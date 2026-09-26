@@ -150,6 +150,27 @@ class RectificacionesTests(TestCase):
         self.assertNotIn('recibí copia', html)
         self.assertNotIn('Firma por BROTHAUS', html)
 
+    def test_reporte_conformidad_descansos_sin_marcar(self):
+        from . import views_rectificaciones as vr
+        from django.template.loader import render_to_string
+        # 3/9 tiene sólo entrada y salida: se descontó el descanso sin marcar
+        datos = vr.datos_reporte(self.emp, '2026-09')
+        self.assertEqual([f.isoformat() for f in datos['fechas_sin_descanso']], ['2026-09-03'])
+        html = render_to_string('control_horario/reporte_mensual_pdf.html', datos)
+        self.assertIn('omitió marcar en el reloj el descanso obligatorio', html)
+        self.assertIn('sí gozó efectivamente de ese descanso', html)
+        self.assertIn('03/09', html)
+
+    def test_reporte_sin_descansos_faltantes_no_pide_reconocerlos(self):
+        from . import views_rectificaciones as vr
+        from django.template.loader import render_to_string
+        _marca(self.emp, 2026, 9, 3, 10, 0)
+        _marca(self.emp, 2026, 9, 3, 10, 30)  # ahora el 3/9 tiene las 4 marcas
+        datos = vr.datos_reporte(self.emp, '2026-09')
+        self.assertEqual(datos['fechas_sin_descanso'], [])
+        html = render_to_string('control_horario/reporte_mensual_pdf.html', datos)
+        self.assertNotIn('omitió marcar', html)
+
     def test_aviso_fuera_de_termino(self):
         r = self._crear(fecha_hora_aviso='2026-09-08T10:00')
         self.assertTrue(r.json()['fuera_de_termino'])
