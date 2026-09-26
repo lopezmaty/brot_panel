@@ -26,6 +26,8 @@ function mesAnterior(){ const h=new Date(); const a=new Date(h.getFullYear(),h.g
 function labelMes(mk){ const [y,m]=mk.split('-'); const n=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']; return n[+m-1]+' '+y; }
 
 function sello(estado){
+  if(estado.indexOf('Rectificación autorizada')!==-1) return '<span class="badge naranja" title="'+esc(estado)+'">Corregido</span>';
+  if(estado.indexOf('Sin marcas')!==-1) return '<span class="badge gris">Sin marcas</span>';
   if(estado.indexOf('manualmente')!==-1) return '<span class="badge amarillo">Error (manual)</span>';
   if(estado.indexOf('Error')!==-1) return '<span class="badge rojo">Error de fichada</span>';
   if(estado.indexOf('sin descanso')!==-1||estado.indexOf('descontó')!==-1) return '<span class="badge amarillo">Sin descanso marcado</span>';
@@ -113,6 +115,7 @@ function activarTabCH(tab){
   document.querySelectorAll('.ch-nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
   document.querySelectorAll('.ch-tab').forEach(t=>t.classList.toggle('active', t.id==='ch-tab-'+tab));
   if(tab==='detalle') renderDetalle();
+  if(tab==='rectificaciones') CHRect.renderLista();
   if(tab==='resumen') renderResumen();
   if(tab==='evolucion') renderEvolucion();
   if(tab==='config') renderConfig();
@@ -264,18 +267,19 @@ async function renderDetalle(){
     const rows = await chFetch(url);
     if(!rows.length){ cont.innerHTML = emptyState('No hay fichadas para este filtro.'); return; }
     const colErrTh = ES_ADMIN ? '<th style="text-align:center" title="Error de fichada">Error de fichada</th>' : '';
-    let html = '<div class="table-scroll"><table><thead><tr><th>Empleado</th><th>Fecha</th><th style="text-align:right">Marca 1</th><th style="text-align:right">Marca 2</th><th style="text-align:right">Marca 3</th><th style="text-align:right">Marca 4</th><th style="text-align:right">Horas (bruto)</th><th>Estado</th><th style="text-align:right">A liquidar</th>'+colErrTh+'</tr></thead><tbody>';
+    let html = '<div class="table-scroll"><table><thead><tr><th>Empleado</th><th>Fecha</th><th style="text-align:right">Marca 1</th><th style="text-align:right">Marca 2</th><th style="text-align:right">Marca 3</th><th style="text-align:right">Marca 4</th><th style="text-align:right">Horas (bruto)</th><th>Estado</th><th style="text-align:right">A liquidar</th><th title="Reporte y corrección excepcional de fichada (Anexo I)">Rectificación</th>'+colErrTh+'</tr></thead><tbody>';
     rows.forEach(r=>{
       const colErrTd = ES_ADMIN
-        ? '<td style="text-align:center"><input type="checkbox" class="ch-err-manual"'
+        ? '<td style="text-align:center">'+(r.sin_marcas ? '' : '<input type="checkbox" class="ch-err-manual"'
           +' data-nombre="'+esc(r.nombre_raw||r.nombre)+'" data-fecha="'+esc(r.fecha)+'"'
-          +(r.es_error_manual?' checked':'')+' title="Error de fichada"></td>'
+          +(r.es_error_manual?' checked':'')+' title="Error de fichada">')+'</td>'
         : '';
       html+='<tr><td class="nombre-cell">'+esc(r.nombre)+'</td><td>'+fmtFechaCorta(r.fecha)+'</td>'
         +'<td style="text-align:right">'+(r.h1||'—')+'</td><td style="text-align:right">'+(r.h2||'—')+'</td><td style="text-align:right">'+(r.h3||'—')+'</td><td style="text-align:right">'+(r.h4||'—')+'</td>'
         +'<td style="text-align:right">'+(r.horas!==null?fmtDec(r.horas)+' h':'—')+'</td>'
         +'<td>'+sello(r.estado)+'</td>'
-        +'<td style="text-align:right;font-weight:700">'+fmtDec(r.a_liquidar)+' h</td>'
+        +CHRect.celdaLiquidar(r)
+        +'<td data-export="'+esc(r.rectificacion ? 'N° '+r.rectificacion.numero+' - '+r.rectificacion.estado_label : '')+'">'+CHRect.celdaDetalle(r)+'</td>'
         +colErrTd+'</tr>';
     });
     html+='</tbody></table></div>';
@@ -314,8 +318,8 @@ function exportarDetalle(){
   const cont = document.getElementById('chDetalleContainer');
   const rows = cont.querySelectorAll('tbody tr');
   if(!rows.length) return;
-  const headers = ['Empleado','Fecha','Marca 1','Marca 2','Marca 3','Marca 4','Horas bruto','Estado','A liquidar'];
-  const data = Array.from(rows).map(r=>Array.from(r.querySelectorAll('td')).map(td=>td.textContent.trim()));
+  const headers = ['Empleado','Fecha','Marca 1','Marca 2','Marca 3','Marca 4','Horas bruto','Estado','A liquidar','Rectificación'];
+  const data = Array.from(rows).map(r=>Array.from(r.querySelectorAll('td')).slice(0, headers.length).map(td=>(td.dataset.export ?? td.textContent).trim()));
   exportCSV('detalle_horario.csv', headers, data);
 }
 
@@ -346,11 +350,13 @@ async function renderResumen(){
 function renderResumenSnapshot(data){
   const cont = document.getElementById('chResumenContainer');
   let html = '<div class="alerta-card ok" style="margin-bottom:16px">Este mes está cerrado ('+new Date(data.cerrado_el).toLocaleDateString('es-AR')+'). Los datos son del snapshot.</div>';
-  html += '<div class="table-scroll"><table><thead><tr><th>Empleado</th><th style="text-align:center">Total horas</th><th style="text-align:center">Esperadas</th><th style="text-align:center">Diferencia</th></tr></thead><tbody>';
+  html += '<div class="table-scroll"><table><thead><tr><th>Empleado</th><th style="text-align:center">Total horas</th><th style="text-align:center">Esperadas</th><th style="text-align:center">Diferencia</th><th style="text-align:center" title="Rectificaciones del mes / límite para evaluar apercibimiento">Rectif.</th><th></th></tr></thead><tbody>';
   for(const [nombre, snap] of Object.entries(data.snapshot)){
     const dif = snap.diferencia||0;
     const color = dif<-0.01?'var(--error)':(dif>0.01?'var(--good)':'');
-    html+='<tr><td class="nombre-cell">'+esc(nombre)+'</td><td style="font-family:var(--font-mono);text-align:center">'+(snap.total?fmtDec(snap.total)+' h':'—')+'</td><td style="font-family:var(--font-mono);text-align:center">'+(snap.esperadas?fmtDec(snap.esperadas)+' h':'—')+'</td><td style="font-family:var(--font-mono);text-align:center;font-weight:700;color:'+color+'">'+fmtHorasEtq(dif)+'</td></tr>';
+    html+='<tr><td class="nombre-cell">'+esc(nombre)+'</td><td style="font-family:var(--font-mono);text-align:center">'+(snap.total?fmtDec(snap.total)+' h':'—')+'</td><td style="font-family:var(--font-mono);text-align:center">'+(snap.esperadas?fmtDec(snap.esperadas)+' h':'—')+'</td><td style="font-family:var(--font-mono);text-align:center;font-weight:700;color:'+color+'">'+fmtHorasEtq(dif)+'</td>'
+      +'<td style="text-align:center">'+CHRect.celdaIncidencias((data.incidencias||{})[nombre], data.limite_incidencias)+'</td>'
+      +'<td style="text-align:right">'+CHRect.botonReporte(nombre, data.mes)+'</td></tr>';
   }
   html+='</tbody></table></div>';
   cont.innerHTML = html;
@@ -379,6 +385,7 @@ function renderResumenVivo(data, mes){
     +'<th style="text-align:center">Esperadas</th>'
     +'<th style="text-align:center">Días err.</th>'
     +'<th style="text-align:center">Diferencia</th><th>Estado</th>'
+    +'<th style="text-align:center" title="Rectificaciones del mes / límite para evaluar apercibimiento">Rectif.</th><th></th>'
     +'</tr></thead><tbody>';
 
   data.resumenes.forEach(r=>{
@@ -401,8 +408,10 @@ function renderResumenVivo(data, mes){
       +'<td style="text-align:center">'+r.dias_con_error+'</td>'
       +'<td style="text-align:center">'+difCell+'</td>'
       +'<td>'+selloResumen(r.estado)+'</td>'
+      +'<td style="text-align:center">'+CHRect.celdaIncidencias(r.incidencias, r.limite_incidencias)+'</td>'
+      +'<td style="text-align:right">'+CHRect.botonReporte(r.nombre_raw, mes)+'</td>'
       +'</tr>';
-    if(r.observacion) html+='<tr><td colspan="9" style="font-size:12px;color:var(--gray600);padding-left:20px;font-style:italic">📝 '+esc(r.observacion)+'</td></tr>';
+    if(r.observacion) html+='<tr><td colspan="11" style="font-size:12px;color:var(--gray600);padding-left:20px;font-style:italic">📝 '+esc(r.observacion)+'</td></tr>';
   });
   html+='</tbody></table></div>';
 
@@ -820,4 +829,5 @@ chInit().then(()=>{
     document.getElementById('chFiltroMesDetalle').value = mesDefault;
     document.getElementById('chFiltroMesResumen').value = mesDefault;
   }
+  if(typeof CHRect !== 'undefined') CHRect.init();
 });

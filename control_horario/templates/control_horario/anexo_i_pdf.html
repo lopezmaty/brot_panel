@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4; margin: 12mm 13mm 13mm; @bottom-center { content: "Anexo I · Formulario de Reporte y Corrección Excepcional de Fichada · N° {{ r.numero }} · Página " counter(page) " de " counter(pages); font: 7pt Helvetica, Arial, sans-serif; color: #6b7a90; } }
+  * { box-sizing: border-box; }
+  body { font-family: Helvetica, Arial, sans-serif; font-size: 8.6pt; color: #1b2433; margin: 0; }
+  .top { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #132644; padding-bottom: 6px; margin-bottom: 8px; }
+  .top img { height: 30px; }
+  .top .emp { text-align: right; font-size: 7.6pt; color: #4a5d7a; line-height: 1.35; }
+  .top .emp b { color: #132644; font-size: 8.4pt; }
+  h1 { font-size: 12.5pt; margin: 0; color: #132644; letter-spacing: .3px; }
+  .sub { font-size: 9pt; color: #4a5d7a; margin: 1px 0 8px; }
+  .numero { float: right; font-size: 8pt; border: 1px solid #132644; border-radius: 4px; padding: 2px 7px; color: #132644; font-weight: bold; }
+  .sec { background: #132644; color: #fff; font-weight: bold; font-size: 8.4pt; padding: 3px 7px; margin: 8px 0 0; letter-spacing: .4px; text-transform: uppercase; }
+  table { width: 100%; border-collapse: collapse; }
+  td, th { border: 1px solid #9aa8bd; padding: 3.4px 6px; vertical-align: top; }
+  td.l { width: 30%; background: #eef2f8; font-weight: bold; color: #1e2d45; }
+  .cb { display: inline-block; width: 9px; height: 9px; border: 1.2px solid #1b2433; margin-right: 3px; vertical-align: -1px; position: relative; }
+  .cb.on { background: #1b2433; box-shadow: inset 0 0 0 1.5px #fff; }
+  .opts span { margin-right: 10px; white-space: nowrap; }
+  .decl { border: 1px solid #9aa8bd; border-top: 0; padding: 5px 7px; font-size: 7.8pt; line-height: 1.4; color: #333; background: #fbfcfe; }
+  .firmas td { height: 40px; vertical-align: bottom; text-align: center; font-size: 7.5pt; color: #4a5d7a; }
+  .firmas .val { display: block; color: #1b2433; font-size: 8.6pt; margin-bottom: 2px; min-height: 12px; }
+  .linea { border-bottom: 1px dotted #9aa8bd; height: 15px; }
+  .res td { font-size: 8.2pt; }
+  .grid5 th { background: #eef2f8; font-size: 7.4pt; text-align: center; font-weight: bold; }
+  .grid5 td { height: 26px; text-align: center; vertical-align: middle; }
+  .aviso { color: #b42318; font-weight: bold; }
+  .muted { color: #6b7a90; }
+  .nota { font-size: 7.2pt; color: #6b7a90; margin-top: 5px; line-height: 1.35; }
+</style>
+</head>
+<body>
+
+<div class="top">
+  {% if logo_base64 %}<img src="data:image/png;base64,{{ logo_base64 }}" alt="Brot">{% else %}<b>BROT PANES</b>{% endif %}
+  <div class="emp"><b>BROTHAUS S.A.S. (BROT PANES)</b><br>Registro horario · Anexo I del Reglamento Interno</div>
+</div>
+
+<span class="numero">N° {{ r.numero }}</span>
+<h1>ANEXO I</h1>
+<div class="sub">Formulario de Reporte y Corrección Excepcional de Fichada</div>
+
+<div class="sec">Datos de la incidencia — completa la persona trabajadora</div>
+<table>
+  <tr><td class="l">Trabajador/a</td><td>{{ d.empleado_display }}</td></tr>
+  <tr><td class="l">DNI</td><td>{{ d.dni|default:"" }}</td></tr>
+  <tr><td class="l">Fecha de la incidencia</td><td>{{ r.fecha|date:"d/m/Y" }}</td></tr>
+  <tr><td class="l">Sector / turno</td><td>{{ d.sector_turno|default:"" }}</td></tr>
+  <tr><td class="l">Tipo de incidencia</td>
+    <td class="opts check">
+      <span>{% if "ingreso" in r.tipos %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Ingreso</span>
+      <span>{% if "salida" in r.tipos %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Salida</span>
+      <span>{% if "descanso" in r.tipos %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Descanso</span>
+      <span>{% if "falla_tecnica" in r.tipos %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Falla técnica</span>
+      <span>{% if "otro" in r.tipos %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Otro{% if r.tipo_otro %}: {{ r.tipo_otro }}{% endif %}</span>
+    </td></tr>
+  <tr><td class="l">Marcas originales del reloj biométrico</td><td>{{ r.marcas_originales }}</td></tr>
+  <tr><td class="l">Cálculo provisional del sistema</td><td>{{ r.calculo_provisional }} No se reconoce automáticamente el horario informado.</td></tr>
+  <tr><td class="l">Horario real informado</td>
+    <td>
+      {% if d.real_entrada or d.real_salida %}
+        Entrada {{ d.real_entrada|default:"—" }}
+        {% if d.real_salida_descanso or d.real_regreso_descanso %} · Salida a descanso {{ d.real_salida_descanso|default:"—" }} · Regreso {{ d.real_regreso_descanso|default:"—" }}{% endif %}
+        · Salida {{ d.real_salida|default:"—" }}.
+        {% if r.sin_descanso_declarado %} Declara que <b>no pudo tomar el descanso</b>.{% endif %}
+        {% if d.horas_declaradas is not None %} <span class="muted">(Equivale a {{ d.horas_declaradas|floatformat:2 }} h)</span>{% endif %}
+      {% endif %}
+      {% if r.horario_real_texto %}<br>{{ r.horario_real_texto }}{% endif %}
+    </td></tr>
+  <tr><td class="l">Motivo de la incidencia</td><td>{{ r.motivo|linebreaksbr }}</td></tr>
+  <tr><td class="l">Fecha y hora del aviso</td>
+    <td>{{ r.fecha_hora_aviso|date:"d/m/Y - H:i" }}
+      {% if r.aviso_fuera_de_termino %}<span class="aviso"> · Aviso fuera del plazo interno de 48 h (Reglamento §7)</span>{% endif %}</td></tr>
+  <tr><td class="l">Medio utilizado para avisar</td><td>{{ r.medio_aviso }}</td></tr>
+</table>
+<div class="decl"><b>Declaración de la persona trabajadora.</b> Declaro que los datos informados reflejan, según mi conocimiento, el horario efectivamente cumplido. Comprendo que la empresa podrá verificar esta información con registros objetivos y que una falsedad deliberada podrá ser considerada un incumplimiento laboral, sin perjuicio de los derechos que correspondan.</div>
+<table class="firmas">
+  <tr>
+    <td style="width:40%"><span class="val">&nbsp;</span>Firma del trabajador/a</td>
+    <td style="width:22%"><span class="val">{{ r.fecha_hora_aviso|date:"d/m/Y" }}</span>Fecha</td>
+    <td><span class="val">{{ d.empleado_display }}</span>Aclaración</td>
+  </tr>
+</table>
+
+<div class="sec">Verificación interna — completa el responsable</div>
+<table class="res check">
+  <tr><td class="l">Registro biométrico revisado</td><td>{% if r.verif_biometrico is True %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Sí &nbsp; {% if r.verif_biometrico is False %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} No</td></tr>
+  <tr><td class="l">Horario programado revisado</td><td>{% if r.verif_horario_programado is True %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Sí &nbsp; {% if r.verif_horario_programado is False %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} No</td></tr>
+  <tr><td class="l">Cámaras disponibles y pertinentes</td><td>{% if r.verif_camaras == "si" %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Sí &nbsp; {% if r.verif_camaras == "no" %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} No &nbsp; {% if r.verif_camaras == "no_disponibles" %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} No disponibles</td></tr>
+  <tr><td class="l">Registros de producción o acceso</td><td>{% if r.verif_registros is True %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Sí &nbsp; {% if r.verif_registros is False %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} No</td></tr>
+  <tr><td class="l">Supervisor / testigos</td><td>{% if r.verif_supervisor is True %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Sí &nbsp; {% if r.verif_supervisor is False %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} No</td></tr>
+  <tr><td class="l">Otros elementos</td><td>{% if r.verif_otros %}{{ r.verif_otros|linebreaksbr }}{% else %}<div class="linea"></div><div class="linea"></div>{% endif %}</td></tr>
+</table>
+
+<div class="sec">Resolución</div>
+<table class="res check">
+  <tr><td>{% if r.resolucion == "acreditada" %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Incidencia acreditada: se autoriza corrección excepcional.</td></tr>
+  <tr><td>{% if r.resolucion == "parcial" %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Incidencia parcialmente acreditada: se autoriza corrección por el horario comprobado.</td></tr>
+  <tr><td>{% if r.resolucion == "no_acreditada" %}<span class="cb on"></span>{% else %}<span class="cb"></span>{% endif %} Incidencia no acreditada: se mantiene el cálculo administrativo provisional, dejando constancia de los motivos.</td></tr>
+</table>
+<table class="grid5" style="margin-top:4px">
+  <tr><th>Horario corregido</th><th>Horas a liquidar / impacto</th><th>Fecha de carga</th><th>Usuario que carga</th><th>Aprobó</th></tr>
+  <tr>
+    <td>{{ r.horario_corregido }}</td>
+    <td>{% if r.autoriza_correccion %}{{ d.horas_a_liquidar|floatformat:2 }} h<br><span class="muted">({% if d.impacto_horas > 0 %}+{% endif %}{{ d.impacto_horas|floatformat:2 }} h vs. cálculo provisional)</span>{% elif r.resolucion == "no_acreditada" %}Sin cambios<br><span class="muted">({{ d.horas_provisionales|floatformat:2 }} h)</span>{% endif %}</td>
+    <td>{{ r.resuelta_el|date:"d/m/Y" }}</td>
+    <td>{{ d.resuelta_por }}</td>
+    <td>{{ r.aprobado_por }}</td>
+  </tr>
+</table>
+<table style="margin-top:4px"><tr><td>
+  <b>Observaciones / fundamentos:</b>
+  {% if r.observaciones %}{{ r.observaciones|linebreaksbr }}{% else %}<div class="linea"></div><div class="linea"></div><div class="linea"></div>{% endif %}
+</td></tr></table>
+<table class="firmas">
+  <tr>
+    <td style="width:40%"><span class="val">&nbsp;</span>Firma del responsable</td>
+    <td><span class="val">{{ r.aprobado_por }}</span>Aclaración y cargo</td>
+    <td style="width:22%"><span class="val">{{ r.resuelta_el|date:"d/m/Y" }}</span>Fecha</td>
+  </tr>
+</table>
+<div class="nota">Las marcas originales del reloj biométrico no se borran ni se modifican: esta corrección queda registrada por separado en el sistema, con la persona que la solicitó, la que la autorizó y la documentación de respaldo (Reglamento §2 y §8). Generado el {{ emitido_el|date:"d/m/Y H:i" }} por el sistema de control horario.</div>
+
+</body>
+</html>

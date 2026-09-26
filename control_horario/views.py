@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from users.permissions import EsAdmin
 from . import models
+from . import rectificaciones as rects
 from datetime import date, datetime, timezone as dt_tz
 import calendar
 
@@ -763,6 +764,11 @@ def ch_detalle(request):
         else:
             row['es_error_manual'] = False
 
+    emp_obj = models.Empleado.objects.filter(nombre=empleado).first() if empleado else None
+    rects.aplicar_a_detalle(detalle, rects.rectificaciones_qs(mes, emp_obj))
+    if empleado:
+        detalle = [r for r in detalle if r['nombre_raw'] == empleado]
+
     return Response(detalle)
 
 
@@ -833,6 +839,8 @@ def ch_resumen(request):
             'cerrado': True,
             'cerrado_el': historial.cerrado_el.isoformat(),
             'snapshot': snapshot_filtrado,
+            'incidencias': rects.incidencias_por_empleado(mes),
+            'limite_incidencias': models.ConfigHorario.actual().limite_incidencias_mes,
         })
     except models.HistorialMes.DoesNotExist:
         pass
@@ -840,6 +848,7 @@ def ch_resumen(request):
     qs = models.MarcaFichada.objects.filter(mes=mes).select_related('empleado')
     errores = _errores_manuales_set(mes)
     detalle = build_detalle(qs, errores)
+    rects.aplicar_a_detalle(detalle, rects.rectificaciones_qs(mes))
 
     empleados = models.Empleado.objects.filter(activo=True)
     nombres_con_datos = {r['nombre_raw'] for r in detalle}
@@ -848,10 +857,15 @@ def ch_resumen(request):
     ajustes_qs = models.AjusteMes.objects.filter(mes=mes).select_related('empleado')
     ajustes_map = {a.empleado.nombre: {'faltas': a.faltas, 'feriados': a.feriados, 'vacaciones': a.vacaciones, 'observacion': a.observacion} for a in ajustes_qs}
 
+    incidencias = rects.incidencias_por_empleado(mes)
+    limite = models.ConfigHorario.actual().limite_incidencias_mes
+
     resumenes = []
     for emp in sorted(empleados_mes, key=lambda e: e.nombre):
         ajuste = ajustes_map.get(emp.nombre, {'faltas': [], 'feriados': [], 'vacaciones': {}, 'observacion': ''})
         r = monthly_summary(detalle, emp.nombre, mes, emp, ajuste)
+        r['incidencias'] = incidencias.get(emp.nombre, 0)
+        r['limite_incidencias'] = limite
         resumenes.append(r)
 
     _agregar_advertencias(resumenes, detalle, mes)
@@ -908,6 +922,7 @@ def ch_cerrar_mes(request):
     qs = models.MarcaFichada.objects.filter(mes=mes).select_related('empleado')
     errores = _errores_manuales_set(mes)
     detalle = build_detalle(qs, errores)
+    rects.aplicar_a_detalle(detalle, rects.rectificaciones_qs(mes))
 
     empleados = models.Empleado.objects.filter(activo=True)
     nombres_con_datos = {r['nombre_raw'] for r in detalle}
@@ -915,6 +930,13 @@ def ch_cerrar_mes(request):
 
     ajustes_qs = models.AjusteMes.objects.filter(mes=mes).select_related('empleado')
     ajustes_map = {a.empleado.nombre: {'faltas': a.faltas, 'feriados': a.feriados, 'vacaciones': a.vacaciones, 'observacion': a.observacion} for a in ajustes_qs}
+
+    pendientes = rects.rectificaciones_qs(mes).exclude(estado=models.RectificacionFichada.Estado.RESUELTA).count()
+    if pendientes and not request.data.get('forzar'):
+        return Response({
+            'error': f'Hay {pendientes} rectificación(es) sin resolver en este mes. Resolvelas o anulalas antes de cerrar.',
+            'rectificaciones_pendientes': pendientes,
+        }, status=409)
 
     snapshot = {}
     for emp in empleados_mes:
@@ -1012,6 +1034,7 @@ def ch_evolucion(request):
         models.MarcaFichada.objects.select_related('empleado').all(),
         errores,
     )
+    rects.aplicar_a_detalle(detalle_all, rects.rectificaciones_qs())
 
     ajustes_all = {(a.empleado.nombre, a.mes): {'faltas': a.faltas, 'feriados': a.feriados, 'vacaciones': a.vacaciones, 'observacion': a.observacion}
                    for a in models.AjusteMes.objects.select_related('empleado').all()}

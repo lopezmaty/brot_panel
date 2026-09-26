@@ -1,7 +1,18 @@
 from django.urls import path
 from . import views
+from . import views_rectificaciones as vr
 
 urlpatterns = [
+    path('rectificaciones/', vr.rectificaciones, name='ch_rectificaciones'),
+    path('rectificaciones/datos-dia/', vr.datos_dia, name='ch_rectificacion_datos_dia'),
+    path('rectificaciones/<int:rect_id>/', vr.rectificacion_detalle, name='ch_rectificacion_detalle'),
+    path('rectificaciones/<int:rect_id>/pdf/', vr.rectificacion_pdf, name='ch_rectificacion_pdf'),
+    path('rectificaciones/<int:rect_id>/foto/', vr.rectificacion_foto, name='ch_rectificacion_foto'),
+    path('rectificaciones/<int:rect_id>/resolver/', vr.rectificacion_resolver, name='ch_rectificacion_resolver'),
+    path('rectificaciones/<int:rect_id>/anular/', vr.rectificacion_anular, name='ch_rectificacion_anular'),
+    path('reporte-mensual/', vr.reporte_mensual, name='ch_reporte_mensual'),
+    path('config/', vr.config, name='ch_config'),
+
     path('empleados/', views.ch_empleados, name='ch_empleados'),
     path('empleados/update/', views.ch_empleados_update, name='ch_empleados_update'),
     path('empleados/crear/', views.ch_empleado_crear, name='ch_empleado_crear'),
