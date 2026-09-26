@@ -101,7 +101,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Desde Django 4.2 el almacenamiento se configura con STORAGES (STATICFILES_STORAGE ya no
+# se lee en Django 6). Con el manifiesto, cada archivo estático se publica con un hash en el
+# nombre: si cambia, cambia la URL y ni el navegador ni Cloudflare pueden servir una versión vieja.
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
