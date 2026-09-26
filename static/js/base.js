@@ -55,6 +55,33 @@ function aplicarTema(tema) {
 
   aplicarTema(document.documentElement.dataset.theme || 'light');
 
+  /* ---------- Tablas con scroll lateral ----------
+     Muchas tablas viven dentro de tarjetas con overflow:hidden; en pantallas
+     chicas no se podían deslizar. Se envuelven en un contenedor con scroll,
+     también las que los módulos dibujan después por JS. */
+  function envolverTablas(raiz) {
+    raiz.querySelectorAll('table').forEach(t => {
+      const padre = t.parentElement;
+      if (!padre || padre.classList.contains('bp-table-scroll') || padre.closest('table')) return;
+      const ox = getComputedStyle(padre).overflowX;
+      if (ox === 'auto' || ox === 'scroll') return;
+      const envoltura = document.createElement('div');
+      envoltura.className = 'bp-table-scroll';
+      padre.insertBefore(envoltura, t);
+      envoltura.appendChild(t);
+    });
+  }
+  const contenido = document.querySelector('.content');
+  if (contenido) {
+    envolverTablas(contenido);
+    let pendiente = false;
+    new MutationObserver(() => {
+      if (pendiente) return;
+      pendiente = true;
+      requestAnimationFrame(() => { pendiente = false; envolverTablas(contenido); });
+    }).observe(contenido, { childList: true, subtree: true });
+  }
+
   $('#themeToggle').addEventListener('click', function (e) {
     const nuevo = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     guardar('tema', nuevo);

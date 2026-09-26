@@ -357,7 +357,7 @@ html.bp-colapsado .bp-sidebar:not(:hover) .bp-brand-mark { display: grid; }
 .bp-topbar {
   position: sticky; top: 0; z-index: 30;
   display: flex; align-items: center; gap: 10px;
-  padding: 14px clamp(16px, 3vw, 40px);
+  padding: 14px max(clamp(16px, 3vw, 40px), calc((100% - 1400px) / 2));
   transition: background .25s, box-shadow .25s;
 }
 .bp-topbar.scrolled {
@@ -451,10 +451,10 @@ html.bp-colapsado .bp-sidebar:not(:hover) .bp-brand-mark { display: grid; }
   flex: 1;
   width: 100%;
   min-width: 0;
-  padding: 6px clamp(16px, 3vw, 40px) 60px;
+  /* El ancho máximo (1400px) se logra con el padding lateral, así título,
+     etiqueta y tarjetas quedan siempre alineados al mismo borde */
+  padding: 6px max(clamp(16px, 3vw, 40px), calc((100% - 1400px) / 2)) 60px;
 }
-.content > * { max-width: 1400px; margin-left: auto; margin-right: auto; }
-.content > .modal-overlay { max-width: none; }
 
 .page-eyebrow {
   display: block;
@@ -1219,3 +1219,90 @@ html.bp-no-vt .bp-sidebar, html.bp-no-vt .content { view-transition-name: none; 
 :root[data-theme="dark"] .content .lg-ficha-header { background: linear-gradient(120deg, #132644, #1B3A6B) !important; }
 :root[data-theme="dark"] .content .mapa-estante-seg.margen { background: #1B3A6B; }
 :root[data-theme="dark"] .content .cc-resumen-tabla tr.row-total[style] { background: #1B3A6B !important; }
+/* =====================================================================
+   AJUSTES POR PÁGINA
+   ===================================================================== */
+
+/* Productos: columnas reales (antes la familia flotaba al centro y se pisaba con el nombre) */
+.tabla-productos .fila-header,
+.tabla-productos .fila-producto {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) 40px;
+  align-items: center;
+  gap: 16px;
+}
+.tabla-productos .familia-centrada,
+.tabla-productos .familia-centrada-label { position: static; transform: none; left: auto; }
+.tabla-productos .fila-producto > div { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; min-width: 0; }
+.tabla-productos .fila-producto .badge-tamaño { margin-left: 0; }
+.tabla-productos .fila-producto .btn-delete { margin-left: 0; justify-self: end; }
+
+/* Calculadora de producción: filas alternadas para leer y cargar mejor */
+.content :is(#tablaDetalleBody, #tablaResumenBody) tr:nth-child(even) td { background: color-mix(in srgb, var(--navy) 8%, transparent); }
+:root[data-theme="dark"] .content :is(#tablaDetalleBody, #tablaResumenBody) tr:nth-child(even) td { background: rgba(255, 255, 255, .06); }
+.content :is(#tablaDetalleBody, #tablaResumenBody) tr:hover td { background: color-mix(in srgb, var(--sky) 10%, transparent); }
+.content #tablaDetalleBody tr:focus-within td { background: color-mix(in srgb, var(--orange) 10%, transparent); }
+
+/* Tablas con scroll lateral (el contenedor lo agrega base.js) */
+.bp-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+.bp-table-scroll > table { margin: 0; }
+
+/* =====================================================================
+   CELULAR
+   ===================================================================== */
+@media (max-width: 860px) {
+  .bp-topbar { padding: 10px 14px; }
+  html body .content { padding: 4px 14px 40px !important; }
+  .content .page-title, .content h1.page-title { font-size: 28px; margin-bottom: 16px; }
+
+  .card { padding: 14px; border-radius: 16px; }
+  .content :is(.cc-panel, .eerr-panel, .mapa-panel, .co-panel, .ch-panel) { padding: 18px 16px !important; border-radius: 16px; }
+
+  /* Tablas: se deslizan de costado en vez de apretar las columnas */
+  .bp-table-scroll { margin: 0 -14px; padding: 0 14px; width: calc(100% + 28px); max-width: none; }
+  .card .bp-table-scroll { margin: 0; padding: 0; width: 100%; }
+  .bp-table-scroll > table { width: max-content; min-width: 100%; }
+  .bp-table-scroll > table :is(th, td) { white-space: nowrap; }
+  .bp-table-scroll > table td :is(input, select) { min-width: 64px; }
+
+  /* Barras de filtros y botones: a lo ancho */
+  .usuarios-toolbar, .toolbar { justify-content: flex-start; }
+  .usuarios-toolbar > :is(select, .filtro-select, a, button) { flex: 1 1 100%; justify-content: center; }
+  .toolbar-left { flex-wrap: wrap; }
+  .toolbar-left .input-buscar { flex: 1 1 100%; width: 100%; }
+  .toolbar-right { flex-wrap: wrap; }
+  .toolbar-right > :is(button, a) { flex: 1 1 auto; }
+  .content :is(.cc-toolbar, .eerr-toolbar, .mapa-toolbar, .eerr-filters) { flex-wrap: wrap; gap: 10px; }
+  .content .cc-saldo-card { flex-wrap: wrap; gap: 12px; }
+  .filtro-desplegable { position: fixed; left: 14px; right: 14px; top: auto; min-width: 0; }
+  .form-actions > :is(a, button) { flex: 1 1 auto; }
+
+  /* Productos: nombre arriba, familia abajo */
+  .tabla-productos .fila-header { display: none; }
+  .tabla-productos .fila-producto { grid-template-columns: minmax(0, 1fr) 36px; gap: 4px 10px; padding: 12px 4px; }
+  .tabla-productos .fila-producto > div { grid-column: 1; }
+  .tabla-productos .familia-centrada { grid-column: 1; grid-row: 2; font-size: 12px; color: var(--text-3); }
+  .tabla-productos .fila-producto .btn-delete { grid-column: 2; grid-row: 1 / span 2; }
+
+  /* Modales como hoja desde abajo */
+  .modal-overlay { align-items: flex-end; padding: 0; }
+  .modal-box { max-width: none !important; border-radius: 22px 22px 0 0; max-height: 92vh; }
+  .modal-overlay.open .modal-box { animation: bp-sheet-in .35s var(--ease); }
+}
+@keyframes bp-sheet-in { from { transform: translateY(100%); } }
+/* Usuarios: nombre editable en la tabla */
+.input-nombre {
+  width: 150px;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--heading);
+  font: inherit;
+  font-size: 14px;
+  transition: border-color .15s, background .15s;
+}
+.input-nombre:hover { border-color: var(--line-strong); background: var(--surface-solid); }
+.input-nombre::placeholder { color: var(--text-3); }
+#formCrearUsuario input, #formCrearUsuario select { margin-bottom: 2px; }
