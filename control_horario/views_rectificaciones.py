@@ -220,9 +220,10 @@ def rectificaciones(request):
         return Response({'error': 'La fecha de la incidencia no puede ser futura.'}, status=400)
     if not (d.get('motivo') or '').strip():
         return Response({'error': 'Completá el motivo de la incidencia.'}, status=400)
-    tipos = [t for t in (d.get('tipos') or []) if t in rects.TIPOS_LABEL]
+    # Sólo se rectifican marcas de entrada o salida (el descanso no se declara)
+    tipos = [t for t in (d.get('tipos') or []) if t in rects.TIPOS_PERMITIDOS]
     if not tipos:
-        return Response({'error': 'Elegí al menos un tipo de incidencia.'}, status=400)
+        return Response({'error': 'Elegí si la incidencia es de entrada o de salida.'}, status=400)
     if rects.rectificaciones_qs(empleado=emp).filter(fecha=fecha).exists():
         return Response({'error': 'Ya hay una rectificación activa para ese empleado y día. Anulala si necesitás cargar otra.'}, status=409)
 
@@ -240,15 +241,12 @@ def rectificaciones(request):
             dni=(d.get('dni') or '').strip() or datos_legajo(emp)['dni'],
             sector_turno=(d.get('sector_turno') or '').strip() or datos_legajo(emp)['puesto'],
             tipos=tipos,
-            tipo_otro=(d.get('tipo_otro') or '').strip(),
+            tipo_otro='',
             marcas_originales=rects.formatear_marcas(fila),
             calculo_provisional=rects.formatear_calculo(fila),
             horas_provisionales=Decimal(str(round(fila['a_liquidar'], 2))) if fila else Decimal('0'),
             real_entrada=_hora(d.get('real_entrada')),
-            real_salida_descanso=_hora(d.get('real_salida_descanso')),
-            real_regreso_descanso=_hora(d.get('real_regreso_descanso')),
             real_salida=_hora(d.get('real_salida')),
-            sin_descanso_declarado=bool(d.get('sin_descanso_declarado')),
             horario_real_texto=(d.get('horario_real_texto') or '').strip(),
             motivo=d['motivo'].strip(),
             fecha_hora_aviso=aviso,
